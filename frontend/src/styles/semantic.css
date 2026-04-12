@@ -1,0 +1,89 @@
+.glass-page {
+  background: var(--glass-bg-canvas);
+  color: var(--glass-text-primary);
+}
+
+.glass-surface {
+  background: var(--glass-bg-surface);
+  border: 1px solid var(--glass-stroke-soft);
+  border-radius: var(--glass-radius-lg);
+  box-shadow: var(--glass-shadow-sm);
+  backdrop-filter: blur(var(--glass-blur-md));
+  -webkit-backdrop-filter: blur(var(--glass-blur-md));
+}
+
+.glass-surface-strong {
+  background: var(--glass-bg-surface-strong);
+  border: 1px solid var(--glass-stroke-soft);
+  border-radius: var(--glass-radius-lg);
+  box-shadow: var(--glass-shadow-md);
+}
+
+.glass-nav {
+  background: var(--glass-bg-nav);
+  border-bottom: 1px solid var(--glass-stroke-soft);
+  box-shadow: var(--glass-shadow-nav);
+  backdrop-filter: blur(var(--glass-blur-nav));
+  -webkit-backdrop-filter: blur(var(--glass-blur-nav));
+}
+
+.glass-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--glass-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.glass-btn-primary {
+  background: linear-gradient(140deg, var(--glass-accent-from) 0%, var(--glass-accent-to) 100%);
+  color: var(--glass-text-on-accent);
+}
+
+.glass-btn-primary:hover {
+  filter: brightness(1.03);
+}
+
+.glass-btn-secondary {
+  background: var(--glass-bg-surface-strong);
+  color: var(--glass-text-primary);
+  border-color: var(--glass-stroke-base);
+}
+
+.glass-input {
+  width: 100%;
+  border-radius: var(--glass-radius-md);
+  border: 1px solid var(--glass-stroke-base);
+  background: var(--glass-bg-muted);
+  color: var(--glass-text-primary);
+  padding: 10px 12px;
+  outline: none;
+}
+
+.glass-input:focus {
+  border-color: var(--glass-stroke-focus);
+  box-shadow: 0 0 0 3px rgba(47, 123, 255, 0.16);
+}
+
+.glass-muted {
+  color: var(--glass-text-tertiary);
+}
+
+.glass-danger {
+  color: var(--glass-tone-danger-fg);
+  background: var(--glass-tone-danger-bg);
+}
+
+.glass-warning {
+  color: var(--glass-tone-warning-fg);
+  background: var(--glass-tone-warning-bg);
+}
+
+.glass-success {
+  color: var(--glass-tone-success-fg);
+  background: var(--glass-tone-success-bg);
+}

@@ -1,0 +1,29 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./.env.example
+    environment:
+      DIRECTOR_DATABASE_URL: mysql+pymysql://root:waoowaoo123@host.docker.internal:13306/director
+      DIRECTOR_REDIS_URL: redis://host.docker.internal:16379/0
+      DIRECTOR_MINIO_ENDPOINT: http://host.docker.internal:19000
+      DIRECTOR_CORS_ORIGINS: http://localhost:15173
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "18000:18000"
+    command: >
+      python -m app.scripts.dev --no-reload --host 0.0.0.0 --port 18000
+
+  frontend:
+    build:
+      context: ./frontend
+    env_file:
+      - ./.env.example
+    ports:
+      - "15173:15173"
+    depends_on:
+      - backend
+    command: >
+      sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 15173"

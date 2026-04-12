@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "director-backend"
+version = "0.1.0"
+description = "FastAPI backend for the director rewrite"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic>=1.16.0",
+  "boto3>=1.38.0",
+  "fastapi>=0.115.0",
+  "httpx>=0.28.0",
+  "passlib>=1.7.4",
+  "pydantic-settings>=2.8.0",
+  "PyJWT>=2.10.0",
+  "pymysql>=1.1.1",
+  "python-multipart>=0.0.20",
+  "redis>=6.0.0",
+  "sqlalchemy>=2.0.0",
+  "uvicorn[standard]>=0.34.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "ruff>=0.11.0",
+]
+
+[project.scripts]
+director-dev = "app.scripts.dev:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = ["B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

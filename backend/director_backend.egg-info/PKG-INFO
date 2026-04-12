@@ -1,0 +1,20 @@
+Metadata-Version: 2.4
+Name: director-backend
+Version: 0.1.0
+Summary: FastAPI backend for the director rewrite
+Requires-Python: >=3.12
+Requires-Dist: alembic>=1.16.0
+Requires-Dist: boto3>=1.38.0
+Requires-Dist: fastapi>=0.115.0
+Requires-Dist: httpx>=0.28.0
+Requires-Dist: passlib>=1.7.4
+Requires-Dist: pydantic-settings>=2.8.0
+Requires-Dist: PyJWT>=2.10.0
+Requires-Dist: pymysql>=1.1.1
+Requires-Dist: python-multipart>=0.0.20
+Requires-Dist: redis>=6.0.0
+Requires-Dist: sqlalchemy>=2.0.0
+Requires-Dist: uvicorn[standard]>=0.34.0
+Provides-Extra: dev
+Requires-Dist: pytest>=8.3.0; extra == "dev"
+Requires-Dist: ruff>=0.11.0; extra == "dev"
