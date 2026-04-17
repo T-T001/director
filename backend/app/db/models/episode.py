@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from app.db.models.media import MediaObject
     from app.db.models.project import Project
     from app.db.models.run import WorkflowRun
+    from app.db.models.storyboard import Storyboard
     from app.db.models.task import Task
 
 
@@ -47,3 +48,6 @@ class Episode(Base):
     audio_media: Mapped["MediaObject | None"] = relationship()
     tasks: Mapped[list["Task"]] = relationship(back_populates="episode")
     runs: Mapped[list["WorkflowRun"]] = relationship(back_populates="episode")
+    storyboards: Mapped[list["Storyboard"]] = relationship(
+        back_populates="episode", cascade="all, delete-orphan"
+    )

@@ -8,9 +8,19 @@ export type Project = {
 
 export type ProjectSettings = {
   analysis_model: string | null
-  character_model?: string | null
-  location_model?: string | null
-  storyboard_model?: string | null
+  character_model: string | null
+  location_model: string | null
+  storyboard_model: string | null
+  video_model: string | null
+  audio_model: string | null
+  art_style: string
+  video_ratio: string
+  video_resolution: string
+}
+
+export type UserSettings = {
+  analysis_model: string | null
+  image_model: string | null
   video_model: string | null
   audio_model: string | null
   art_style: string

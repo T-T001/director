@@ -25,3 +25,13 @@ export async function deleteEpisode(episodeId: string) {
   const response = await apiClient.delete(`/episodes/${episodeId}`)
   return response.data.data as { deleted: boolean }
 }
+
+export async function appendPromptSource(episodeId: string, payload: Record<string, unknown>) {
+  const response = await apiClient.post(`/episodes/${episodeId}/prompt-source`, payload)
+  return response.data.data as { task_id: string; run_id: string; status: string; deduped: boolean }
+}
+
+export async function voiceGenerate(episodeId: string, payload: Record<string, unknown> = {}) {
+  const response = await apiClient.post(`/episodes/${episodeId}/voice-generate`, payload)
+  return response.data.data as { task_id: string; run_id: string; status: string; deduped: boolean }
+}

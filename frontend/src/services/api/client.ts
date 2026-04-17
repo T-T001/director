@@ -9,6 +9,11 @@ export const apiClient = axios.create({
   withCredentials: true,
 })
 
+export function buildMediaUrl(mediaId: string) {
+  const normalizedBase = (apiClient.defaults.baseURL as string | undefined)?.replace(/\/+$/, '') || '/api'
+  return `${normalizedBase}/media/${mediaId}`
+}
+
 apiClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
   if (token) {

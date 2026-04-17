@@ -49,7 +49,7 @@ export function ProtectedLayout() {
   if (checkingAuth) {
     return (
       <div className="glass-page min-h-screen p-6">
-        <LoadingState message="正在校验登录状态..." />
+        <LoadingState message="Checking authentication..." />
       </div>
     )
   }
@@ -71,11 +71,11 @@ export function LegacyWorkspaceRedirect() {
   const workspaceQuery = useQuery({
     queryKey: ['workspace', projectId],
     queryFn: () => getWorkspace(projectId),
-    enabled: !!projectId,
+    enabled: Boolean(projectId),
   })
 
   const sortedEpisodes = useMemo(
-    () => [...(workspaceQuery.data?.episodes ?? [])].sort((a, b) => a.episode_number - b.episode_number),
+    () => [...(workspaceQuery.data?.episodes ?? [])].sort((left, right) => left.episode_number - right.episode_number),
     [workspaceQuery.data?.episodes],
   )
 
@@ -84,7 +84,7 @@ export function LegacyWorkspaceRedirect() {
   }
 
   if (workspaceQuery.isLoading) {
-    return <LoadingState message="正在准备工作台..." />
+    return <LoadingState message="Preparing workspace..." />
   }
 
   if (workspaceQuery.isError) {

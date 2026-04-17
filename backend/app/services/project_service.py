@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from app.db.models.project import Project, ProjectSettings
 from app.db.models.task import Task
-from app.schemas.project import ProjectCreate, ProjectUpdate
+from app.schemas.project import ProjectCreate, ProjectSettingsUpdate, ProjectUpdate
 
 
 class ProjectService:
@@ -53,6 +53,22 @@ class ProjectService:
         self.db.commit()
         self.db.refresh(project)
         return project
+
+    def update_project_settings(
+        self, user_id: str, project_id: str, payload: ProjectSettingsUpdate
+    ) -> ProjectSettings:
+        project = self.get_project(user_id, project_id)
+        settings = project.settings
+        if settings is None:
+            settings = ProjectSettings(project_id=project.id)
+
+        for field_name, value in payload.model_dump(exclude_unset=True).items():
+            setattr(settings, field_name, value)
+
+        self.db.add(settings)
+        self.db.commit()
+        self.db.refresh(settings)
+        return settings
 
     def delete_project(self, user_id: str, project_id: str) -> None:
         project = self.get_project(user_id, project_id)

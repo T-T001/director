@@ -17,6 +17,18 @@ class ProjectSettingsRead(BaseModel):
     video_resolution: str
 
 
+class ProjectSettingsUpdate(BaseModel):
+    analysis_model: str | None = None
+    character_model: str | None = None
+    location_model: str | None = None
+    storyboard_model: str | None = None
+    video_model: str | None = None
+    audio_model: str | None = None
+    art_style: str | None = None
+    video_ratio: str | None = None
+    video_resolution: str | None = None
+
+
 class ProjectRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

@@ -5,7 +5,13 @@ from app.api.deps.auth import get_current_user
 from app.core.db import get_db
 from app.db.models.user import User
 from app.schemas.episode import EpisodeRead
-from app.schemas.project import ProjectCreate, ProjectRead, ProjectSettingsRead, ProjectUpdate
+from app.schemas.project import (
+    ProjectCreate,
+    ProjectRead,
+    ProjectSettingsRead,
+    ProjectSettingsUpdate,
+    ProjectUpdate,
+)
 from app.services.project_service import ProjectService
 
 router = APIRouter(prefix="/projects", tags=["projects"])
@@ -53,6 +59,23 @@ def update_project(
     service = ProjectService(db)
     project = service.update_project(current_user.id, project_id, payload)
     return {"success": True, "data": {"project": ProjectRead.model_validate(project).model_dump()}}
+
+
+@router.patch("/{project_id}/settings")
+def update_project_settings(
+    project_id: str,
+    payload: ProjectSettingsUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> dict:
+    service = ProjectService(db)
+    settings = service.update_project_settings(current_user.id, project_id, payload)
+    return {
+        "success": True,
+        "data": {
+            "settings": ProjectSettingsRead.model_validate(settings).model_dump(),
+        },
+    }
 
 
 @router.delete("/{project_id}")

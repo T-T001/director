@@ -5,6 +5,7 @@
   --glass-bg-surface-modal: rgba(255, 255, 255, 0.97);
   --glass-bg-muted: rgba(255, 255, 255, 0.86);
   --glass-bg-nav: rgba(255, 255, 255, 0.96);
+  --glass-overlay: rgba(10, 18, 36, 0.48);
 
   --glass-text-primary: #0a0a0a;
   --glass-text-secondary: #111827;

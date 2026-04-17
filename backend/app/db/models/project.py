@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.db import Base
 
 if TYPE_CHECKING:
+    from app.db.models.asset import ProjectAsset
     from app.db.models.episode import Episode
     from app.db.models.run import WorkflowRun
     from app.db.models.task import Task
@@ -37,6 +38,9 @@ class Project(Base):
         back_populates="project", uselist=False, cascade="all, delete-orphan"
     )
     episodes: Mapped[list["Episode"]] = relationship(
+        back_populates="project", cascade="all, delete-orphan"
+    )
+    assets: Mapped[list["ProjectAsset"]] = relationship(
         back_populates="project", cascade="all, delete-orphan"
     )
     tasks: Mapped[list["Task"]] = relationship(

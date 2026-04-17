@@ -1,5 +1,5 @@
 import { apiClient } from './client'
-import type { Project, Workspace } from '../../types/project'
+import type { Project, ProjectSettings, Workspace } from '../../types/project'
 
 export async function listProjects() {
   const response = await apiClient.get('/projects')
@@ -19,6 +19,11 @@ export async function getProject(projectId: string) {
 export async function updateProject(projectId: string, payload: { name?: string; description?: string | null }) {
   const response = await apiClient.patch(`/projects/${projectId}`, payload)
   return response.data.data.project as Project
+}
+
+export async function updateProjectSettings(projectId: string, payload: Partial<ProjectSettings>) {
+  const response = await apiClient.patch(`/projects/${projectId}/settings`, payload)
+  return response.data.data.settings as ProjectSettings
 }
 
 export async function deleteProject(projectId: string) {

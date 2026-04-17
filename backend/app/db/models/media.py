@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from sqlalchemy import DateTime, Integer, String
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.db import Base
@@ -11,6 +11,9 @@ class MediaObject(Base):
     __tablename__ = "media_objects"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid4()))
+    user_id: Mapped[str | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     storage_key: Mapped[str] = mapped_column(String(255), unique=True)
     bucket: Mapped[str] = mapped_column(String(128))
     mime_type: Mapped[str | None] = mapped_column(String(128), nullable=True)

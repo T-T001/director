@@ -12,6 +12,7 @@ app/api/routes/projects.py
 app/api/routes/runs.py
 app/api/routes/settings.py
 app/api/routes/sse.py
+app/api/routes/tasks.py
 app/core/__init__.py
 app/core/config.py
 app/core/db.py
@@ -34,6 +35,7 @@ app/schemas/episode.py
 app/schemas/project.py
 app/schemas/run.py
 app/schemas/settings.py
+app/schemas/task.py
 app/scripts/__init__.py
 app/scripts/dev.py
 app/scripts/seed.py
@@ -43,6 +45,8 @@ app/services/episode_service.py
 app/services/project_service.py
 app/services/run_service.py
 app/services/settings_service.py
+app/services/story_to_script_service.py
+app/services/task_service.py
 director_backend.egg-info/PKG-INFO
 director_backend.egg-info/SOURCES.txt
 director_backend.egg-info/dependency_links.txt
@@ -50,3 +54,4 @@ director_backend.egg-info/entry_points.txt
 director_backend.egg-info/requires.txt
 director_backend.egg-info/top_level.txt
 tests/test_health.py
+tests/test_task_run_story_to_script.py

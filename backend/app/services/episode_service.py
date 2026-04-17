@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.db.models.episode import Episode
 from app.schemas.episode import EpisodeCreate, EpisodeUpdate
@@ -38,7 +38,12 @@ class EpisodeService:
         return episode
 
     def get_episode(self, episode_id: str) -> Episode:
-        episode = self.db.query(Episode).filter(Episode.id == episode_id).first()
+        episode = (
+            self.db.query(Episode)
+            .options(joinedload(Episode.project))
+            .filter(Episode.id == episode_id)
+            .first()
+        )
         if not episode:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail={"message": "Episode not found"}
