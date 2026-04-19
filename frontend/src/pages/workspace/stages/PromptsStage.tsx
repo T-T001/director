@@ -501,14 +501,14 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">Prompts Stage</h2>
+            <h2 className="text-lg font-semibold">提示词阶段</h2>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
               Prompt editing with storyboard-backed save, append source, and AI modify workflows.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'storyboard')}>
-              <Button variant="secondary">Back Storyboard</Button>
+              <Button variant="secondary">返回分镜</Button>
             </Link>
             <Button
               type="button"
@@ -522,43 +522,43 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
               {saveAllMutation.isPending ? 'Saving All...' : 'Save All'}
             </Button>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'voice')}>
-              <Button variant="secondary">Go Voice</Button>
+              <Button variant="secondary">进入配音</Button>
             </Link>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Shots</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">镜头数</p>
             <p className="mt-1 text-2xl font-semibold">{shots.length}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Prompt Ready</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">提示词就绪</p>
             <p className="mt-1 text-2xl font-semibold">{readyCount}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Dirty Drafts</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">待保存草稿</p>
             <p className="mt-1 text-2xl font-semibold">{dirtyCount}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Running Tasks</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">进行中任务</p>
             <p className="mt-1 text-2xl font-semibold">{runningTotal}</p>
           </article>
         </div>
       </SectionCard>
 
       {saveNotice ? <SectionCard className="glass-success rounded-2xl p-4 text-sm">{saveNotice}</SectionCard> : null}
-      {episodeQuery.isLoading || storyboardsQuery.isLoading ? <LoadingState message="Loading prompt source..." /> : null}
-      {episodeQuery.isError || storyboardsQuery.isError ? <ErrorState message="Failed to load prompt source." /> : null}
+      {episodeQuery.isLoading || storyboardsQuery.isLoading ? <LoadingState message="正在加载提示词源..." /> : null}
+      {episodeQuery.isError || storyboardsQuery.isError ? <ErrorState message="加载提示词源失败。" /> : null}
 
       {shots.length === 0 ? (
-        <EmptyState title="No prompt source yet" description="Create script or storyboard content first." />
+        <EmptyState title="尚无提示词源" description="请先创建剧本或分镜内容。" />
       ) : (
         <>
           <SectionCard className="grid gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-base font-semibold">Prompt Workspace</h3>
+                <h3 className="text-base font-semibold">提示词工作台</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">
                   Visible {visibleShots.length} · Mention tagged {mentionedShotCount} · Dirty drafts {dirtyCount}
                 </p>
@@ -592,8 +592,8 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 >
                   Generate All Images
                 </button>
-                <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-3 py-1.5 text-xs" onClick={() => setIsMentionPickerOpen(true)}>Mention Picker</button>
-                <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-3 py-1.5 text-xs" onClick={() => setIsAiModalOpen(true)}>AI Modify</button>
+                <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-3 py-1.5 text-xs" onClick={() => setIsMentionPickerOpen(true)}>@提及资产</button>
+                <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-3 py-1.5 text-xs" onClick={() => setIsAiModalOpen(true)}>AI 润色</button>
               </div>
             </div>
 
@@ -603,7 +603,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                   className="glass-input"
                   value={shotSearch}
                   onChange={(event) => setShotSearch(event.target.value)}
-                  placeholder="Search shots / prompts / source"
+                  placeholder="搜索镜头 / 提示词 / 来源"
                 />
                 <button
                   type="button"
@@ -617,9 +617,9 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 </button>
               </div>
               <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto_auto]">
-                <input className="glass-input" value={styleSnippet} onChange={(event) => setStyleSnippet(event.target.value)} placeholder="Reusable style snippet" />
-                <Button type="button" variant="secondary" onClick={handleAppendStyle} disabled={!selectedShot}>Append To Selected</Button>
-                <Button type="button" variant="secondary" onClick={handleFillEmptyPrompts}>Fill Empty</Button>
+                <input className="glass-input" value={styleSnippet} onChange={(event) => setStyleSnippet(event.target.value)} placeholder="可复用风格片段" />
+                <Button type="button" variant="secondary" onClick={handleAppendStyle} disabled={!selectedShot}>追加到所选</Button>
+                <Button type="button" variant="secondary" onClick={handleFillEmptyPrompts}>补全空提示词</Button>
               </div>
             </div>
 
@@ -651,15 +651,15 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                     >
                       <div className="aspect-video rounded-lg border border-dashed border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]" />
                       <div className="mt-2 flex items-center justify-between gap-2">
-                        <p className="text-xs text-[var(--glass-text-tertiary)]">Shot {shot.order}</p>
+                        <p className="text-xs text-[var(--glass-text-tertiary)]">镜头 {shot.order}</p>
                         <span className="glass-chip">{shot.source}</span>
                       </div>
                       <div className="mt-1 flex flex-wrap items-center gap-1 text-[11px]">
                         <span className={['rounded-full px-2 py-0.5', isPromptReady ? 'glass-success' : 'glass-warning'].join(' ')}>
                           {isPromptReady ? 'Prompt Ready' : 'Prompt Missing'}
                         </span>
-                        {shotDirty ? <span className="glass-warning rounded-full px-2 py-0.5">Dirty</span> : <span className="glass-success rounded-full px-2 py-0.5">Synced</span>}
-                        {hasMention ? <span className="glass-chip px-2 py-0.5">Mentioned</span> : null}
+                        {shotDirty ? <span className="glass-warning rounded-full px-2 py-0.5">草稿</span> : <span className="glass-success rounded-full px-2 py-0.5">已同步</span>}
+                        {hasMention ? <span className="glass-chip px-2 py-0.5">已提及</span> : null}
                       </div>
                       <div className="mt-1 flex flex-wrap items-center justify-between gap-2 text-[11px] text-[var(--glass-text-tertiary)]">
                         <span>{shot.panelIndex !== null ? `Panel ${shot.panelIndex}` : 'Fallback'}</span>
@@ -714,20 +714,20 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                     </article>
                   )
                 })}
-                {visibleShots.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">No shots match the current filter.</p> : null}
+                {visibleShots.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">当前筛选没有镜头。</p> : null}
               </div>
             ) : (
               <div className="overflow-x-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70">
                 <table className="min-w-full text-sm">
                   <thead className="text-left text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">
                     <tr>
-                      <th className="px-3 py-2">Shot</th>
-                      <th className="px-3 py-2">Preview</th>
-                      <th className="px-3 py-2">Source</th>
-                      <th className="px-3 py-2">Timing</th>
-                      <th className="px-3 py-2">Status</th>
-                      <th className="px-3 py-2">Prompt</th>
-                      <th className="px-3 py-2">Actions</th>
+                      <th className="px-3 py-2">镜头</th>
+                      <th className="px-3 py-2">预览</th>
+                      <th className="px-3 py-2">来源</th>
+                      <th className="px-3 py-2">时间</th>
+                      <th className="px-3 py-2">状态</th>
+                      <th className="px-3 py-2">提示词</th>
+                      <th className="px-3 py-2">操作</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -747,8 +747,8 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                               <span className={['rounded-full px-2 py-0.5', prompt.trim() ? 'glass-success' : 'glass-warning'].join(' ')}>
                                 {prompt.trim() ? 'Ready' : 'Missing'}
                               </span>
-                              {shotDirty ? <span className="glass-warning rounded-full px-2 py-0.5">Dirty</span> : <span className="glass-success rounded-full px-2 py-0.5">Synced</span>}
-                              {hasMentionTokens(shot) ? <span className="glass-chip px-2 py-0.5">Mentioned</span> : null}
+                              {shotDirty ? <span className="glass-warning rounded-full px-2 py-0.5">草稿</span> : <span className="glass-success rounded-full px-2 py-0.5">已同步</span>}
+                              {hasMentionTokens(shot) ? <span className="glass-chip px-2 py-0.5">已提及</span> : null}
                             </div>
                           </td>
                           <td className="line-clamp-2 px-3 py-2">{prompt}</td>
@@ -803,7 +803,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                     })}
                     {visibleShots.length === 0 ? (
                       <tr>
-                        <td colSpan={7} className="px-3 py-4 text-center text-sm text-[var(--glass-text-tertiary)]">No shots match the current filter.</td>
+                        <td colSpan={7} className="px-3 py-4 text-center text-sm text-[var(--glass-text-tertiary)]">当前筛选没有镜头。</td>
                       </tr>
                     ) : null}
                   </tbody>
@@ -816,14 +816,14 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
             <SectionCard className="grid gap-3">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
-                  <h3 className="text-base font-semibold">Shot Prompt Editor</h3>
-                  <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Shot {selectedShot.order} | Source: {selectedShot.source}</p>
+                  <h3 className="text-base font-semibold">镜头提示词编辑器</h3>
+                  <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">镜头 {selectedShot.order} · 来源：{selectedShot.source}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button type="button" variant="secondary" onClick={() => setIsMentionPickerOpen(true)}>Mention</Button>
-                  <Button type="button" variant="secondary" onClick={() => setIsAiModalOpen(true)}>AI Modify</Button>
-                  <Button type="button" variant="secondary" onClick={handleCopySelected}>Copy Prompt</Button>
-                  <Button type="button" variant="secondary" onClick={() => updatePrompt(selectedShot.id, '')}>Clear</Button>
+                  <Button type="button" variant="secondary" onClick={() => setIsMentionPickerOpen(true)}>@提及</Button>
+                  <Button type="button" variant="secondary" onClick={() => setIsAiModalOpen(true)}>AI 润色</Button>
+                  <Button type="button" variant="secondary" onClick={handleCopySelected}>复制提示词</Button>
+                  <Button type="button" variant="secondary" onClick={() => updatePrompt(selectedShot.id, '')}>清空</Button>
                 </div>
               </div>
 
@@ -832,8 +832,8 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 <span className={['rounded-full px-2 py-0.5', getPrompt(selectedShot).trim() ? 'glass-success' : 'glass-warning'].join(' ')}>
                   {getPrompt(selectedShot).trim() ? 'Prompt Ready' : 'Prompt Missing'}
                 </span>
-                {isShotDirty(selectedShot) ? <span className="glass-warning rounded-full px-2 py-0.5">Dirty</span> : <span className="glass-success rounded-full px-2 py-0.5">Synced</span>}
-                {hasMentionTokens(selectedShot) ? <span className="glass-chip px-2 py-0.5">Mentioned</span> : null}
+                {isShotDirty(selectedShot) ? <span className="glass-warning rounded-full px-2 py-0.5">草稿</span> : <span className="glass-success rounded-full px-2 py-0.5">已同步</span>}
+                {hasMentionTokens(selectedShot) ? <span className="glass-chip px-2 py-0.5">已提及</span> : null}
                 <span className="text-[var(--glass-text-tertiary)]">{mentionSummary}</span>
               </div>
               {selectedAssetsForCurrentShot.length > 0 ? (
@@ -847,7 +847,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                         'inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs',
                         asset.type === 'character' ? 'bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'bg-[var(--glass-tone-warning-bg)] text-[var(--glass-tone-warning-fg)]',
                       ].join(' ')}
-                      title="Remove selected asset mention"
+                      title="移除所选资产提及"
                     >
                       <span>@{asset.name}</span>
                       <span>x</span>
@@ -860,18 +860,18 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 className="glass-input min-h-[240px]"
                 value={getPrompt(selectedShot)}
                 onChange={(event) => updatePrompt(selectedShot.id, event.target.value)}
-                placeholder="Describe composition, style, atmosphere, and camera language."
+                placeholder="描述构图、画风、氛围、镜头语言。"
               />
 
-              {selectedShot.panelId ? null : <p className="text-xs text-[var(--glass-text-tertiary)]">Episode fallback shot: local edits only. Generate storyboard to persist or run AI modify.</p>}
-              {copyState === 'copied' ? <p className="text-xs text-[var(--glass-text-tertiary)]">Prompt copied.</p> : null}
-              {copyState === 'failed' ? <p className="text-xs text-[var(--glass-text-tertiary)]">Copy failed.</p> : null}
+              {selectedShot.panelId ? null : <p className="text-xs text-[var(--glass-text-tertiary)]">剧集兜底镜头：仅在本地草稿中生效。请先生成分镜以持久化，或运行 AI 润色。</p>}
+              {copyState === 'copied' ? <p className="text-xs text-[var(--glass-text-tertiary)]">提示词已复制。</p> : null}
+              {copyState === 'failed' ? <p className="text-xs text-[var(--glass-text-tertiary)]">复制失败。</p> : null}
             </SectionCard>
           ) : null}
 
           <SectionCard className="rounded-2xl border-2 border-dashed border-[var(--glass-stroke-strong)] bg-[var(--glass-bg-muted)]">
-            <h3 className="text-base font-semibold">Append Prompt Source</h3>
-            <textarea className="glass-input mt-3 min-h-40" value={appendContent} onChange={(event) => setAppendContent(event.target.value)} placeholder="Paste source content..." />
+            <h3 className="text-base font-semibold">追加提示词来源</h3>
+            <textarea className="glass-input mt-3 min-h-40" value={appendContent} onChange={(event) => setAppendContent(event.target.value)} placeholder="粘贴来源内容..." />
             <div className="mt-3 flex items-center justify-between gap-2 text-xs text-[var(--glass-text-tertiary)]">
               <span>{storyboardsQuery.data && storyboardsQuery.data.length > 0 ? 'Updates existing storyboard panels.' : 'Generate storyboard first to append source.'}</span>
               <button
@@ -888,17 +888,17 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
       )}
 
       <SectionCard className="grid gap-2">
-        <h3 className="text-base font-semibold">Prompt Task Stream</h3>
-        {tasksQuery.isLoading ? <LoadingState message="Loading tasks..." /> : null}
-        {tasksQuery.isError ? <ErrorState message="Failed to load tasks." /> : null}
-        {!tasksQuery.isLoading && !tasksQuery.isError && promptTasks.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">No prompt-related tasks yet.</p> : null}
+        <h3 className="text-base font-semibold">提示词任务流</h3>
+        {tasksQuery.isLoading ? <LoadingState message="正在加载任务..." /> : null}
+        {tasksQuery.isError ? <ErrorState message="加载任务失败。" /> : null}
+        {!tasksQuery.isLoading && !tasksQuery.isError && promptTasks.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">当前没有提示词相关任务。</p> : null}
         {promptTasks.map((task) => (
           <article key={task.id} className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="font-medium text-[var(--glass-text-secondary)]">{task.task_type}</p>
               <span className={['rounded-full px-2 py-0.5 text-xs', statusClass(task.status)].join(' ')}>{task.status.replace(/_/g, ' ')}</span>
             </div>
-            <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Progress: {task.progress}% | Updated: {new Date(task.updated_at).toLocaleString()}</p>
+            <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">进度：{task.progress}% · 更新：{new Date(task.updated_at).toLocaleString('zh-CN')}</p>
           </article>
         ))}
       </SectionCard>
@@ -915,8 +915,8 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
           <button type="button" className="glass-overlay absolute inset-0" onClick={() => setIsAiModalOpen(false)} />
           <section className="glass-modal-shell relative z-10 grid w-full max-w-4xl gap-4 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h3 className="text-lg font-semibold">AI Modify Prompt</h3>
-              <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsAiModalOpen(false)}>Close</button>
+              <h3 className="text-lg font-semibold">AI 润色提示词</h3>
+              <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsAiModalOpen(false)}>关闭</button>
             </div>
             <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm text-[var(--glass-text-secondary)]">{selectedShot.text}</p>
             <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2">
@@ -947,7 +947,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
             </div>
             <div className="grid gap-2 md:grid-cols-2">
               <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 p-2">
-                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Character Assets</p>
+                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">角色资产</p>
                 <div className="mt-2 flex max-h-32 flex-wrap gap-1 overflow-y-auto">
                   {assetLibrary.characterAssets.map((asset) => {
                     const selected = selectedAssetsForCurrentShot.some((item) => item.id === asset.id)
@@ -968,7 +968,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 </div>
               </div>
               <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 p-2">
-                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Location Assets</p>
+                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">场景资产</p>
                 <div className="mt-2 flex max-h-32 flex-wrap gap-1 overflow-y-auto">
                   {assetLibrary.locationAssets.map((asset) => {
                     const selected = selectedAssetsForCurrentShot.some((item) => item.id === asset.id)
@@ -989,9 +989,9 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 </div>
               </div>
             </div>
-            <textarea className="glass-input min-h-28" value={aiInstruction} onChange={(event) => setAiInstruction(event.target.value)} placeholder="Describe how AI should refine the prompt." />
+            <textarea className="glass-input min-h-28" value={aiInstruction} onChange={(event) => setAiInstruction(event.target.value)} placeholder="描述 AI 如何润色提示词。" />
             <div className="flex flex-wrap justify-end gap-2">
-              <Button type="button" variant="secondary" onClick={() => setIsAiModalOpen(false)}>Cancel</Button>
+              <Button type="button" variant="secondary" onClick={() => setIsAiModalOpen(false)}>取消</Button>
               <Button type="button" onClick={() => void applyAiModify()} disabled={aiModifyMutation.isPending || !aiInstruction.trim()}>{aiModifyMutation.isPending ? 'Applying...' : 'Apply To Selected Prompt'}</Button>
             </div>
           </section>
@@ -1003,16 +1003,16 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
           <button type="button" className="glass-overlay absolute inset-0" onClick={() => setIsMentionPickerOpen(false)} />
           <section className="glass-modal-shell relative z-10 grid w-full max-w-4xl gap-4 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <h3 className="text-lg font-semibold">Mention Picker</h3>
-              <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsMentionPickerOpen(false)}>Close</button>
+              <h3 className="text-lg font-semibold">@提及资产</h3>
+              <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsMentionPickerOpen(false)}>关闭</button>
             </div>
 
-            <input className="glass-input" value={mentionSearch} onChange={(event) => setMentionSearch(event.target.value)} placeholder="Search mentions" />
+            <input className="glass-input" value={mentionSearch} onChange={(event) => setMentionSearch(event.target.value)} placeholder="搜索资产" />
 
             <div className="grid gap-2 lg:grid-cols-3">
               <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
-                <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Character Options</p>
-                {filteredCharacters.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">No candidates.</p> : null}
+                <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">角色候选</p>
+                {filteredCharacters.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">暂无候选。</p> : null}
                 {filteredCharacters.map((item) => {
                   const selected = mentionedCharacters.includes(item)
                   const asset = filteredCharacterAssets.find((candidate) => candidate.name === item)
@@ -1034,7 +1034,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                   )
                 })}
                 <div className="mt-2 border-t border-[var(--glass-stroke-base)] pt-2">
-                  <p className="mb-1 text-[11px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">Bind As @asset</p>
+                  <p className="mb-1 text-[11px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">绑定为 @资产</p>
                   <div className="flex flex-wrap gap-1">
                     {filteredCharacterAssets.map((asset) => {
                       const selected = selectedAssetsForCurrentShot.some((entry) => entry.id === asset.id)
@@ -1057,8 +1057,8 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
               </div>
 
               <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
-                <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Location Options</p>
-                {filteredLocations.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">No candidates.</p> : null}
+                <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">场景候选</p>
+                {filteredLocations.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">暂无候选。</p> : null}
                 {filteredLocations.map((item) => {
                   const selected = mentionedLocations.includes(item)
                   const asset = filteredLocationAssets.find((candidate) => candidate.name === item)
@@ -1080,7 +1080,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                   )
                 })}
                 <div className="mt-2 border-t border-[var(--glass-stroke-base)] pt-2">
-                  <p className="mb-1 text-[11px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">Bind As @asset</p>
+                  <p className="mb-1 text-[11px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">绑定为 @资产</p>
                   <div className="flex flex-wrap gap-1">
                     {filteredLocationAssets.map((asset) => {
                       const selected = selectedAssetsForCurrentShot.some((entry) => entry.id === asset.id)
@@ -1103,8 +1103,8 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
               </div>
 
               <div className="max-h-64 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
-                <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Selected Asset Mentions</p>
-                {selectedAssetsForCurrentShot.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">No assets selected for this shot.</p> : null}
+                <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">已选资产提及</p>
+                {selectedAssetsForCurrentShot.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">当前镜头尚未选择资产。</p> : null}
                 <div className="flex flex-wrap gap-1.5">
                   {selectedAssetsForCurrentShot.map((asset) => (
                     <button
@@ -1129,7 +1129,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 Insert Selected @assets To AI Instruction
               </button>
               <div className="flex flex-wrap justify-end gap-2">
-              <Button type="button" variant="secondary" onClick={() => setIsMentionPickerOpen(false)}>Cancel</Button>
+              <Button type="button" variant="secondary" onClick={() => setIsMentionPickerOpen(false)}>取消</Button>
               <Button
                 type="button"
                 onClick={() => {

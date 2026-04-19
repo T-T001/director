@@ -1,10 +1,10 @@
 import type { PropsWithChildren } from 'react'
 
-export function LoadingState({ message = 'Loading...' }: { message?: string }) {
+export function LoadingState({ message = '加载中...' }: { message?: string }) {
   return <div className="glass-surface-elevated rounded-2xl px-4 py-3 text-sm text-[var(--glass-text-secondary)]">{message}</div>
 }
 
-export function ErrorState({ message = 'Failed to load.' }: { message?: string }) {
+export function ErrorState({ message = '加载失败。' }: { message?: string }) {
   return <div className="glass-surface-elevated glass-danger rounded-2xl px-4 py-3 text-sm">{message}</div>
 }
 

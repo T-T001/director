@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     director_refresh_token_expire_days: int = 30
     director_jwt_secret: str = "change-me"
     director_refresh_cookie_name: str = "director_refresh_token"
+    director_encryption_key: str = ""
 
     director_database_url: str = "mysql+pymysql://root:waoowaoo123@localhost:13306/director"
     director_redis_url: str = "redis://127.0.0.1:16379/0"

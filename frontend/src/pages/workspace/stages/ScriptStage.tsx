@@ -61,10 +61,10 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.episodes.detail(episodeId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
-      setFeedback('Script text saved.')
+      setFeedback('剧本文本已保存。')
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : 'Failed to save script text.'
+      const message = error instanceof Error ? error.message : '保存剧本失败。'
       setFeedback(message)
     },
   })
@@ -75,10 +75,10 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
       setSubmitInfo({ task_id: result.task_id, run_id: result.run_id })
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byProject(projectId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
-      setFeedback('Story-to-script task submitted.')
+      setFeedback('已提交「故事转剧本」任务。')
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : 'Failed to submit task.'
+      const message = error instanceof Error ? error.message : '提交任务失败。'
       setFeedback(message)
     },
   })
@@ -90,9 +90,9 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
 
   const injectSample = () => {
     const sample = [
-      'Hero: The city lights are too quiet tonight.',
-      'Narrator: A sudden storm rolls in from the harbor.',
-      'Companion: We should move before the signal disappears.',
+      '主角：今夜的城市灯火格外安静。',
+      '旁白：一场骤雨从海港的方向卷来。',
+      '同伴：我们得在信号消失前离开。',
     ].join('\n')
     setNovelText((previous) => (previous.trim() ? previous : sample))
   }
@@ -102,39 +102,39 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">Script Stage</h2>
+            <h2 className="text-lg font-semibold">剧本阶段</h2>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
-              Write and save source text, then trigger story-to-script task for downstream stages.
+              撰写并保存原始文本，随后触发「故事转剧本」任务，进入下游阶段。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'config')}>
-              <Button variant="secondary">Back Config</Button>
+              <Button variant="secondary">返回配置</Button>
             </Link>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'assets')}>
-              <Button variant="secondary">Go Assets</Button>
+              <Button variant="secondary">进入素材</Button>
             </Link>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'storyboard')}>
-              <Button variant="secondary">Go Storyboard</Button>
+              <Button variant="secondary">进入分镜</Button>
             </Link>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Characters</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">字符数</p>
             <p className="mt-1 text-2xl font-semibold">{novelText.length}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Words</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">词数</p>
             <p className="mt-1 text-2xl font-semibold">{wordCount(novelText)}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Segments</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">段落数</p>
             <p className="mt-1 text-2xl font-semibold">{parsedLines.length}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Detected Speakers</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">识别发言者</p>
             <p className="mt-1 text-2xl font-semibold">{speakerSet.size}</p>
           </article>
         </div>
@@ -144,10 +144,10 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
 
       <SectionCard className="grid gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-base font-semibold">Script Editor</h3>
+          <h3 className="text-base font-semibold">剧本编辑器</h3>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" onClick={injectSample}>
-              Insert Sample
+              插入示例
             </Button>
             <Button
               type="button"
@@ -155,7 +155,7 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
               onClick={() => setNovelText(currentEpisode.novel_text ?? '')}
               disabled={!draftDirty || saveMutation.isPending}
             >
-              Reset
+              重置
             </Button>
           </div>
         </div>
@@ -164,11 +164,11 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
             className="glass-input min-h-64"
             value={novelText}
             onChange={(event) => setNovelText(event.target.value)}
-            placeholder="Paste novel text or write script content line-by-line here..."
+            placeholder="粘贴小说原文或按行撰写剧本内容..."
           />
           <div className="flex flex-wrap gap-2">
             <Button type="submit" disabled={!draftDirty || saveMutation.isPending}>
-              {saveMutation.isPending ? 'Saving...' : 'Save Text'}
+              {saveMutation.isPending ? '保存中...' : '保存文本'}
             </Button>
             <Button
               type="button"
@@ -176,29 +176,29 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
               onClick={() => storyToScriptMutation.mutate()}
               disabled={storyToScriptMutation.isPending}
             >
-              {storyToScriptMutation.isPending ? 'Submitting...' : 'Run Story To Script'}
+              {storyToScriptMutation.isPending ? '提交中...' : '运行：故事转剧本'}
             </Button>
           </div>
         </form>
       </SectionCard>
 
-      {episodeQuery.isLoading ? <LoadingState message="Loading episode content..." /> : null}
-      {episodeQuery.isError ? <ErrorState message="Failed to load episode details." /> : null}
+      {episodeQuery.isLoading ? <LoadingState message="正在加载剧集内容..." /> : null}
+      {episodeQuery.isError ? <ErrorState message="加载剧集详情失败。" /> : null}
 
       {submitInfo ? (
         <SectionCard className="glass-success rounded-2xl p-4 text-sm">
-          Submitted task: task_id={submitInfo.task_id}
-          {submitInfo.run_id ? `, run_id=${submitInfo.run_id}` : ''}
+          已提交任务：task_id={submitInfo.task_id}
+          {submitInfo.run_id ? `，run_id=${submitInfo.run_id}` : ''}
         </SectionCard>
       ) : null}
 
       {parsedLines.length > 0 ? (
         <SectionCard className="grid gap-3">
-          <h3 className="text-base font-semibold">Segment Preview</h3>
+          <h3 className="text-base font-semibold">段落预览</h3>
           <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-3">
             {parsedLines.slice(0, 12).map((line) => (
               <article key={line.id} className="card-base rounded-xl p-3">
-                <p className="text-xs text-[var(--glass-text-tertiary)]">Segment {line.order}</p>
+                <p className="text-xs text-[var(--glass-text-tertiary)]">段落 {line.order}</p>
                 <p className="mt-1 text-sm text-[var(--glass-text-secondary)]">{line.text}</p>
               </article>
             ))}
@@ -206,8 +206,8 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
         </SectionCard>
       ) : (
         <EmptyState
-          title="No script text yet"
-          description="Add text in the editor and save to continue storyboard generation."
+          title="尚无剧本文本"
+          description="在编辑器中输入内容并保存，即可进入分镜生成流程。"
         />
       )}
 
@@ -215,7 +215,7 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
         to={buildWorkspaceStagePath(projectId, episodeId, 'assets')}
         className="fixed bottom-6 right-6 z-40 rounded-2xl bg-[var(--glass-accent-from)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--glass-shadow-lg)] transition-colors hover:bg-[var(--glass-accent-to)]"
       >
-        Continue To Assets
+        继续到素材
       </Link>
     </div>
   )

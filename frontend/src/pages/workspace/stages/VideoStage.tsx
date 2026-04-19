@@ -100,13 +100,13 @@ function defaultShotConfig(order: number): ShotConfigDraft {
 }
 
 function modeLabel(mode: RenderMode) {
-  return mode === 'first-last-frame' ? 'First/Last Frame' : 'Single Panel'
+  return mode === 'first-last-frame' ? '首尾帧' : '单镜'
 }
 
 function presetLabel(preset: ShotPreset) {
-  if (preset === 'action') return 'Action'
-  if (preset === 'dialogue') return 'Dialogue'
-  return 'Cinematic'
+  if (preset === 'action') return '动作'
+  if (preset === 'dialogue') return '对白'
+  return '电影化'
 }
 
 export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePageProps) {
@@ -571,67 +571,67 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">Video Stage</h2>
-            <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">Storyboard panel render queue with persisted prompts and media-backed outputs.</p>
+            <h2 className="text-lg font-semibold">视频阶段</h2>
+            <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">分镜面板渲染队列，提示词持久化与媒体产出同步管理。</p>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
-              <span className="glass-chip">Total {stageLines.length}</span>
+              <span className="glass-chip">共 {stageLines.length}</span>
               <span className={['rounded-full px-2 py-0.5', runningRenderCount > 0 || renderActionBusyKey ? 'glass-warning' : 'glass-success'].join(' ')}>
                 Running {runningRenderCount + (renderActionBusyKey ? 1 : 0)}
               </span>
-              <span className="glass-success rounded-full px-2 py-0.5">Completed {videosWithUrl}</span>
-              <span className={['rounded-full px-2 py-0.5', failedCount > 0 ? 'glass-danger' : 'glass-chip'].join(' ')}>Failed {failedCount}</span>
-              <span className="glass-chip">Single {singlePanelModeCount}</span>
+              <span className="glass-success rounded-full px-2 py-0.5">已完成 {videosWithUrl}</span>
+              <span className={['rounded-full px-2 py-0.5', failedCount > 0 ? 'glass-danger' : 'glass-chip'].join(' ')}>失败 {failedCount}</span>
+              <span className="glass-chip">单镜 {singlePanelModeCount}</span>
               <span className="glass-chip">F/L {firstLastModeCount}</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'voice')}>
-              <Button variant="secondary">Back Voice</Button>
+              <Button variant="secondary">返回配音</Button>
             </Link>
-            <Button type="button" variant="secondary" onClick={fillAllPrompts}>Fill Empty Prompts</Button>
+            <Button type="button" variant="secondary" onClick={fillAllPrompts}>补全空提示词</Button>
             <Button type="button" variant="secondary" onClick={() => saveSelectedPromptMutation.mutate()} disabled={!selectedLine || saveSelectedPromptMutation.isPending || saveAllPromptsMutation.isPending}>{saveSelectedPromptMutation.isPending ? 'Saving...' : 'Save Selected'}</Button>
             <Button type="button" variant="secondary" onClick={() => saveAllPromptsMutation.mutate()} disabled={saveSelectedPromptMutation.isPending || saveAllPromptsMutation.isPending}>{saveAllPromptsMutation.isPending ? 'Saving All...' : 'Save All'}</Button>
             <Button type="button" variant="secondary" onClick={() => tasksQuery.refetch()} disabled={tasksQuery.isFetching}>{tasksQuery.isFetching ? 'Refreshing...' : 'Refresh Tasks'}</Button>
             <Button type="button" onClick={() => void runBatchRender()} disabled={isAnyTaskRunning || queueLines.length === 0}>{renderActionBusyKey === 'batch-render' ? 'Queueing...' : 'Batch Render'}</Button>
             <Link to={`/editor/${episodeId}`}>
-              <Button variant="secondary">Open Editor</Button>
+              <Button variant="secondary">打开剪辑台</Button>
             </Link>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Shots</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">镜头数</p>
             <p className="mt-1 text-2xl font-semibold">{stageLines.length}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Prompts Ready</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">提示词就绪</p>
             <p className="mt-1 text-2xl font-semibold">{promptReadyCount}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Rendered Videos</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">已渲染视频</p>
             <p className="mt-1 text-2xl font-semibold">{videosWithUrl}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Runtime Tasks</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">运行中任务</p>
             <p className="mt-1 text-2xl font-semibold">{runningRenderCount}</p>
           </article>
         </div>
       </SectionCard>
 
       {renderFeedback ? <SectionCard className="glass-success rounded-2xl p-4 text-sm">{renderFeedback}</SectionCard> : null}
-      {episodeQuery.isLoading || storyboardsQuery.isLoading ? <LoadingState message="Loading storyboard source..." /> : null}
-      {episodeQuery.isError || storyboardsQuery.isError ? <ErrorState message="Failed to load storyboard source." /> : null}
+      {episodeQuery.isLoading || storyboardsQuery.isLoading ? <LoadingState message="正在加载分镜来源..." /> : null}
+      {episodeQuery.isError || storyboardsQuery.isError ? <ErrorState message="加载分镜来源失败。" /> : null}
 
       {stageLines.length === 0 ? (
-        <EmptyState title="No storyboard panels available" description="Generate storyboard content first, then continue to video queue." />
+        <EmptyState title="暂无分镜面板" description="请先生成分镜，再进入视频队列。" />
       ) : (
         <>
           <SectionCard className="grid gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-base font-semibold">Video Timeline</h3>
-                <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Quick navigation shell across all shots and render states.</p>
+                <h3 className="text-base font-semibold">视频时间线</h3>
+                <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">跨镜头与渲染状态的快速导航。</p>
               </div>
               <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-3 py-1.5 text-xs" onClick={() => setIsTimelineExpanded((value) => !value)}>
                 {isTimelineExpanded ? 'Collapse Timeline' : 'Expand Timeline'}
@@ -659,14 +659,14 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                               : 'border-[var(--glass-stroke-base)] bg-white/80 text-[var(--glass-text-secondary)] hover:bg-white',
                           ].join(' ')}
                         >
-                          <p className="font-semibold">Shot {line.order}</p>
+                          <p className="font-semibold">镜头 {line.order}</p>
                           <p className="mt-1">{modeLabel(config.mode)}</p>
                           <div className="mt-1 flex flex-wrap gap-1">
                             <span className={['rounded-full px-2 py-0.5', ready ? 'glass-success' : 'glass-warning'].join(' ')}>
                               {ready ? 'Prompt' : 'Missing'}
                             </span>
-                            {videoReady ? <span className="glass-success rounded-full px-2 py-0.5">Video</span> : null}
-                            {running ? <span className="glass-chip px-2 py-0.5">Running</span> : null}
+                            {videoReady ? <span className="glass-success rounded-full px-2 py-0.5">视频</span> : null}
+                            {running ? <span className="glass-chip px-2 py-0.5">进行中</span> : null}
                           </div>
                         </button>
                         {index < stageLines.length - 1 ? <span className="h-px w-8 bg-[var(--glass-stroke-base)]" /> : null}
@@ -681,7 +681,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <SectionCard className="grid gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-base font-semibold">Render Queue Snapshot</h3>
+                <h3 className="text-base font-semibold">渲染队列快照</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">
                   Visible {queueLines.length} / {stageLines.length} · First/Last {firstLastModeCount} · Single {singlePanelModeCount}
                 </p>
@@ -691,7 +691,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   className="glass-input w-64"
                   value={shotSearch}
                   onChange={(event) => setShotSearch(event.target.value)}
-                  placeholder="Search shot text / prompt / mode"
+                  placeholder="搜索镜头文本 / 提示词 / 模式"
                 />
                 <button type="button" onClick={() => setShowReadyOnly((current) => !current)} className={['glass-btn-base rounded-xl px-3 py-2 text-xs', showReadyOnly ? 'glass-btn-tone-info text-white' : 'glass-btn-ghost'].join(' ')}>
                   {showReadyOnly ? 'Prompt Ready Only' : 'Show Prompt Ready'}
@@ -733,12 +733,12 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                     ].join(' ')}
                   >
                     <div className={['px-3 py-2 flex items-center justify-between gap-2', ready ? 'bg-[var(--glass-tone-success-bg)]/60' : 'bg-[var(--glass-tone-warning-bg)]/60'].join(' ')}>
-                      <p className="font-medium text-[var(--glass-text-secondary)]">Shot {line.order}</p>
+                      <p className="font-medium text-[var(--glass-text-secondary)]">镜头 {line.order}</p>
                       <div className="flex items-center gap-1 text-[11px]">
                         <span className={['rounded-full px-2 py-0.5', ready ? 'glass-success' : 'glass-warning'].join(' ')}>{ready ? 'Prompt Ready' : 'Prompt Missing'}</span>
-                        {firstLastMode ? <span className="glass-chip px-2 py-0.5">First/Last</span> : <span className="glass-chip px-2 py-0.5">Single</span>}
-                        {videoUrl ? <span className="glass-success rounded-full px-2 py-0.5">Video Ready</span> : null}
-                        {isGenerating || isLipSyncing ? <span className="glass-chip px-2 py-0.5">Running</span> : null}
+                        {firstLastMode ? <span className="glass-chip px-2 py-0.5">首尾帧</span> : <span className="glass-chip px-2 py-0.5">单镜</span>}
+                        {videoUrl ? <span className="glass-success rounded-full px-2 py-0.5">视频就绪</span> : null}
+                        {isGenerating || isLipSyncing ? <span className="glass-chip px-2 py-0.5">进行中</span> : null}
                       </div>
                     </div>
                     <div className="px-3 py-3">
@@ -756,7 +756,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                           Flow: {prevLine ? `#${prevLine.order}` : 'Start'} {' -> '}#{line.order} {' -> '} {nextLine ? `#${nextLine.order}` : 'End'}
                         </p>
                       ) : null}
-                      {hasCustomFirstLastPrompt ? <p className="mt-1 text-[11px] text-[var(--glass-tone-info-fg)]">Custom first/last prompt configured.</p> : null}
+                      {hasCustomFirstLastPrompt ? <p className="mt-1 text-[11px] text-[var(--glass-tone-info-fg)]">已自定义首尾帧提示词。</p> : null}
                       <p className="mt-1 line-clamp-2 text-[var(--glass-text-tertiary)]">{line.text}</p>
 
                       <div className="mt-2 grid grid-cols-2 gap-1.5">
@@ -807,7 +807,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   </article>
                 )
               })}
-              {queueLines.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">No shots in current queue filter.</p> : null}
+              {queueLines.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">当前队列筛选没有镜头。</p> : null}
             </div>
           </SectionCard>
 
@@ -815,8 +815,8 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
             <SectionCard className="grid gap-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <h3 className="text-base font-semibold">Selected Shot</h3>
-                  <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Shot {selectedLine.order} | Panel target</p>
+                  <h3 className="text-base font-semibold">当前镜头</h3>
+                  <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">镜头 {selectedLine.order} · 面板目标</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button type="button" variant="secondary" onClick={() => saveSelectedPromptMutation.mutate()} disabled={saveSelectedPromptMutation.isPending}>
@@ -828,10 +828,10 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   <Button type="button" variant="secondary" onClick={() => void runRenderAction('lip-sync', selectedLine.id, selectedLine.order)} disabled={!currentEpisode.audio_media_id}>
                     {renderActionBusyKey === `lip-sync-${selectedLine.id}` ? 'Lip Sync...' : 'Lip Sync'}
                   </Button>
-                  <Button type="button" variant="secondary" onClick={copySelectedPrompt}>Copy Prompt</Button>
-                  <Button type="button" variant="secondary" onClick={() => openPromptModal(selectedLine)}>Prompt Modal</Button>
-                  <Button type="button" variant="secondary" onClick={() => setIsShotConfigOpen(true)}>Shot Config</Button>
-                  <Button type="button" variant="secondary" onClick={() => updatePrompt(selectedLine.id, '')}>Clear</Button>
+                  <Button type="button" variant="secondary" onClick={copySelectedPrompt}>复制提示词</Button>
+                  <Button type="button" variant="secondary" onClick={() => openPromptModal(selectedLine)}>提示词弹窗</Button>
+                  <Button type="button" variant="secondary" onClick={() => setIsShotConfigOpen(true)}>镜头配置</Button>
+                  <Button type="button" variant="secondary" onClick={() => updatePrompt(selectedLine.id, '')}>清空</Button>
                 </div>
               </div>
 
@@ -839,7 +839,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
               {selectedConfig?.mode === 'first-last-frame' ? (
                 <div className="grid gap-3 rounded-xl border border-[var(--glass-stroke-focus)]/50 bg-[var(--glass-tone-info-bg)]/50 p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <p className="text-sm font-medium text-[var(--glass-tone-info-fg)]">First/Last Frame Panel</p>
+                    <p className="text-sm font-medium text-[var(--glass-tone-info-fg)]">首尾帧镜头</p>
                     <span className="text-xs text-[var(--glass-tone-info-fg)]">
                       Shot #{selectedLine.order} {' -> '} {selectedNextLine ? `#${selectedNextLine.order}` : 'No next shot'}
                     </span>
@@ -847,7 +847,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
 
                   <div className="grid gap-2 md:grid-cols-[1fr_auto_1fr] md:items-center">
                     <div className="space-y-1">
-                      <p className="text-[11px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">First Frame</p>
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">首帧</p>
                       {selectedFirstFrameUrl ? (
                         <img src={selectedFirstFrameUrl} alt={`Shot ${selectedLine.order} first frame`} className="aspect-video w-full rounded-lg border border-[var(--glass-stroke-base)] object-cover" />
                       ) : (
@@ -856,7 +856,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                     </div>
                     <span className="text-center text-xs text-[var(--glass-text-tertiary)]">{'->'}</span>
                     <div className="space-y-1">
-                      <p className="text-[11px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">Last Frame</p>
+                      <p className="text-[11px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">尾帧</p>
                       {selectedLastFrameUrl ? (
                         <img src={selectedLastFrameUrl} alt={`Shot ${selectedNextLine?.order ?? selectedLine.order} last frame`} className="aspect-video w-full rounded-lg border border-[var(--glass-stroke-base)] object-cover" />
                       ) : (
@@ -866,12 +866,12 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   </div>
 
                   <label className="grid gap-1">
-                    <span className="text-xs text-[var(--glass-tone-info-fg)]">Custom first/last prompt</span>
+                    <span className="text-xs text-[var(--glass-tone-info-fg)]">自定义首尾帧提示词</span>
                     <textarea
                       className="glass-input min-h-24 text-sm"
                       value={selectedFirstLastPrompt}
                       onChange={(event) => updateFirstLastPrompt(selectedLine.id, event.target.value)}
-                      placeholder="Describe continuity constraints and transition behavior between first and last frame."
+                      placeholder="描述首帧与尾帧间的连续性约束与转场行为。"
                     />
                   </label>
 
@@ -895,13 +895,13 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   </div>
                 </div>
               ) : null}
-              <textarea className="glass-input min-h-44" value={selectedPrompt} onChange={(event) => updatePrompt(selectedLine.id, event.target.value)} placeholder="Describe visual composition, motion style, and camera language." />
+              <textarea className="glass-input min-h-44" value={selectedPrompt} onChange={(event) => updatePrompt(selectedLine.id, event.target.value)} placeholder="描述画面构图、运动风格与镜头语言。" />
 
               {getVideoUrl(selectedLine) ? (
                 <div className="space-y-2">
                   <video src={getVideoUrl(selectedLine) ?? undefined} className="aspect-video w-full rounded-lg border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]" controls preload="metadata" />
                   <div className="text-xs text-[var(--glass-text-tertiary)]">
-                    <a className="underline" href={getVideoUrl(selectedLine) ?? '#'} target="_blank" rel="noreferrer">Open latest rendered video</a>
+                    <a className="underline" href={getVideoUrl(selectedLine) ?? '#'} target="_blank" rel="noreferrer">打开最新渲染视频</a>
                   </div>
                 </div>
               ) : null}
@@ -916,18 +916,18 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <SectionCard className="grid gap-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-base font-semibold">Runtime Tasks</h3>
+                <h3 className="text-base font-semibold">运行中任务</h3>
                 <p className="text-xs text-[var(--glass-text-tertiary)]">
                   Running {runningRenderCount} · Ready {videosWithUrl} · Failed {failedCount}
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <select className="glass-input w-44" value={batchPreset} onChange={(event) => setBatchPreset(event.target.value as ShotPreset)}>
-                  <option value="cinematic">Cinematic</option>
-                  <option value="action">Action</option>
-                  <option value="dialogue">Dialogue</option>
+                  <option value="cinematic">电影化</option>
+                  <option value="action">动作</option>
+                  <option value="dialogue">对白</option>
                 </select>
-                <Button type="button" variant="secondary" onClick={applyBatchPreset}>Apply Batch Preset</Button>
+                <Button type="button" variant="secondary" onClick={applyBatchPreset}>批量应用预设</Button>
               </div>
             </div>
 
@@ -939,9 +939,9 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
             ) : null}
 
             {currentEpisode.audio_media_id ? (
-              <p className="text-xs text-[var(--glass-text-tertiary)]">Episode audio available for lip sync.</p>
+              <p className="text-xs text-[var(--glass-text-tertiary)]">剧集音频已就绪，可用于口型同步。</p>
             ) : (
-              <p className="text-xs text-[var(--glass-text-tertiary)]">Generate episode audio in Voice stage to enable lip sync.</p>
+              <p className="text-xs text-[var(--glass-text-tertiary)]">请先在「配音」阶段生成剧集音频，以启用口型同步。</p>
             )}
 
             {tasksQuery.isLoading ? <LoadingState message="Loading runtime tasks..." /> : null}
@@ -973,58 +973,58 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <section className="glass-modal-shell relative z-10 grid w-full max-w-2xl gap-4 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-lg font-semibold">Shot Model Config</h3>
-                <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Shot {selectedLine.order}</p>
+                <h3 className="text-lg font-semibold">镜头模型配置</h3>
+                <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">镜头 {selectedLine.order}</p>
               </div>
-              <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsShotConfigOpen(false)}>Close</button>
+              <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsShotConfigOpen(false)}>关闭</button>
             </div>
 
             <div className="grid gap-2 md:grid-cols-2">
               <label className="grid gap-1">
-                <span className="text-xs text-[var(--glass-text-tertiary)]">Render Mode</span>
+                <span className="text-xs text-[var(--glass-text-tertiary)]">渲染模式</span>
                 <select className="glass-input" value={selectedConfig.mode} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { mode: event.target.value as RenderMode })}>
-                  <option value="single-panel">Single Panel</option>
-                  <option value="first-last-frame">First/Last Frame</option>
+                  <option value="single-panel">单镜</option>
+                  <option value="first-last-frame">首尾帧</option>
                 </select>
               </label>
 
               <label className="grid gap-1">
-                <span className="text-xs text-[var(--glass-text-tertiary)]">Shot Preset</span>
+                <span className="text-xs text-[var(--glass-text-tertiary)]">镜头预设</span>
                 <select className="glass-input" value={selectedConfig.preset} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { preset: event.target.value as ShotPreset })}>
-                  <option value="cinematic">Cinematic</option>
-                  <option value="action">Action</option>
-                  <option value="dialogue">Dialogue</option>
+                  <option value="cinematic">电影化</option>
+                  <option value="action">动作</option>
+                  <option value="dialogue">对白</option>
                 </select>
               </label>
 
               <label className="grid gap-1 md:col-span-2">
-                <span className="text-xs text-[var(--glass-text-tertiary)]">Camera Direction</span>
-                <input type="text" className="glass-input" value={selectedConfig.camera} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { camera: event.target.value })} placeholder="e.g. slow push-in, eye-level" />
+                <span className="text-xs text-[var(--glass-text-tertiary)]">镜头方向</span>
+                <input type="text" className="glass-input" value={selectedConfig.camera} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { camera: event.target.value })} placeholder="例如：缓慢推进、平视视角" />
               </label>
 
               <label className="grid gap-1 md:col-span-2">
-                <span className="text-xs text-[var(--glass-text-tertiary)]">Motion Direction</span>
-                <input type="text" className="glass-input" value={selectedConfig.motion} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { motion: event.target.value })} placeholder="e.g. smooth continuity and camera drift" />
+                <span className="text-xs text-[var(--glass-text-tertiary)]">运动方向</span>
+                <input type="text" className="glass-input" value={selectedConfig.motion} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { motion: event.target.value })} placeholder="例如：平滑连贯，轻微镜头漂移" />
               </label>
 
               <label className="grid gap-1">
-                <span className="text-xs text-[var(--glass-text-tertiary)]">Duration Hint</span>
+                <span className="text-xs text-[var(--glass-text-tertiary)]">时长提示</span>
                 <select className="glass-input" value={selectedConfig.durationHint} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { durationHint: event.target.value as DurationHint })}>
-                  <option value="auto">Auto</option>
-                  <option value="short">Short</option>
-                  <option value="medium">Medium</option>
-                  <option value="long">Long</option>
+                  <option value="auto">自动</option>
+                  <option value="short">短</option>
+                  <option value="medium">中</option>
+                  <option value="long">长</option>
                 </select>
               </label>
 
               <label className="flex items-center gap-2 rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2">
                 <input type="checkbox" checked={selectedConfig.enableLipSync} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { enableLipSync: event.target.checked })} />
-                <span className="text-sm text-[var(--glass-text-secondary)]">Enable Lip Sync</span>
+                <span className="text-sm text-[var(--glass-text-secondary)]">启用口型同步</span>
               </label>
             </div>
 
             <div className="flex flex-wrap justify-end gap-2">
-              <Button type="button" variant="secondary" onClick={() => setIsShotConfigOpen(false)}>Cancel</Button>
+              <Button type="button" variant="secondary" onClick={() => setIsShotConfigOpen(false)}>取消</Button>
               <Button
                 type="button"
                 onClick={() => {
@@ -1045,8 +1045,8 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <section className="glass-modal-shell relative z-10 grid w-full max-w-3xl gap-4 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-lg font-semibold">Video Prompt Modal</h3>
-                <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Shot {promptModalShot.order} prompt shell editor</p>
+                <h3 className="text-lg font-semibold">视频提示词弹窗</h3>
+                <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">镜头 {promptModalShot.order} 提示词编辑外壳</p>
               </div>
               <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsPromptModalOpen(false)}>
                 Close
@@ -1054,19 +1054,19 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
             </div>
 
             <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-xs text-[var(--glass-text-tertiary)]">
-              <p>Mode: {modeLabel(promptModalConfig.mode)} | Preset: {presetLabel(promptModalConfig.preset)}</p>
-              <p className="mt-1">Shot text: {promptModalShot.text}</p>
+              <p>模式：{modeLabel(promptModalConfig.mode)} · 预设：{presetLabel(promptModalConfig.preset)}</p>
+              <p className="mt-1">镜头文本：{promptModalShot.text}</p>
             </div>
 
             <textarea
               className="glass-input min-h-44"
               value={promptModalDraft}
               onChange={(event) => setPromptModalDraft(event.target.value)}
-              placeholder="Describe composition, movement, and cinematic continuity..."
+              placeholder="描述画面构图、运动与电影级连续性..."
             />
 
             <div className="flex flex-wrap justify-end gap-2">
-              <Button type="button" variant="secondary" onClick={() => setIsPromptModalOpen(false)}>Cancel</Button>
+              <Button type="button" variant="secondary" onClick={() => setIsPromptModalOpen(false)}>取消</Button>
               <Button type="button" onClick={savePromptModal}>Save Prompt Draft</Button>
             </div>
           </section>

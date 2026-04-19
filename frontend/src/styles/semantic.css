@@ -202,3 +202,110 @@
   color: var(--glass-tone-success-fg);
   background: var(--glass-tone-success-bg);
 }
+
+/* === 顶栏滚动加深 === */
+.glass-nav-scrolled {
+  background: color-mix(in oklch, var(--glass-bg-nav) 92%, white 8%);
+  box-shadow: 0 12px 28px rgba(15, 32, 66, 0.14);
+}
+
+/* === 顶栏导航激活态下划线 === */
+.nav-link-base {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--glass-radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--glass-text-secondary);
+  transition: all 0.2s ease;
+}
+
+.nav-link-base:hover {
+  color: var(--glass-text-primary);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.nav-link-active {
+  color: var(--glass-text-primary);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--glass-shadow-sm);
+}
+
+.nav-link-active::after {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--glass-accent-from), var(--glass-accent-to));
+}
+
+/* === 模态弹窗动画 === */
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-overlay-in {
+  animation: overlay-in 0.18s ease-out both;
+}
+
+.animate-modal-in {
+  animation: modal-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* === 缓慢自转 (sparkle) === */
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* === 阶段导航胶囊微光 === */
+@keyframes capsule-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(47, 123, 255, 0.0), var(--glass-shadow-md); }
+  50%      { box-shadow: 0 0 0 4px rgba(47, 123, 255, 0.18), var(--glass-shadow-md); }
+}
+
+.animate-capsule-glow {
+  animation: capsule-glow 2.4s ease-in-out infinite;
+}
+
+/* === 用户菜单下拉 === */
+.dropdown-panel {
+  background: var(--glass-bg-surface-modal);
+  border: 1px solid var(--glass-stroke-base);
+  border-radius: var(--glass-radius-md);
+  box-shadow: var(--glass-shadow-lg);
+  backdrop-filter: blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  font-size: 13px;
+  color: var(--glass-text-secondary);
+  border-radius: var(--glass-radius-sm);
+  transition: all 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background: rgba(47, 123, 255, 0.08);
+  color: var(--glass-text-primary);
+}

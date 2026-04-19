@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(/e/pythonProject/director/backend/.venv/Scripts/python.exe:*)",
-      "Bash(PYTHONIOENCODING=utf-8 python:*)"
+      "Bash(PYTHONIOENCODING=utf-8 python:*)",
+      "Bash(python -c \"from app.main import app; print\\('OK'\\); from app.db.base import Base; print\\('tables:', len\\(Base.metadata.tables\\)\\)\")",
+      "Bash(python -c \"from app.main import app; print\\([r.path for r in app.routes if hasattr\\(r,'path'\\) and \\('provider' in r.path or 'model' in r.path or 'novel' in r.path\\)]\\)\")",
+      "Bash(python -c \"from app.main import app; print\\('OK'\\); routes=[r for r in app.routes if hasattr\\(r,'path'\\) and '/novel-promotion' in r.path]; print\\('NP routes:', len\\(routes\\)\\); [print\\(f'{m:5s} {r.path}'\\) for r in routes for m in r.methods if m != 'HEAD']\")",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('app/workers/handlers/analyze.py', encoding='utf-8'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "Bash(ls src/types src/features)",
+      "Bash(ls src/features)",
+      "Bash(npx tsc *)"
     ]
   }
 }

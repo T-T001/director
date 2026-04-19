@@ -11,6 +11,7 @@ from app.api.router import api_router
 from app.core.config import get_settings
 from app.core.storage import ensure_bucket_exists
 from app.db import base as model_registry
+from app.workers import start_worker, stop_worker
 
 settings = get_settings()
 MODEL_REGISTRY = model_registry.__all__
@@ -20,7 +21,11 @@ LOCAL_CORS_ORIGIN_PATTERN = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     ensure_bucket_exists()
-    yield
+    start_worker()
+    try:
+        yield
+    finally:
+        await stop_worker()
 
 
 app = FastAPI(title=settings.app_name, lifespan=lifespan)

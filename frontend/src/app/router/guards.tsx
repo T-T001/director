@@ -8,14 +8,30 @@ import { refreshAuth } from '../../services/api/auth'
 import { getWorkspace } from '../../services/api/projects'
 import { buildWorkspaceStagePath } from './routes'
 import { LoadingState } from '../../components/common/PageState'
+import type { AuthUser } from '../../types/auth'
+
+const SKIP_AUTH = (import.meta.env.VITE_SKIP_AUTH ?? 'true') !== 'false'
+
+const MOCK_USER: AuthUser = {
+  id: 'dev-user',
+  username: '开发者',
+  email: 'dev@local.test',
+}
 
 export function ProtectedLayout() {
   const user = useAuthStore((state) => state.user)
   const setAuth = useAuthStore((state) => state.setAuth)
   const clearAuth = useAuthStore((state) => state.clearAuth)
-  const [checkingAuth, setCheckingAuth] = useState(true)
+  const [checkingAuth, setCheckingAuth] = useState(!SKIP_AUTH)
 
   useEffect(() => {
+    if (SKIP_AUTH) {
+      if (!user) {
+        setAuth(MOCK_USER, 'dev-mock-token')
+      }
+      return
+    }
+
     let active = true
 
     const bootstrap = async () => {
@@ -49,7 +65,7 @@ export function ProtectedLayout() {
   if (checkingAuth) {
     return (
       <div className="glass-page min-h-screen p-6">
-        <LoadingState message="Checking authentication..." />
+        <LoadingState message="正在校验登录状态..." />
       </div>
     )
   }
@@ -71,7 +87,7 @@ export function LegacyWorkspaceRedirect() {
   const workspaceQuery = useQuery({
     queryKey: ['workspace', projectId],
     queryFn: () => getWorkspace(projectId),
-    enabled: Boolean(projectId),
+    enabled: Boolean(projectId) && !SKIP_AUTH,
   })
 
   const sortedEpisodes = useMemo(
@@ -83,8 +99,12 @@ export function LegacyWorkspaceRedirect() {
     return <Navigate to="/projects" replace />
   }
 
+  if (SKIP_AUTH) {
+    return <Navigate to={`/projects/${projectId}`} replace />
+  }
+
   if (workspaceQuery.isLoading) {
-    return <LoadingState message="Preparing workspace..." />
+    return <LoadingState message="正在准备工作区..." />
   }
 
   if (workspaceQuery.isError) {

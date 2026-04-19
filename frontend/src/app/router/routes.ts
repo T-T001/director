@@ -2,14 +2,14 @@ export const workspaceStages = ['config', 'script', 'assets', 'storyboard', 'pro
 
 export type WorkspaceStage = (typeof workspaceStages)[number]
 
-export const workspaceStageItems: Array<{ stage: WorkspaceStage; label: string }> = [
-  { stage: 'config', label: 'Config' },
-  { stage: 'script', label: 'Script' },
-  { stage: 'assets', label: 'Assets' },
-  { stage: 'storyboard', label: 'Storyboard' },
-  { stage: 'prompts', label: 'Prompts' },
-  { stage: 'voice', label: 'Voice' },
-  { stage: 'video', label: 'Video' },
+export const workspaceStageItems: Array<{ stage: WorkspaceStage; label: string; description: string }> = [
+  { stage: 'config', label: '配置', description: '项目基础设置' },
+  { stage: 'script', label: '剧本', description: '撰写与拆分剧本' },
+  { stage: 'assets', label: '素材', description: '角色与场景素材' },
+  { stage: 'storyboard', label: '分镜', description: '镜头分镜规划' },
+  { stage: 'prompts', label: '提示词', description: '生成提示词管理' },
+  { stage: 'voice', label: '配音', description: '语音合成与对齐' },
+  { stage: 'video', label: '视频', description: '渲染与导出' },
 ]
 
 export function isWorkspaceStage(value: string | undefined | null): value is WorkspaceStage {

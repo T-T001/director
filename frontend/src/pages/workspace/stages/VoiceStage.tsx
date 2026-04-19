@@ -608,14 +608,14 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">Voice Stage</h2>
+            <h2 className="text-lg font-semibold">配音阶段</h2>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">Editable voice-line workflow with transcript sync and persisted episode audio.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" onClick={() => void analyzeLines()} disabled={analyzeMutation.isPending}>
               {analyzeMutation.isPending ? 'Analyzing...' : 'Analyze'}
             </Button>
-            <Button type="button" variant="secondary" onClick={addLineAfterSelected}>Add Line</Button>
+            <Button type="button" variant="secondary" onClick={addLineAfterSelected}>添加台词</Button>
             <Button
               type="button"
               onClick={() => void generateAllLines()}
@@ -632,29 +632,29 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
               Download All
             </Button>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'prompts')}>
-              <Button variant="secondary">Back Prompts</Button>
+              <Button variant="secondary">返回提示词</Button>
             </Link>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'video')}>
-              <Button variant="secondary">Go Video</Button>
+              <Button variant="secondary">进入视频</Button>
             </Link>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Lines</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">台词数</p>
             <p className="mt-1 text-2xl font-semibold">{voiceLines.length}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Timed Lines</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">带时间戳台词</p>
             <p className="mt-1 text-2xl font-semibold">{timedLineCount}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Speakers</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">发言者数</p>
             <p className="mt-1 text-2xl font-semibold">{speakerOptions.length}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Running Tasks</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">进行中任务</p>
             <p className="mt-1 text-2xl font-semibold">{runningSummaryCount}</p>
           </article>
         </div>
@@ -663,13 +663,13 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
       {feedback ? <SectionCard className="glass-success rounded-2xl p-4 text-sm">{feedback}</SectionCard> : null}
       {lineActionInfo ? <SectionCard className="glass-warning rounded-2xl p-4 text-sm">{lineActionInfo}</SectionCard> : null}
 
-      {episodeQuery.isLoading ? <LoadingState message="Loading episode content..." /> : null}
-      {episodeQuery.isError ? <ErrorState message="Failed to load episode details." /> : null}
+      {episodeQuery.isLoading ? <LoadingState message="正在加载剧集内容..." /> : null}
+      {episodeQuery.isError ? <ErrorState message="加载剧集详情失败。" /> : null}
 
       {speakerOptions.length > 0 ? (
         <SectionCard className="grid gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-base font-semibold">Speaker Voice Status</h3>
+            <h3 className="text-base font-semibold">发言者音色状态</h3>
             <p className="text-xs text-[var(--glass-text-tertiary)]">
               Lines: {voiceLines.length} | Speaker Set: {linesWithVoice} | Voice Bound: {linesWithBoundVoice} | Missing Speaker: {missingSpeakerCount} | Missing Binding: {missingVoiceBindingCount} | Audio Ready: {linesWithAudio}
             </p>
@@ -691,7 +691,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                     <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-2 py-1 text-xs" onClick={() => openSpeakerBinding(speaker)}>
                       {profile ? 'Rebind Voice' : 'Bind Voice'}
                     </button>
-                    {profile ? <span className="glass-chip px-2 py-0.5">{profile.gender}</span> : <span className="glass-warning rounded-full px-2 py-0.5">Unbound</span>}
+                    {profile ? <span className="glass-chip px-2 py-0.5">{profile.gender}</span> : <span className="glass-warning rounded-full px-2 py-0.5">未绑定</span>}
                   </div>
                 </article>
               )
@@ -700,8 +700,8 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
           {!allSpeakersHaveVoice ? <p className="text-xs text-[var(--glass-tone-warning-fg)]">Some lines are missing speaker bindings. Use `Fill Missing Speakers` before batch generation.</p> : null}
           {episodeAudioUrl ? (
             <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--glass-text-tertiary)]">
-              <span className="glass-success rounded-full px-2 py-0.5">Episode Audio Ready</span>
-              <a className="underline" href={episodeAudioUrl} target="_blank" rel="noreferrer">Open latest audio</a>
+              <span className="glass-success rounded-full px-2 py-0.5">剧集音频就绪</span>
+              <a className="underline" href={episodeAudioUrl} target="_blank" rel="noreferrer">打开最新音频</a>
             </div>
           ) : null}
         </SectionCard>
@@ -710,14 +710,14 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
       <SectionCard className="grid gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h3 className="text-base font-semibold">Voice Line Queue</h3>
+            <h3 className="text-base font-semibold">配音台词队列</h3>
             <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">
               Visible {visibleVoiceLines.length} / {filteredVoiceLines.length} · Visible speakers {visibleSpeakers.length} · Needs speaker {missingSpeakerCount}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <select className="glass-input w-40" value={speakerFilter} onChange={(event) => setSpeakerFilter(event.target.value)}>
-              <option value="all">All Speakers</option>
+              <option value="all">全部发言者</option>
               {speakerOptions.map((speaker) => (
                 <option key={speaker} value={speaker}>{speaker}</option>
               ))}
@@ -726,7 +726,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
               className="glass-input w-56"
               value={lineSearch}
               onChange={(event) => setLineSearch(event.target.value)}
-              placeholder="Search line / speaker / timestamp"
+              placeholder="搜索台词 / 发言者 / 时间戳"
             />
             <button
               type="button"
@@ -738,13 +738,13 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
             >
               {showNeedsSpeakerOnly ? 'Missing Speaker Only' : 'Show Missing Speaker'}
             </button>
-            <Button type="button" variant="secondary" onClick={fillMissingSpeaker}>Fill Missing Speakers</Button>
-            <Button type="button" variant="secondary" onClick={resetLineDrafts}>Reset Line Draft</Button>
+            <Button type="button" variant="secondary" onClick={fillMissingSpeaker}>补全缺失发言者</Button>
+            <Button type="button" variant="secondary" onClick={resetLineDrafts}>重置台词草稿</Button>
           </div>
         </div>
 
         {visibleVoiceLines.length === 0 ? (
-          <EmptyState title="No lines available" description="Adjust filters, or create/reparse transcript lines to continue." />
+          <EmptyState title="暂无台词" description="调整筛选条件，或创建/解析台词以继续。" />
         ) : (
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {visibleVoiceLines.map((line) => {
@@ -774,10 +774,10 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                       <p className="text-xs text-[var(--glass-text-tertiary)]">Line {line.order}</p>
                     </button>
                     <div className="flex items-center gap-1 text-[11px]">
-                      {hasAudio ? <span className="glass-success rounded-full px-2 py-0.5">Audio Ready</span> : <span className="glass-warning rounded-full px-2 py-0.5">Pending</span>}
-                      {!hasSpeaker ? <span className="glass-warning rounded-full px-2 py-0.5">Speaker Missing</span> : null}
+                      {hasAudio ? <span className="glass-success rounded-full px-2 py-0.5">音频就绪</span> : <span className="glass-warning rounded-full px-2 py-0.5">待生成</span>}
+                      {!hasSpeaker ? <span className="glass-warning rounded-full px-2 py-0.5">未指定发言者</span> : null}
                       {hasSpeaker ? (
-                        boundProfile ? <span className="glass-success rounded-full px-2 py-0.5">Voice Bound</span> : <span className="glass-warning rounded-full px-2 py-0.5">Voice Unbound</span>
+                        boundProfile ? <span className="glass-success rounded-full px-2 py-0.5">已绑音色</span> : <span className="glass-warning rounded-full px-2 py-0.5">未绑音色</span>
                       ) : null}
                     </div>
                   </div>
@@ -785,20 +785,20 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   <div className="px-3 py-3">
                     <button type="button" onClick={() => setSelectedLineId(line.id)} className="w-full text-left">
                       <p className="line-clamp-3 text-sm text-[var(--glass-text-secondary)]">{line.text || '-'}</p>
-                      {timingLabel ? <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">{timingLabel}</p> : <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">No timing bound</p>}
+                      {timingLabel ? <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">{timingLabel}</p> : <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">未绑定时间戳</p>}
                     </button>
                     <div className="mt-2 grid grid-cols-2 gap-1.5">
                       <button type="button" onClick={() => void runLineAction('generate', line)} disabled={generating || voiceGenerateMutation.isPending} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
                         {generating ? '...' : hasAudio ? 'Regenerate' : 'Generate'}
                       </button>
-                      <button type="button" onClick={() => openLineEditor(line.id)} className="glass-btn-base glass-btn-ghost rounded-lg px-2 py-1 text-xs">Edit</button>
+                      <button type="button" onClick={() => openLineEditor(line.id)} className="glass-btn-base glass-btn-ghost rounded-lg px-2 py-1 text-xs">编辑</button>
                       <button type="button" onClick={() => void runLineAction('play', line)} disabled={playing || !episodeAudioUrl} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
                         {playing ? '...' : 'Play'}
                       </button>
                       <button type="button" onClick={() => void runLineAction('download', line)} disabled={downloading || !episodeAudioUrl} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
                         {downloading ? '...' : 'Download'}
                       </button>
-                      <button type="button" onClick={() => void runLineAction('delete', line)} className="glass-btn-base col-span-2 rounded-lg border border-[var(--glass-tone-danger-fg)] bg-[var(--glass-tone-danger-bg)] px-2 py-1 text-xs text-[var(--glass-tone-danger-fg)]">Delete Line</button>
+                      <button type="button" onClick={() => void runLineAction('delete', line)} className="glass-btn-base col-span-2 rounded-lg border border-[var(--glass-tone-danger-fg)] bg-[var(--glass-tone-danger-bg)] px-2 py-1 text-xs text-[var(--glass-tone-danger-fg)]">删除台词</button>
                     </div>
 
                     <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -807,7 +807,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                           {boundProfile ? `Rebind: ${boundProfile.name}` : 'Bind Voice'}
                         </button>
                       ) : (
-                        <span className="glass-warning rounded-full px-2 py-0.5 text-[11px]">Set speaker before binding voice</span>
+                        <span className="glass-warning rounded-full px-2 py-0.5 text-[11px]">绑定音色前请先设置发言者</span>
                       )}
                       <button
                         type="button"
@@ -822,7 +822,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                     {emotionExpanded ? (
                       <div className="mt-2 space-y-2 rounded-lg border border-[var(--glass-stroke-focus)]/40 bg-[var(--glass-tone-info-bg)]/80 p-2">
                         <label className="grid gap-1">
-                          <span className="text-[11px] font-medium text-[var(--glass-tone-info-fg)]">Emotion Prompt</span>
+                          <span className="text-[11px] font-medium text-[var(--glass-tone-info-fg)]">情绪提示词</span>
                           <input
                             type="text"
                             className="glass-input h-9 text-xs"
@@ -836,7 +836,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                                 },
                               }))
                             }
-                            placeholder="e.g. restrained sadness with soft trembling"
+                            placeholder="例如：克制的悲伤，带轻微颤抖"
                           />
                         </label>
                         <label className="grid gap-1">
@@ -884,7 +884,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   <div className="flex items-center justify-between gap-2 border-t border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]/70 px-3 py-2 text-xs">
                     <span className={hasSpeaker ? 'glass-chip px-2 py-0.5' : 'glass-warning rounded-full px-2 py-0.5'}>{speaker || 'Speaker ?'}</span>
                     <div className="flex items-center gap-1.5">
-                      {boundProfile ? <span className="glass-chip px-2 py-0.5">{boundProfile.name}</span> : hasSpeaker ? <span className="glass-warning rounded-full px-2 py-0.5">Unbound</span> : null}
+                      {boundProfile ? <span className="glass-chip px-2 py-0.5">{boundProfile.name}</span> : hasSpeaker ? <span className="glass-warning rounded-full px-2 py-0.5">未绑定</span> : null}
                       <span className="text-[var(--glass-text-tertiary)]">{line.source.toUpperCase()}</span>
                     </div>
                   </div>
@@ -900,12 +900,12 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <SectionCard className="grid gap-3">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
-                <h3 className="text-base font-semibold">Voice Line Editor</h3>
+                <h3 className="text-base font-semibold">台词编辑器</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Line {selectedLine.order} | Source: {selectedLine.source.toUpperCase()}</p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <Button type="button" variant="secondary" onClick={() => setIsLineModalOpen(true)}>Open Modal</Button>
-                <Button type="button" variant="secondary" onClick={deleteSelected}>Delete</Button>
+                <Button type="button" variant="secondary" onClick={() => setIsLineModalOpen(true)}>打开弹窗</Button>
+                <Button type="button" variant="secondary" onClick={deleteSelected}>删除</Button>
               </div>
             </div>
 
@@ -915,7 +915,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
             ) : null}
             {episodeAudioUrl ? (
               <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--glass-text-tertiary)]">
-                <a className="underline" href={episodeAudioUrl} target="_blank" rel="noreferrer">Open latest episode audio</a>
+                <a className="underline" href={episodeAudioUrl} target="_blank" rel="noreferrer">打开最新剧集音频</a>
               </div>
             ) : null}
           </SectionCard>
@@ -923,21 +923,21 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
 
         <SectionCard className="grid gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h3 className="text-base font-semibold">Transcript Draft</h3>
+            <h3 className="text-base font-semibold">字幕草稿</h3>
             <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="secondary" onClick={reparseTranscript}>Reparse Draft</Button>
-              <Button type="button" variant="secondary" onClick={applyLineEdits} disabled={lineEditsApplied}>Sync From Lines</Button>
+              <Button type="button" variant="secondary" onClick={reparseTranscript}>重新解析草稿</Button>
+              <Button type="button" variant="secondary" onClick={applyLineEdits} disabled={lineEditsApplied}>从台词同步</Button>
             </div>
           </div>
 
-          <textarea className="glass-input min-h-56" value={transcriptDraft} onChange={(event) => setTranscriptDraft(event.target.value)} placeholder="SRT or plain transcript text..." />
+          <textarea className="glass-input min-h-56" value={transcriptDraft} onChange={(event) => setTranscriptDraft(event.target.value)} placeholder="SRT 字幕或纯文本内容..." />
 
           <div className="flex flex-wrap gap-2">
             <Button type="button" onClick={() => saveTranscriptMutation.mutate()} disabled={saveTranscriptMutation.isPending || !transcriptDirty}>
-              {saveTranscriptMutation.isPending ? 'Saving...' : 'Save Transcript'}
+              {saveTranscriptMutation.isPending ? '保存中...' : '保存字幕'}
             </Button>
-            <Link className="underline" to={buildWorkspaceStagePath(projectId, episodeId, 'prompts')}>Back To Prompts</Link>
-            <Link className="underline" to={buildWorkspaceStagePath(projectId, episodeId, 'video')}>Continue Video</Link>
+            <Link className="underline" to={buildWorkspaceStagePath(projectId, episodeId, 'prompts')}>返回提示词</Link>
+            <Link className="underline" to={buildWorkspaceStagePath(projectId, episodeId, 'video')}>继续视频</Link>
           </div>
           <p className="text-xs text-[var(--glass-text-tertiary)]">Line edits applied: {lineEditsApplied ? 'Yes' : 'No'} | Transcript changed: {transcriptDirty ? 'Yes' : 'No'}</p>
         </SectionCard>
@@ -945,11 +945,11 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
 
       <SectionCard className="grid gap-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-base font-semibold">Voice Task Stream</h3>
+          <h3 className="text-base font-semibold">配音任务流</h3>
           <Button type="button" variant="secondary" onClick={() => tasksQuery.refetch()} disabled={tasksQuery.isFetching}>{tasksQuery.isFetching ? 'Refreshing...' : 'Refresh Tasks'}</Button>
         </div>
-        {tasksQuery.isLoading ? <LoadingState message="Loading tasks..." /> : null}
-        {tasksQuery.isError ? <ErrorState message="Failed to load tasks." /> : null}
+        {tasksQuery.isLoading ? <LoadingState message="正在加载任务..." /> : null}
+        {tasksQuery.isError ? <ErrorState message="加载任务失败。" /> : null}
         {!tasksQuery.isLoading && !tasksQuery.isError && voiceTasks.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">No voice-related tasks yet.</p> : null}
         {voiceTasks.map((task) => (
           <article key={task.id} className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm">
@@ -975,24 +975,24 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <section className="glass-modal-shell relative z-10 grid w-full max-w-2xl gap-4 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-lg font-semibold">Voice Line Editor</h3>
+                <h3 className="text-lg font-semibold">台词编辑器</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Line {selectedLine.order} | Source: {selectedLine.source.toUpperCase()}</p>
               </div>
-              <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsLineModalOpen(false)}>Close</button>
+              <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsLineModalOpen(false)}>关闭</button>
             </div>
 
             <div className="grid gap-2 md:grid-cols-3">
-              <input type="text" className="glass-input" value={selectedLine.speaker} onChange={(event) => updateLine(selectedLine.id, { speaker: event.target.value })} placeholder="Speaker" />
-              <input type="text" className="glass-input" value={selectedLine.startTime} onChange={(event) => updateLine(selectedLine.id, { startTime: event.target.value })} placeholder="Start (00:00:00,000)" />
-              <input type="text" className="glass-input" value={selectedLine.endTime} onChange={(event) => updateLine(selectedLine.id, { endTime: event.target.value })} placeholder="End (00:00:00,000)" />
+              <input type="text" className="glass-input" value={selectedLine.speaker} onChange={(event) => updateLine(selectedLine.id, { speaker: event.target.value })} placeholder="发言者" />
+              <input type="text" className="glass-input" value={selectedLine.startTime} onChange={(event) => updateLine(selectedLine.id, { startTime: event.target.value })} placeholder="开始 (00:00:00,000)" />
+              <input type="text" className="glass-input" value={selectedLine.endTime} onChange={(event) => updateLine(selectedLine.id, { endTime: event.target.value })} placeholder="结束 (00:00:00,000)" />
             </div>
 
-            <textarea className="glass-input min-h-36" value={selectedLine.text} onChange={(event) => updateLine(selectedLine.id, { text: event.target.value })} placeholder="Dialogue text..." />
+            <textarea className="glass-input min-h-36" value={selectedLine.text} onChange={(event) => updateLine(selectedLine.id, { text: event.target.value })} placeholder="台词内容..." />
 
             <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">Preview: {composeDialogue(selectedLine) || '-'}</p>
 
             <div className="flex flex-wrap justify-end gap-2">
-              <Button type="button" variant="secondary" onClick={() => setIsLineModalOpen(false)}>Cancel</Button>
+              <Button type="button" variant="secondary" onClick={() => setIsLineModalOpen(false)}>取消</Button>
               <Button
                 type="button"
                 onClick={() => {
@@ -1013,7 +1013,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <section className="glass-modal-shell relative z-10 grid w-full max-w-4xl gap-4 p-5">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
-                <h3 className="text-lg font-semibold">Speaker Voice Binding</h3>
+                <h3 className="text-lg font-semibold">发言者音色绑定</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Select a voice profile for speaker "{bindingSpeaker}".</p>
               </div>
               <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsSpeakerBindingOpen(false)}>
@@ -1027,7 +1027,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   className="glass-input"
                   value={voiceSearch}
                   onChange={(event) => setVoiceSearch(event.target.value)}
-                  placeholder="Search voice profile by name/style"
+                  placeholder="按名称或风格搜索音色"
                 />
                 <div className="max-h-72 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
                   {filteredVoiceProfiles.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">No profile matches the current search.</p> : null}
@@ -1057,7 +1057,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
               </div>
 
               <aside className="space-y-2 rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-3">
-                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Binding Summary</p>
+                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">绑定汇总</p>
                 <p className="text-xs text-[var(--glass-text-tertiary)]">Speaker: <span className="font-medium text-[var(--glass-text-secondary)]">{bindingSpeaker}</span></p>
                 <p className="text-xs text-[var(--glass-text-tertiary)]">
                   Selected: <span className="font-medium text-[var(--glass-text-secondary)]">{voiceProfiles.find((profile) => profile.id === selectedVoiceProfileId)?.name ?? 'None'}</span>
@@ -1087,7 +1087,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
 
             <div className="flex flex-wrap justify-end gap-2">
               <Button type="button" variant="secondary" onClick={() => setIsSpeakerBindingOpen(false)}>Cancel</Button>
-              <Button type="button" onClick={saveSpeakerBinding} disabled={!selectedVoiceProfileId}>Bind Voice</Button>
+              <Button type="button" onClick={saveSpeakerBinding} disabled={!selectedVoiceProfileId}>绑定音色</Button>
             </div>
           </section>
         </div>
@@ -1099,7 +1099,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <section className="glass-modal-shell relative z-10 grid w-full max-w-xl gap-4 p-5">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
-                <h3 className="text-lg font-semibold">Voice Design</h3>
+                <h3 className="text-lg font-semibold">设计音色</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Create a custom voice profile shell and auto-bind to "{bindingSpeaker || 'speaker'}".</p>
               </div>
               <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsVoiceDesignOpen(false)}>
@@ -1108,32 +1108,32 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
             </div>
 
             <label className="grid gap-1">
-              <span className="text-xs text-[var(--glass-text-tertiary)]">Voice Name</span>
-              <input type="text" className="glass-input" value={voiceDesignName} onChange={(event) => setVoiceDesignName(event.target.value)} placeholder="e.g. Midnight Storyteller" />
+              <span className="text-xs text-[var(--glass-text-tertiary)]">音色名称</span>
+              <input type="text" className="glass-input" value={voiceDesignName} onChange={(event) => setVoiceDesignName(event.target.value)} placeholder="例如：午夜讲述者" />
             </label>
 
             <label className="grid gap-1">
-              <span className="text-xs text-[var(--glass-text-tertiary)]">Voice Style</span>
+              <span className="text-xs text-[var(--glass-text-tertiary)]">音色风格</span>
               <textarea
                 className="glass-input min-h-24"
                 value={voiceDesignStyle}
                 onChange={(event) => setVoiceDesignStyle(event.target.value)}
-                placeholder="Describe tone, texture, pacing, and articulation."
+                placeholder="描述音色的语气、质感、节奏与咬字。"
               />
             </label>
 
             <label className="grid gap-1">
-              <span className="text-xs text-[var(--glass-text-tertiary)]">Gender Hint</span>
+              <span className="text-xs text-[var(--glass-text-tertiary)]">性别倾向</span>
               <select className="glass-input" value={voiceDesignGender} onChange={(event) => setVoiceDesignGender(event.target.value as 'female' | 'male' | 'neutral')}>
-                <option value="neutral">Neutral</option>
-                <option value="female">Female</option>
-                <option value="male">Male</option>
+                <option value="neutral">中性</option>
+                <option value="female">女声</option>
+                <option value="male">男声</option>
               </select>
             </label>
 
             <div className="flex flex-wrap justify-end gap-2">
               <Button type="button" variant="secondary" onClick={() => setIsVoiceDesignOpen(false)}>Cancel</Button>
-              <Button type="button" onClick={createVoiceProfile} disabled={!voiceDesignName.trim()}>Create And Bind</Button>
+              <Button type="button" onClick={createVoiceProfile} disabled={!voiceDesignName.trim()}>创建并绑定</Button>
             </div>
           </section>
         </div>

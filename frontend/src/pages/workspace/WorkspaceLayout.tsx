@@ -67,19 +67,19 @@ export function WorkspaceLayout() {
   }
 
   if (workspaceQuery.isLoading) {
-    return <LoadingState message="Loading workspace..." />
+    return <LoadingState message="正在加载工作区..." />
   }
 
   if (workspaceQuery.isError || !workspace) {
-    return <ErrorState message="Failed to load workspace." />
+    return <ErrorState message="加载工作区失败。" />
   }
 
   if (!episode) {
     return (
       <div className="grid gap-4">
-        <EmptyState title="Episode not found" description="Create an episode first, then re-open workspace." />
+        <EmptyState title="未找到剧集" description="请先创建剧集，再重新打开工作区。" />
         <Link className="w-fit rounded-lg bg-white px-3 py-2 text-sm" to={`/projects/${projectId}`}>
-          Back to project
+          返回项目
         </Link>
       </div>
     )
@@ -109,22 +109,22 @@ export function WorkspaceLayout() {
           to="/asset-hub"
           className="glass-btn-base glass-btn-ghost rounded-xl px-3 py-2 text-sm font-semibold"
         >
-          Asset Hub
+          资产中心
         </Link>
         <Link
           to="/settings"
           className="glass-btn-base glass-btn-ghost rounded-xl px-3 py-2 text-sm font-semibold"
         >
-          Settings
+          设置
         </Link>
         <button
           type="button"
           onClick={() => void handleRefreshWorkspace()}
           disabled={isRefreshing}
           className="glass-btn-base glass-btn-ghost rounded-xl px-3 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
-          title="Refresh workspace data"
+          title="刷新工作区数据"
         >
-          {isRefreshing ? 'Refreshing...' : 'Refresh'}
+          {isRefreshing ? '刷新中...' : '刷新'}
         </button>
       </div>
 
@@ -133,7 +133,7 @@ export function WorkspaceLayout() {
           <div>
             <h1 className="text-xl font-semibold">{workspace.project.name}</h1>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
-              Episode {episode.episode_number}: {episode.name}
+              第 {episode.episode_number} 集：{episode.name}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -147,7 +147,7 @@ export function WorkspaceLayout() {
             >
               {sortedEpisodes.map((item) => (
                 <option key={item.id} value={item.id}>
-                  Episode {item.episode_number}: {item.name}
+                  第 {item.episode_number} 集：{item.name}
                 </option>
               ))}
             </select>
@@ -155,13 +155,13 @@ export function WorkspaceLayout() {
               className="glass-btn-base glass-btn-ghost rounded-xl px-3 py-2 text-sm"
               to={`/projects/${workspace.project.id}`}
             >
-              Back to project
+              返回项目
             </Link>
           </div>
         </div>
 
         <div className="grid gap-2">
-          <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Episode Capsules</p>
+          <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">剧集切换</p>
           <div className="flex gap-2 overflow-x-auto pb-1">
             {sortedEpisodes.map((item) => {
               const active = item.id === episode.id
@@ -177,7 +177,7 @@ export function WorkspaceLayout() {
                       : 'border-[var(--glass-stroke-base)] bg-white/80 text-[var(--glass-text-secondary)] hover:bg-white',
                   ].join(' ')}
                 >
-                  <p className="text-xs">Episode {item.episode_number}</p>
+                  <p className="text-xs">第 {item.episode_number} 集</p>
                   <p className="mt-1 line-clamp-1 text-sm font-semibold">{item.name}</p>
                 </button>
               )
@@ -187,26 +187,26 @@ export function WorkspaceLayout() {
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Current Stage</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">当前阶段</p>
             <p className="mt-1 text-lg font-semibold">{stageTitle(stage)}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Stage Progress</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">阶段进度</p>
             <p className="mt-1 text-lg font-semibold">{stageProgress}%</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Active Tasks</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">进行中任务</p>
             <p className="mt-1 text-lg font-semibold">{workspace.latest_active_tasks.length}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Episode Count</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">剧集总数</p>
             <p className="mt-1 text-lg font-semibold">{workspace.episodes.length}</p>
           </article>
         </div>
 
         <div className="grid gap-2">
           <div className="flex items-center justify-between text-xs text-[var(--glass-text-tertiary)]">
-            <span>Pipeline Progress</span>
+            <span>流水线进度</span>
             <span>{stageProgress}%</span>
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-white/70">
@@ -234,7 +234,7 @@ export function WorkspaceLayout() {
           to={buildWorkspaceStagePath(projectId, episodeId, nextStage.stage)}
           className="fixed bottom-6 right-6 z-40 rounded-2xl bg-[var(--glass-accent-from)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--glass-shadow-lg)] transition-colors hover:bg-[var(--glass-accent-to)]"
         >
-          Continue: {nextStage.label}
+          继续：{nextStage.label}
         </Link>
       ) : null}
     </div>

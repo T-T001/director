@@ -1,28 +1,47 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { Settings, Trash2, Calendar, Activity, Clapperboard } from 'lucide-react'
 
 import { createEpisode, deleteEpisode, updateEpisode } from '../../services/api/episodes'
+import { analyzeNPEpisode, convertNPScreenplay } from '../../services/api/novel-promotion'
 import { deleteProject, getWorkspace, updateProject } from '../../services/api/projects'
+import { getTask } from '../../services/api/tasks'
 import { buildWorkspaceStagePath } from '../../app/router/routes'
 import { queryKeys } from '../../services/queryKeys'
-import type { Episode, Project } from '../../types/project'
+import type { Project } from '../../types/project'
 import { Button } from '../../components/ui/Button'
-import { EmptyState, ErrorState, LoadingState, SectionCard } from '../../components/common/PageState'
+import { Modal } from '../../components/ui/Modal'
+import { ErrorState, LoadingState, SectionCard } from '../../components/common/PageState'
+import type { SplitEpisode } from '../../lib/episode-marker-detector'
+import { projectStages, ProjectStageNav, type ProjectStage } from './components/ProjectStageNav'
+import { NovelIntakeStage, type IntakeSubmitProgress } from './components/NovelIntakeStage'
+import { EpisodeSidebar, type EpisodeListItem } from './components/EpisodeSidebar'
+
+async function pollTask(taskId: string, intervalMs = 1500) {
+  for (;;) {
+    const task = await getTask(taskId)
+    if (task.status === 'completed') return task
+    if (task.status === 'failed' || task.status === 'canceled') {
+      throw new Error(task.error_message ?? `task ${task.status}`)
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs))
+  }
+}
 
 export function ProjectDetailPage() {
   const { projectId = '' } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const episodeNameInputRef = useRef<HTMLInputElement | null>(null)
 
-  const [episodeName, setEpisodeName] = useState('')
-  const [episodeDescription, setEpisodeDescription] = useState('')
-  const [editingProjectName, setEditingProjectName] = useState('')
-  const [editingProjectDescription, setEditingProjectDescription] = useState('')
-  const [editingEpisodeId, setEditingEpisodeId] = useState<string | null>(null)
-  const [editingEpisodeName, setEditingEpisodeName] = useState('')
-  const [editingEpisodeDescription, setEditingEpisodeDescription] = useState('')
+  const [stage, setStage] = useState<ProjectStage>('intake')
+  const [currentEpisodeId, setCurrentEpisodeId] = useState<string | null>(null)
+  const [enableNarration, setEnableNarration] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [editingName, setEditingName] = useState('')
+  const [editingDesc, setEditingDesc] = useState('')
+  const [projectFeedback, setProjectFeedback] = useState<string | null>(null)
+  const [submitProgress, setSubmitProgress] = useState<IntakeSubmitProgress | null>(null)
 
   const workspaceQuery = useQuery({
     queryKey: queryKeys.projects.workspace(projectId),
@@ -32,57 +51,41 @@ export function ProjectDetailPage() {
 
   const workspace = workspaceQuery.data
 
-  useEffect(() => {
-    if (!workspace) return
-    setEditingProjectName(workspace.project.name)
-    setEditingProjectDescription(workspace.project.description || '')
-  }, [workspace])
-
   const sortedEpisodes = useMemo(
-    () => [...(workspace?.episodes ?? [])].sort((left, right) => left.episode_number - right.episode_number),
+    () => [...(workspace?.episodes ?? [])].sort((l, r) => l.episode_number - r.episode_number),
     [workspace?.episodes],
   )
 
-  const activeTasks = workspace?.latest_active_tasks ?? []
+  const episodeListItems: EpisodeListItem[] = useMemo(
+    () => sortedEpisodes.map((ep) => ({ id: ep.id, episodeNumber: ep.episode_number, name: ep.name })),
+    [sortedEpisodes],
+  )
 
-  const createEpisodeMutation = useMutation({
-    mutationFn: (payload: { name: string; description?: string }) => createEpisode(projectId, payload),
-    onSuccess: () => {
-      setEpisodeName('')
-      setEpisodeDescription('')
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
-    },
-  })
+  useEffect(() => {
+    if (!workspace) return
+    setEditingName(workspace.project.name)
+    setEditingDesc(workspace.project.description || '')
+  }, [workspace])
+
+  useEffect(() => {
+    if (!currentEpisodeId && sortedEpisodes.length > 0) {
+      setCurrentEpisodeId(sortedEpisodes[0].id)
+    }
+    if (currentEpisodeId && !sortedEpisodes.some((ep) => ep.id === currentEpisodeId)) {
+      setCurrentEpisodeId(sortedEpisodes[0]?.id ?? null)
+    }
+  }, [currentEpisodeId, sortedEpisodes])
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
 
   const updateProjectMutation = useMutation({
     mutationFn: (payload: { name?: string; description?: Project['description'] }) => updateProject(projectId, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
+      invalidate()
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
+      setProjectFeedback('已保存项目设置。')
     },
-  })
-
-  const updateEpisodeMutation = useMutation({
-    mutationFn: ({
-      episodeId,
-      payload,
-    }: {
-      episodeId: string
-      payload: Partial<Pick<Episode, 'name' | 'description' | 'novel_text' | 'srt_content' | 'audio_media_id'>>
-    }) => updateEpisode(episodeId, payload),
-    onSuccess: () => {
-      setEditingEpisodeId(null)
-      setEditingEpisodeName('')
-      setEditingEpisodeDescription('')
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
-    },
-  })
-
-  const deleteEpisodeMutation = useMutation({
-    mutationFn: deleteEpisode,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
-    },
+    onError: (err) => setProjectFeedback(err instanceof Error ? err.message : '保存失败。'),
   })
 
   const deleteProjectMutation = useMutation({
@@ -93,255 +96,265 @@ export function ProjectDetailPage() {
     },
   })
 
-  const handleCreateEpisode = async (event: FormEvent) => {
-    event.preventDefault()
-    if (!episodeName.trim()) return
-    await createEpisodeMutation.mutateAsync({
-      name: episodeName.trim(),
-      description: episodeDescription.trim() || undefined,
-    })
+  const createEpisodeMutation = useMutation({
+    mutationFn: (payload: { name: string; description?: string; novel_text?: string }) =>
+      createEpisode(projectId, payload),
+    onSuccess: () => invalidate(),
+  })
+
+  const updateEpisodeMutation = useMutation({
+    mutationFn: ({ episodeId, name }: { episodeId: string; name: string }) =>
+      updateEpisode(episodeId, { name }),
+    onSuccess: () => invalidate(),
+  })
+
+  const deleteEpisodeMutation = useMutation({
+    mutationFn: deleteEpisode,
+    onSuccess: () => invalidate(),
+  })
+
+  const handleCreateEpisodes = async (episodes: SplitEpisode[]) => {
+    setSubmitProgress({ stage: 'create', current: 0, total: episodes.length })
+    const createdIds: string[] = []
+    let created = 0
+    let failed = 0
+    let firstId: string | null = null
+
+    for (const ep of episodes) {
+      try {
+        const result = await createEpisode(projectId, {
+          name: ep.title.trim() || `第 ${ep.number} 集`,
+          description: ep.summary.trim() || undefined,
+          novel_text: ep.content.trim() || undefined,
+        })
+        created += 1
+        createdIds.push(result.id)
+        if (!firstId) firstId = result.id
+      } catch {
+        failed += 1
+      } finally {
+        setSubmitProgress({ stage: 'create', current: created + failed, total: episodes.length })
+      }
+    }
+
+    let analyzeFailed = 0
+    let screenplayFailed = 0
+
+    if (createdIds.length > 0) {
+      setSubmitProgress({ stage: 'analyze', current: 0, total: createdIds.length })
+      for (let i = 0; i < createdIds.length; i += 1) {
+        const episodeId = createdIds[i]
+        try {
+          const { task_id } = await analyzeNPEpisode(projectId, { episode_id: episodeId })
+          await pollTask(task_id)
+        } catch (err) {
+          analyzeFailed += 1
+          console.error('np_analyze failed for', episodeId, err)
+        }
+        setSubmitProgress({ stage: 'analyze', current: i + 1, total: createdIds.length })
+      }
+
+      setSubmitProgress({ stage: 'screenplay', current: 0, total: createdIds.length })
+      for (let i = 0; i < createdIds.length; i += 1) {
+        const episodeId = createdIds[i]
+        try {
+          const { task_id } = await convertNPScreenplay(projectId, { episode_id: episodeId })
+          await pollTask(task_id)
+        } catch (err) {
+          screenplayFailed += 1
+          console.error('np_screenplay_conversion failed for', episodeId, err)
+        }
+        setSubmitProgress({ stage: 'screenplay', current: i + 1, total: createdIds.length })
+      }
+    }
+
+    await invalidate()
+    setSubmitProgress(null)
+    if (firstId) setCurrentEpisodeId(firstId)
+    return { created, failed, analyzeFailed, screenplayFailed }
   }
 
-  const handleProjectUpdate = async (event: FormEvent) => {
-    event.preventDefault()
+  const handleStageChange = (nextStage: ProjectStage) => {
+    if (nextStage === 'intake') {
+      setStage('intake')
+      return
+    }
+    const targetEpisodeId = currentEpisodeId ?? sortedEpisodes[0]?.id
+    if (!targetEpisodeId) {
+      setStage('intake')
+      return
+    }
+    const workspaceStage =
+      nextStage === 'storyboard' ? 'storyboard'
+      : nextStage === 'voice' ? 'voice'
+      : nextStage === 'video' ? 'video'
+      : nextStage === 'assets' ? 'assets'
+      : 'script'
+    navigate(buildWorkspaceStagePath(projectId, targetEpisodeId, workspaceStage))
+  }
+
+  const handleProjectUpdate = async () => {
+    if (!workspace) return
     await updateProjectMutation.mutateAsync({
-      name: editingProjectName.trim() || workspace?.project.name,
-      description: editingProjectDescription.trim() || null,
+      name: editingName.trim() || workspace.project.name,
+      description: editingDesc.trim() || null,
     })
-  }
-
-  const startEditEpisode = (episode: Episode) => {
-    setEditingEpisodeId(episode.id)
-    setEditingEpisodeName(episode.name)
-    setEditingEpisodeDescription(episode.description || '')
-  }
-
-  const submitEpisodeUpdate = async (event: FormEvent) => {
-    event.preventDefault()
-    if (!editingEpisodeId) return
-    await updateEpisodeMutation.mutateAsync({
-      episodeId: editingEpisodeId,
-      payload: {
-        name: editingEpisodeName.trim(),
-        description: editingEpisodeDescription.trim() || null,
-      },
-    })
-  }
-
-  const handleDeleteEpisode = (episode: Episode) => {
-    const confirmed = confirm(`Delete episode "${episode.name}"?`)
-    if (!confirmed) return
-    deleteEpisodeMutation.mutate(episode.id)
   }
 
   const handleDeleteProject = () => {
-    const confirmed = confirm('Delete this project and all episodes?')
-    if (!confirmed) return
+    const ok = confirm('确定要删除本项目及其全部剧集吗？此操作不可恢复。')
+    if (!ok) return
     deleteProjectMutation.mutate()
   }
 
-  const handleFocusCreateEpisode = () => {
-    episodeNameInputRef.current?.focus()
-    episodeNameInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  if (workspaceQuery.isLoading) {
+    return <LoadingState message="正在加载项目工作区..." />
   }
 
+  if (workspaceQuery.isError || !workspace) {
+    return <ErrorState message="加载项目工作区失败。" />
+  }
+
+  const stageTitle = projectStages.find((s) => s.id === stage)?.label ?? ''
+
   return (
-    <div className="grid gap-4 pb-20 animate-page-enter">
-      {workspaceQuery.isLoading ? <LoadingState message="Loading project workspace..." /> : null}
-      {workspaceQuery.isError ? <ErrorState message="Failed to load project workspace." /> : null}
+    <div className="animate-page-enter grid gap-6 pb-20">
+      <div className="glass-surface-elevated relative overflow-hidden rounded-3xl">
+        <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-gradient-to-br from-[var(--glass-accent-from)]/15 to-transparent blur-3xl" />
+        <div className="pointer-events-none absolute -left-10 bottom-0 h-40 w-40 rounded-full bg-gradient-to-tr from-[var(--glass-tone-info-bg)]/80 to-transparent blur-3xl" />
 
-      {workspace ? (
-        <>
-          <SectionCard className="glass-surface-elevated grid gap-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h1 className="text-xl font-semibold">{workspace.project.name}</h1>
-                <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
-                  {workspace.project.description?.trim() || 'No description yet.'}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {sortedEpisodes[0] ? (
-                  <Link to={buildWorkspaceStagePath(workspace.project.id, sortedEpisodes[0].id, 'config')}>
-                    <Button>Open Workspace</Button>
-                  </Link>
-                ) : null}
-                <Button variant="secondary" onClick={handleDeleteProject} disabled={deleteProjectMutation.isPending}>
-                  {deleteProjectMutation.isPending ? 'Deleting...' : 'Delete Project'}
-                </Button>
-              </div>
+        <div className="relative grid gap-4 px-5 py-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-center">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-white shadow-[var(--glass-shadow-sm)]">
+                <Clapperboard className="h-4 w-4" />
+              </span>
+              <h1 className="truncate text-lg font-bold text-[var(--glass-text-primary)]">{workspace.project.name}</h1>
+              <span className="glass-chip text-[11px]">{sortedEpisodes.length} 集</span>
             </div>
+            <p className="mt-1 line-clamp-1 pl-9 text-xs text-[var(--glass-text-tertiary)]">
+              {workspace.project.description?.trim() || '暂无描述 · 点击右侧「项目设置」完善信息'}
+            </p>
+          </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Episodes</p>
-                <p className="mt-1 text-2xl font-semibold">{sortedEpisodes.length}</p>
-              </article>
-              <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Active Tasks</p>
-                <p className="mt-1 text-2xl font-semibold">{activeTasks.length}</p>
-              </article>
-              <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Created</p>
-                <p className="mt-1 text-sm font-semibold">{new Date(workspace.project.created_at).toLocaleString()}</p>
-              </article>
-              <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Updated</p>
-                <p className="mt-1 text-sm font-semibold">{new Date(workspace.project.updated_at).toLocaleString()}</p>
-              </article>
+          <div className="flex justify-center">
+            <ProjectStageNav
+              currentStage={stage}
+              onStageChange={handleStageChange}
+              hasEpisodes={sortedEpisodes.length > 0}
+            />
+          </div>
+
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              className="glass-btn-base glass-btn-ghost inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs"
+            >
+              <Settings className="h-3.5 w-3.5" />
+              项目设置
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <EpisodeSidebar
+        projectName={workspace.project.name}
+        episodes={episodeListItems}
+        currentEpisodeId={currentEpisodeId}
+        onEpisodeSelect={(id) => setCurrentEpisodeId(id)}
+        onEpisodeCreate={async (name) => {
+          await createEpisodeMutation.mutateAsync({ name })
+        }}
+        onEpisodeRename={async (id, name) => {
+          await updateEpisodeMutation.mutateAsync({ episodeId: id, name })
+        }}
+        onEpisodeDelete={async (id) => {
+          await deleteEpisodeMutation.mutateAsync(id)
+        }}
+        onGlobalAssetsClick={() => navigate('/asset-hub')}
+      />
+
+      {stage === 'intake' ? (
+        <NovelIntakeStage
+          projectName={workspace.project.name}
+          hasEpisodes={sortedEpisodes.length > 0}
+          episodeCount={sortedEpisodes.length}
+          enableNarration={enableNarration}
+          onEnableNarrationChange={setEnableNarration}
+          onCreateEpisodes={handleCreateEpisodes}
+          onOpenAssetHub={() => navigate('/asset-hub')}
+          submitProgress={submitProgress}
+        />
+      ) : (
+        <SectionCard className="grid gap-3 text-center">
+          <h2 className="text-lg font-semibold text-[var(--glass-text-primary)]">跳转到 {stageTitle} 阶段</h2>
+          <p className="text-sm text-[var(--glass-text-secondary)]">正在跳转到工作区...</p>
+        </SectionCard>
+      )}
+
+      <Modal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        title="项目设置"
+        subtitle="修改项目名称、描述或删除项目"
+        width={520}
+      >
+        <div className="grid gap-4">
+          <label className="grid gap-1">
+            <span className="text-xs font-medium text-[var(--glass-text-secondary)]">项目名称</span>
+            <input
+              className="glass-input"
+              value={editingName}
+              onChange={(e) => setEditingName(e.target.value)}
+              placeholder="项目名称"
+            />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-xs font-medium text-[var(--glass-text-secondary)]">项目描述</span>
+            <textarea
+              className="glass-input min-h-28"
+              value={editingDesc}
+              onChange={(e) => setEditingDesc(e.target.value)}
+              placeholder="一两句描述项目主题与风格"
+              rows={4}
+            />
+          </label>
+
+          <div className="grid gap-3 rounded-xl border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] p-3 text-xs">
+            <div className="flex items-center gap-2 text-[var(--glass-text-tertiary)]">
+              <Calendar className="h-3.5 w-3.5" />
+              创建：{new Date(workspace.project.created_at).toLocaleString('zh-CN')}
             </div>
-          </SectionCard>
-
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-            <div className="grid gap-4">
-              <SectionCard className="grid gap-3">
-                <h2 className="text-base font-semibold">Project Settings</h2>
-                <form className="grid gap-3" onSubmit={handleProjectUpdate}>
-                  <input
-                    className="glass-input"
-                    value={editingProjectName}
-                    onChange={(event) => setEditingProjectName(event.target.value)}
-                    placeholder="Project name"
-                  />
-                  <textarea
-                    className="glass-input min-h-28"
-                    value={editingProjectDescription}
-                    onChange={(event) => setEditingProjectDescription(event.target.value)}
-                    placeholder="Project description"
-                    rows={4}
-                  />
-                  <div>
-                    <Button disabled={updateProjectMutation.isPending} type="submit">
-                      {updateProjectMutation.isPending ? 'Saving...' : 'Save Project'}
-                    </Button>
-                  </div>
-                </form>
-              </SectionCard>
-
-              <SectionCard className="grid gap-3">
-                <h2 className="text-base font-semibold">Episodes</h2>
-                {sortedEpisodes.length > 0 ? (
-                  <div className="grid gap-3">
-                    {sortedEpisodes.map((episode) => (
-                      <article key={episode.id} className="card-base p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div>
-                            <p className="text-sm text-[var(--glass-text-tertiary)]">Episode {episode.episode_number}</p>
-                            <h3 className="text-base font-semibold">{episode.name}</h3>
-                            <p className="mt-1 text-sm text-[var(--glass-text-secondary)]">
-                              {episode.description?.trim() || 'No description yet.'}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            <Link to={buildWorkspaceStagePath(projectId, episode.id, 'config')}>
-                              <Button variant="secondary">Open</Button>
-                            </Link>
-                            <Button variant="secondary" onClick={() => startEditEpisode(episode)}>
-                              Edit
-                            </Button>
-                            <Button variant="secondary" onClick={() => handleDeleteEpisode(episode)} disabled={deleteEpisodeMutation.isPending}>
-                              Delete
-                            </Button>
-                          </div>
-                        </div>
-
-                        {editingEpisodeId === episode.id ? (
-                          <form className="mt-3 grid gap-3" onSubmit={submitEpisodeUpdate}>
-                            <input
-                              className="glass-input"
-                              value={editingEpisodeName}
-                              onChange={(event) => setEditingEpisodeName(event.target.value)}
-                              placeholder="Episode name"
-                            />
-                            <textarea
-                              className="glass-input min-h-24"
-                              value={editingEpisodeDescription}
-                              onChange={(event) => setEditingEpisodeDescription(event.target.value)}
-                              placeholder="Episode description"
-                              rows={3}
-                            />
-                            <div className="flex flex-wrap gap-2">
-                              <Button type="submit" disabled={updateEpisodeMutation.isPending}>
-                                {updateEpisodeMutation.isPending ? 'Saving...' : 'Save Episode'}
-                              </Button>
-                              <Button type="button" variant="secondary" onClick={() => setEditingEpisodeId(null)}>
-                                Cancel
-                              </Button>
-                            </div>
-                          </form>
-                        ) : null}
-                      </article>
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState title="No episodes yet" description="Create your first episode to enter the workspace stages." />
-                )}
-              </SectionCard>
-            </div>
-
-            <div className="grid gap-4">
-              <SectionCard className="grid gap-3">
-                <h2 className="text-base font-semibold">Create Episode</h2>
-                <form className="grid gap-3" onSubmit={handleCreateEpisode}>
-                  <input
-                    className="glass-input"
-                    ref={episodeNameInputRef}
-                    value={episodeName}
-                    onChange={(event) => setEpisodeName(event.target.value)}
-                    placeholder="Episode name"
-                  />
-                  <textarea
-                    className="glass-input min-h-24"
-                    value={episodeDescription}
-                    onChange={(event) => setEpisodeDescription(event.target.value)}
-                    placeholder="Episode description"
-                    rows={3}
-                  />
-                  <Button disabled={createEpisodeMutation.isPending} type="submit">
-                    {createEpisodeMutation.isPending ? 'Creating...' : 'Create Episode'}
-                  </Button>
-                </form>
-              </SectionCard>
-
-              <SectionCard className="grid gap-2">
-                <h2 className="text-base font-semibold">Active Tasks Snapshot</h2>
-                {activeTasks.length === 0 ? (
-                  <p className="text-sm text-[var(--glass-text-tertiary)]">No active tasks currently.</p>
-                ) : (
-                  activeTasks.map((task) => (
-                    <article key={task.id} className="card-base px-3 py-2 text-sm">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <p className="font-medium text-[var(--glass-text-secondary)]">{task.task_type}</p>
-                        <span className="text-xs text-[var(--glass-text-tertiary)]">{task.status}</span>
-                      </div>
-                      <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">
-                        Progress: {task.progress}% | Updated: {new Date(task.updated_at).toLocaleString()}
-                      </p>
-                    </article>
-                  ))
-                )}
-              </SectionCard>
+            <div className="flex items-center gap-2 text-[var(--glass-text-tertiary)]">
+              <Activity className="h-3.5 w-3.5" />
+              最近更新：{new Date(workspace.project.updated_at).toLocaleString('zh-CN')}
             </div>
           </div>
 
-          {sortedEpisodes[0] ? (
-            <Link
-              to={buildWorkspaceStagePath(workspace.project.id, sortedEpisodes[0].id, 'config')}
-              className="fixed bottom-6 right-6 z-40 rounded-2xl bg-[var(--glass-accent-from)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--glass-shadow-lg)] transition-colors hover:bg-[var(--glass-accent-to)]"
-            >
-              Enter Workspace
-            </Link>
-          ) : (
+          {projectFeedback ? (
+            <div className="glass-success rounded-xl px-3 py-2 text-xs">{projectFeedback}</div>
+          ) : null}
+
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <button
               type="button"
-              onClick={handleFocusCreateEpisode}
-              className="fixed bottom-6 right-6 z-40 rounded-2xl bg-[var(--glass-accent-from)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--glass-shadow-lg)] transition-colors hover:bg-[var(--glass-accent-to)]"
+              onClick={handleDeleteProject}
+              disabled={deleteProjectMutation.isPending}
+              className="glass-btn-base inline-flex items-center gap-1.5 rounded-xl border border-[var(--glass-tone-danger-fg)]/40 bg-[var(--glass-tone-danger-bg)]/50 px-3 py-2 text-xs text-[var(--glass-tone-danger-fg)] transition hover:brightness-95 disabled:opacity-50"
             >
-              Create First Episode
+              <Trash2 className="h-3.5 w-3.5" />
+              {deleteProjectMutation.isPending ? '删除中...' : '删除项目'}
             </button>
-          )}
-        </>
-      ) : null}
+            <div className="flex gap-2">
+              <Button variant="secondary" onClick={() => setSettingsOpen(false)}>取消</Button>
+              <Button onClick={() => void handleProjectUpdate()} disabled={updateProjectMutation.isPending}>
+                {updateProjectMutation.isPending ? '保存中...' : '保存设置'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

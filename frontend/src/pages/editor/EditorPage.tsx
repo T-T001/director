@@ -15,11 +15,11 @@ type MockClip = {
 }
 
 const mockClips: MockClip[] = [
-  { id: 'clip-1', title: 'Opening Wide Shot', durationMs: 5600, startMs: 0, lane: 'video', status: 'ready' },
-  { id: 'clip-2', title: 'Dialogue Closeup', durationMs: 4200, startMs: 5800, lane: 'video', status: 'rendering' },
-  { id: 'clip-3', title: 'Rain Transition', durationMs: 2600, startMs: 10300, lane: 'video', status: 'draft' },
-  { id: 'clip-4', title: 'Ambient Music Bed', durationMs: 12200, startMs: 0, lane: 'audio', status: 'ready' },
-  { id: 'clip-5', title: 'Narration VO', durationMs: 6200, startMs: 5400, lane: 'audio', status: 'draft' },
+  { id: 'clip-1', title: '开场大全景', durationMs: 5600, startMs: 0, lane: 'video', status: 'ready' },
+  { id: 'clip-2', title: '对白特写', durationMs: 4200, startMs: 5800, lane: 'video', status: 'rendering' },
+  { id: 'clip-3', title: '雨幕转场', durationMs: 2600, startMs: 10300, lane: 'video', status: 'draft' },
+  { id: 'clip-4', title: '氛围配乐床', durationMs: 12200, startMs: 0, lane: 'audio', status: 'ready' },
+  { id: 'clip-5', title: '旁白配音', durationMs: 6200, startMs: 5400, lane: 'audio', status: 'draft' },
 ]
 
 function formatDuration(ms: number) {
@@ -33,6 +33,16 @@ function statusTone(status: MockClip['status']) {
   if (status === 'ready') return 'glass-success'
   if (status === 'rendering') return 'glass-warning'
   return 'glass-muted'
+}
+
+function statusLabel(status: MockClip['status']) {
+  if (status === 'ready') return '就绪'
+  if (status === 'rendering') return '渲染中'
+  return '草稿'
+}
+
+function laneLabel(lane: 'video' | 'audio') {
+  return lane === 'video' ? '视频轨' : '音频轨'
 }
 
 export function EditorPage() {
@@ -99,11 +109,11 @@ export function EditorPage() {
   const handleQuickAction = (action: 'auto-arrange' | 'smart-trim' | 'export-plan') => {
     const label =
       action === 'auto-arrange'
-        ? 'Auto Arrange'
+        ? '自动排轨'
         : action === 'smart-trim'
-          ? 'Smart Trim'
-          : 'Export Plan'
-    setEditorNotice(`${label} queued (UI shell placeholder).`)
+          ? '智能剪裁'
+          : '导出计划'
+    setEditorNotice(`已排队：${label}（UI 外壳占位）。`)
   }
 
   const handleOpenClipModal = (clipId: string) => {
@@ -118,41 +128,41 @@ export function EditorPage() {
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-xl font-semibold">Episode Editor Console</h1>
+            <h1 className="text-xl font-semibold">剧集剪辑台</h1>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
-              Episode ID: {episodeId} | Timeline shell with lane editing and render package control.
+              剧集 ID：{episodeId} · 多轨时间线、片段编辑与渲染包控制。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link to="/projects">
-              <Button variant="secondary">Back to Projects</Button>
+              <Button variant="secondary">返回项目</Button>
             </Link>
             <Link to="/dashboard">
-              <Button variant="secondary">Dashboard</Button>
+              <Button variant="secondary">工作区总览</Button>
             </Link>
             <Button type="button" onClick={() => handleQuickAction('export-plan')}>
-              Export Package
+              导出成片包
             </Button>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Playback</p>
-            <p className="mt-1 text-lg font-semibold">{playing ? 'Playing' : 'Paused'}</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">播放状态</p>
+            <p className="mt-1 text-lg font-semibold">{playing ? '播放中' : '已暂停'}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Timeline Zoom</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">时间线缩放</p>
             <p className="mt-1 text-lg font-semibold">{timelineLabel}</p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Ready / Rendering</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">就绪 / 渲染中</p>
             <p className="mt-1 text-lg font-semibold">
               {readyClipCount} / {renderClipCount}
             </p>
           </article>
           <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Current / Total</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">当前 / 总时长</p>
             <p className="mt-1 text-lg font-semibold">
               {timeLabel} / {totalDurationLabel}
             </p>
@@ -161,25 +171,25 @@ export function EditorPage() {
 
         <div className="flex flex-wrap gap-2">
           <Button variant="secondary" onClick={() => setPlaying(!playing)}>
-            {playing ? 'Pause' : 'Play'}
+            {playing ? '暂停' : '播放'}
           </Button>
           <Button variant="secondary" onClick={() => setCurrentTimeMs(Math.max(0, currentTimeMs - 1000))}>
-            -1s
+            -1 秒
           </Button>
           <Button variant="secondary" onClick={() => setCurrentTimeMs(Math.min(totalDurationMs, currentTimeMs + 1000))}>
-            +1s
+            +1 秒
           </Button>
           <Button variant="secondary" onClick={() => setZoom(Math.max(0.5, Number((zoom - 0.1).toFixed(1))))}>
-            Zoom Out
+            缩小
           </Button>
           <Button variant="secondary" onClick={() => setZoom(Math.min(3, Number((zoom + 0.1).toFixed(1))))}>
-            Zoom In
+            放大
           </Button>
           <Button variant="secondary" onClick={() => handleQuickAction('auto-arrange')}>
-            Auto Arrange
+            自动排轨
           </Button>
           <Button variant="secondary" onClick={() => handleQuickAction('smart-trim')}>
-            Smart Trim
+            智能剪裁
           </Button>
         </div>
 
@@ -193,7 +203,7 @@ export function EditorPage() {
           className="w-full"
         />
         <p className="text-xs text-[var(--glass-text-tertiary)]">
-          Progress: {progress}% ({timeLabel} / {totalDurationLabel})
+          进度：{progress}%（{timeLabel} / {totalDurationLabel}）
         </p>
       </SectionCard>
 
@@ -202,18 +212,18 @@ export function EditorPage() {
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_360px]">
         <SectionCard className="grid gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-base font-semibold">Timeline Lanes</h2>
+            <h2 className="text-base font-semibold">多轨时间线</h2>
             <div className="flex flex-wrap gap-2">
               <input
                 className="glass-input w-44"
                 value={clipSearch}
                 onChange={(event) => setClipSearch(event.target.value)}
-                placeholder="Search clips"
+                placeholder="搜索片段"
               />
               <select className="glass-input w-32" value={laneFilter} onChange={(event) => setLaneFilter(event.target.value as 'all' | 'video' | 'audio')}>
-                <option value="all">All Lanes</option>
-                <option value="video">Video</option>
-                <option value="audio">Audio</option>
+                <option value="all">全部轨道</option>
+                <option value="video">视频轨</option>
+                <option value="audio">音频轨</option>
               </select>
             </div>
           </div>
@@ -230,7 +240,7 @@ export function EditorPage() {
 
             {(['video', 'audio'] as const).map((lane) => (
               <div key={lane} className="mt-4 grid gap-2">
-                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">{lane} lane</p>
+                <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">{laneLabel(lane)}</p>
                 <div className="relative h-20 rounded-lg border border-dashed border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] px-1">
                   {laneGroups[lane].map((clip) => {
                     const left = (clip.startMs / totalDurationMs) * 100
@@ -267,18 +277,18 @@ export function EditorPage() {
                     <p className="text-sm font-semibold text-[var(--glass-text-secondary)]">{clip.title}</p>
                   </button>
                   <span className={['rounded-full px-2 py-0.5 text-xs', statusTone(clip.status)].join(' ')}>
-                    {clip.status}
+                    {statusLabel(clip.status)}
                   </span>
                 </div>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">
-                  Lane: {clip.lane} | Start {formatDuration(clip.startMs)} | Duration {formatDuration(clip.durationMs)}
+                  {laneLabel(clip.lane)} · 起始 {formatDuration(clip.startMs)} · 时长 {formatDuration(clip.durationMs)}
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-2 py-1 text-xs" onClick={() => handleOpenClipModal(clip.id)}>
-                    Edit Clip
+                    编辑片段
                   </button>
                   <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-2 py-1 text-xs" onClick={() => setCurrentTimeMs(clip.startMs)}>
-                    Jump
+                    跳转
                   </button>
                 </div>
               </article>
@@ -287,38 +297,38 @@ export function EditorPage() {
         </SectionCard>
 
         <SectionCard className="h-fit xl:sticky xl:top-24">
-          <h2 className="text-base font-semibold">Inspector</h2>
+          <h2 className="text-base font-semibold">属性检查器</h2>
           {selectedClip ? (
             <div className="mt-3 grid gap-2 text-sm">
               <article className="card-base px-3 py-2">
-                <p className="text-xs text-[var(--glass-text-tertiary)]">Clip</p>
+                <p className="text-xs text-[var(--glass-text-tertiary)]">片段</p>
                 <p className="mt-1 font-medium">{selectedClip.title}</p>
               </article>
               <article className="card-base px-3 py-2">
-                <p className="text-xs text-[var(--glass-text-tertiary)]">Lane / Status</p>
+                <p className="text-xs text-[var(--glass-text-tertiary)]">轨道 / 状态</p>
                 <p className="mt-1 font-medium">
-                  {selectedClip.lane} / {selectedClip.status}
+                  {laneLabel(selectedClip.lane)} · {statusLabel(selectedClip.status)}
                 </p>
               </article>
               <article className="card-base px-3 py-2">
-                <p className="text-xs text-[var(--glass-text-tertiary)]">Timing</p>
+                <p className="text-xs text-[var(--glass-text-tertiary)]">时间</p>
                 <p className="mt-1 font-medium">
                   {formatDuration(selectedClip.startMs)}
-                  {' -> '}
+                  {' → '}
                   {formatDuration(selectedClip.startMs + selectedClip.durationMs)}
                 </p>
               </article>
               <div className="mt-1 grid gap-2">
                 <Button type="button" onClick={() => setIsClipModalOpen(true)} block>
-                  Open Clip Modal
+                  打开片段详情
                 </Button>
                 <Button type="button" variant="secondary" onClick={() => setCurrentTimeMs(selectedClip.startMs)} block>
-                  Jump To Clip
+                  跳转到片段
                 </Button>
               </div>
             </div>
           ) : (
-            <p className="mt-3 text-sm text-[var(--glass-text-tertiary)]">No clip selected yet.</p>
+            <p className="mt-3 text-sm text-[var(--glass-text-tertiary)]">尚未选中任何片段。</p>
           )}
         </SectionCard>
       </div>
@@ -327,7 +337,7 @@ export function EditorPage() {
         to="/projects"
         className="fixed bottom-6 right-6 z-40 rounded-2xl bg-[var(--glass-accent-from)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--glass-shadow-lg)] transition-colors hover:bg-[var(--glass-accent-to)]"
       >
-        Back To Projects
+        返回项目中心
       </Link>
 
       {isClipModalOpen && selectedClip ? (
@@ -336,7 +346,7 @@ export function EditorPage() {
           <section className="glass-surface-elevated relative z-10 grid w-full max-w-xl gap-4 rounded-2xl p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-lg font-semibold">Clip Edit Modal (UI Replica)</h3>
+                <h3 className="text-lg font-semibold">片段编辑</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">{selectedClip.title}</p>
               </div>
               <button
@@ -344,17 +354,17 @@ export function EditorPage() {
                 className="glass-btn-base glass-btn-ghost rounded-xl px-3 py-1.5 text-xs"
                 onClick={() => setIsClipModalOpen(false)}
               >
-                Close
+                关闭
               </button>
             </div>
 
             <div className="grid gap-2 md:grid-cols-2">
               <article className="card-base px-3 py-2">
-                <p className="text-xs text-[var(--glass-text-tertiary)]">Start</p>
+                <p className="text-xs text-[var(--glass-text-tertiary)]">起始</p>
                 <p className="mt-1 text-sm font-medium">{formatDuration(selectedClip.startMs)}</p>
               </article>
               <article className="card-base px-3 py-2">
-                <p className="text-xs text-[var(--glass-text-tertiary)]">Duration</p>
+                <p className="text-xs text-[var(--glass-text-tertiary)]">时长</p>
                 <p className="mt-1 text-sm font-medium">{formatDuration(selectedClip.durationMs)}</p>
               </article>
             </div>
@@ -368,21 +378,21 @@ export function EditorPage() {
                   [selectedClip.id]: event.target.value,
                 }))
               }
-              placeholder="Director notes, transitions, keyframes..."
+              placeholder="导演笔记、转场、关键帧..."
             />
 
             <div className="flex flex-wrap justify-end gap-2">
               <Button type="button" variant="secondary" onClick={() => setIsClipModalOpen(false)}>
-                Cancel
+                取消
               </Button>
               <Button
                 type="button"
                 onClick={() => {
                   setIsClipModalOpen(false)
-                  setEditorNotice(`Clip note saved for "${selectedClip.title}" (UI shell).`)
+                  setEditorNotice(`已为「${selectedClip.title}」保存笔记（UI 外壳）。`)
                 }}
               >
-                Apply Note
+                应用笔记
               </Button>
             </div>
           </section>

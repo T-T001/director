@@ -19,6 +19,14 @@ function normalizeKind(kind: string) {
   return 'other'
 }
 
+function kindLabel(kind: string) {
+  const n = normalizeKind(kind)
+  if (n === 'character') return '角色'
+  if (n === 'location') return '场景'
+  if (n === 'prop') return '道具'
+  return '其他'
+}
+
 function matchAsset(asset: AssetItem, keyword: string, kindFilter: AssetKindFilter) {
   if (kindFilter !== 'all' && normalizeKind(asset.kind) !== kindFilter) return false
   const normalized = keyword.trim().toLowerCase()
@@ -31,7 +39,7 @@ function sortAssets(items: AssetItem[], mode: AssetSortMode) {
   const sorted = [...items]
   sorted.sort((left, right) => {
     if (mode === 'name-asc') {
-      return left.name.localeCompare(right.name)
+      return left.name.localeCompare(right.name, 'zh-CN')
     }
     const leftTime = left.updated_at ? Date.parse(left.updated_at) : 0
     const rightTime = right.updated_at ? Date.parse(right.updated_at) : 0
@@ -102,12 +110,12 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
   )
 
   const handleCreateCharacter = () => {
-    const value = characterName.trim() || `Character ${Date.now()}`
+    const value = characterName.trim() || `新角色 ${Date.now()}`
     createCharacterMutation.mutate(value)
   }
 
   const handleCreateLocation = () => {
-    const value = locationName.trim() || `Location ${Date.now()}`
+    const value = locationName.trim() || `新场景 ${Date.now()}`
     createLocationMutation.mutate(value)
   }
 
@@ -116,43 +124,43 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">Assets Stage</h2>
+            <h2 className="text-lg font-semibold">素材阶段</h2>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
-              Refactored asset workspace with creation tools, filtering, and selection detail.
+              创建并管理本项目的角色、场景、道具素材，筛选与详情预览一应俱全。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'script')}>
-              <Button variant="secondary">Back Script</Button>
+              <Button variant="secondary">返回剧本</Button>
             </Link>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'storyboard')}>
-              <Button variant="secondary">Go Storyboard</Button>
+              <Button variant="secondary">进入分镜</Button>
             </Link>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'prompts')}>
-              <Button variant="secondary">Go Prompts</Button>
+              <Button variant="secondary">进入提示词</Button>
             </Link>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Total</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">全部</p>
             <p className="mt-1 text-2xl font-semibold">{stats.all}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Character</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">角色</p>
             <p className="mt-1 text-2xl font-semibold">{stats.character}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Location</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">场景</p>
             <p className="mt-1 text-2xl font-semibold">{stats.location}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Prop</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">道具</p>
             <p className="mt-1 text-2xl font-semibold">{stats.prop}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Other</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">其他</p>
             <p className="mt-1 text-2xl font-semibold">{stats.other}</p>
           </article>
         </div>
@@ -165,10 +173,10 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
               className="glass-input"
               value={characterName}
               onChange={(event) => setCharacterName(event.target.value)}
-              placeholder="Character name"
+              placeholder="角色名称"
             />
             <Button onClick={handleCreateCharacter} disabled={createCharacterMutation.isPending}>
-              {createCharacterMutation.isPending ? 'Creating...' : 'New Character'}
+              {createCharacterMutation.isPending ? '创建中...' : '新建角色'}
             </Button>
           </div>
           <div className="grid gap-2 md:grid-cols-[minmax(0,1fr)_auto]">
@@ -176,10 +184,10 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
               className="glass-input"
               value={locationName}
               onChange={(event) => setLocationName(event.target.value)}
-              placeholder="Location name"
+              placeholder="场景名称"
             />
             <Button variant="secondary" onClick={handleCreateLocation} disabled={createLocationMutation.isPending}>
-              {createLocationMutation.isPending ? 'Creating...' : 'New Location'}
+              {createLocationMutation.isPending ? '创建中...' : '新建场景'}
             </Button>
           </div>
         </div>
@@ -189,35 +197,35 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
             className="glass-input"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search assets"
+            placeholder="搜索素材"
           />
           <select
             className="glass-input"
             value={kindFilter}
             onChange={(event) => setKindFilter(event.target.value as AssetKindFilter)}
           >
-            <option value="all">All Types</option>
-            <option value="character">Character</option>
-            <option value="location">Location</option>
-            <option value="prop">Prop</option>
-            <option value="other">Other</option>
+            <option value="all">全部类型</option>
+            <option value="character">角色</option>
+            <option value="location">场景</option>
+            <option value="prop">道具</option>
+            <option value="other">其他</option>
           </select>
           <select
             className="glass-input"
             value={sortMode}
             onChange={(event) => setSortMode(event.target.value as AssetSortMode)}
           >
-            <option value="updated-desc">Recently Updated</option>
-            <option value="name-asc">Name A-Z</option>
+            <option value="updated-desc">最近更新</option>
+            <option value="name-asc">名称 A→Z</option>
           </select>
         </div>
       </SectionCard>
 
-      {assetsQuery.isLoading ? <LoadingState message="Loading project assets..." /> : null}
-      {assetsQuery.isError ? <ErrorState message="Failed to load assets." /> : null}
+      {assetsQuery.isLoading ? <LoadingState message="正在加载项目素材..." /> : null}
+      {assetsQuery.isError ? <ErrorState message="加载素材失败。" /> : null}
 
       {assetsQuery.data && assetsQuery.data.length === 0 ? (
-        <EmptyState title="No assets yet" description="Create a character or location to start building your production set." />
+        <EmptyState title="尚无素材" description="创建一个角色或场景，开启制作物料搭建。" />
       ) : null}
 
       {filteredAssets.length > 0 ? (
@@ -237,19 +245,19 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="rounded-full bg-[var(--glass-bg-surface-strong)] px-2 py-0.5 text-xs text-[var(--glass-text-tertiary)]">
-                    {normalizeKind(asset.kind)}
+                    {kindLabel(asset.kind)}
                   </span>
                   {asset.updated_at ? (
-                    <span className="text-xs text-[var(--glass-text-tertiary)]">{new Date(asset.updated_at).toLocaleDateString()}</span>
+                    <span className="text-xs text-[var(--glass-text-tertiary)]">{new Date(asset.updated_at).toLocaleDateString('zh-CN')}</span>
                   ) : null}
                 </div>
                 <h3 className="text-base font-semibold">{asset.name}</h3>
-                <p className="line-clamp-2 text-sm text-[var(--glass-text-secondary)]">{asset.description?.trim() || 'No description yet.'}</p>
+                <p className="line-clamp-2 text-sm text-[var(--glass-text-secondary)]">{asset.description?.trim() || '暂无描述。'}</p>
                 {asset.image_url ? (
                   <img src={asset.image_url} alt={asset.name} className="mt-1 h-36 w-full rounded-xl object-cover" />
                 ) : (
                   <div className="mt-1 flex h-36 items-center justify-center rounded-xl border border-dashed border-[var(--glass-stroke-base)] text-xs text-[var(--glass-text-tertiary)]">
-                    No Preview
+                    暂无预览
                   </div>
                 )}
               </button>
@@ -258,16 +266,16 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
 
           {selectedAsset ? (
             <SectionCard className="h-fit xl:sticky xl:top-24">
-              <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Selected Asset</p>
+              <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">当前选择</p>
               <h3 className="mt-1 text-lg font-semibold">{selectedAsset.name}</h3>
-              <p className="mt-2 text-sm text-[var(--glass-text-secondary)]">{selectedAsset.description?.trim() || 'No description yet.'}</p>
+              <p className="mt-2 text-sm text-[var(--glass-text-secondary)]">{selectedAsset.description?.trim() || '暂无描述。'}</p>
               <dl className="mt-4 grid gap-2 text-sm">
                 <div className="grid grid-cols-[90px_minmax(0,1fr)] gap-2">
-                  <dt className="text-[var(--glass-text-tertiary)]">Type</dt>
-                  <dd>{normalizeKind(selectedAsset.kind)}</dd>
+                  <dt className="text-[var(--glass-text-tertiary)]">类型</dt>
+                  <dd>{kindLabel(selectedAsset.kind)}</dd>
                 </div>
                 <div className="grid grid-cols-[90px_minmax(0,1fr)] gap-2">
-                  <dt className="text-[var(--glass-text-tertiary)]">Asset ID</dt>
+                  <dt className="text-[var(--glass-text-tertiary)]">资产 ID</dt>
                   <dd className="break-all text-xs">{selectedAsset.id}</dd>
                 </div>
               </dl>
@@ -275,7 +283,7 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
                 <img src={selectedAsset.image_url} alt={selectedAsset.name} className="mt-4 h-44 w-full rounded-xl object-cover" />
               ) : (
                 <div className="mt-4 flex h-44 items-center justify-center rounded-xl border border-dashed border-[var(--glass-stroke-base)] text-xs text-[var(--glass-text-tertiary)]">
-                  No Preview
+                  暂无预览
                 </div>
               )}
             </SectionCard>
@@ -284,14 +292,14 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
       ) : null}
 
       {assetsQuery.data && assetsQuery.data.length > 0 && filteredAssets.length === 0 ? (
-        <EmptyState title="No assets match the filter" description="Adjust keyword or type filter to see more items." />
+        <EmptyState title="没有符合条件的素材" description="调整关键词或类型筛选，查看更多。" />
       ) : null}
 
       <Link
         to={buildWorkspaceStagePath(projectId, episodeId, 'storyboard')}
         className="fixed bottom-6 right-6 z-40 rounded-2xl bg-[var(--glass-accent-from)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--glass-shadow-lg)] transition-colors hover:bg-[var(--glass-accent-to)]"
       >
-        Continue To Storyboard
+        继续到分镜
       </Link>
     </div>
   )

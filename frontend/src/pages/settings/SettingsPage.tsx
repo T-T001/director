@@ -27,30 +27,30 @@ type SettingsPreset = {
 const presets: SettingsPreset[] = [
   {
     id: 'fast',
-    title: 'Fast Draft',
-    description: 'Prioritize throughput and quick iteration.',
+    title: '快速草稿',
+    description: '优先吞吐与迭代速度，适合试错阶段。',
     values: {
-      art_style: 'clean concept art, minimal detail',
+      art_style: '简洁概念画风，低细节',
       video_ratio: '16:9',
       video_resolution: '720p',
     },
   },
   {
     id: 'balanced',
-    title: 'Balanced Production',
-    description: 'General-purpose setup for most episodes.',
+    title: '均衡出片',
+    description: '通用高质量配置，适合绝大多数剧集。',
     values: {
-      art_style: 'cinematic anime realism',
+      art_style: '电影级二次元写实',
       video_ratio: '16:9',
       video_resolution: '1080p',
     },
   },
   {
     id: 'vertical',
-    title: 'Short Video',
-    description: 'Optimized for mobile-first social delivery.',
+    title: '短视频',
+    description: '面向移动端与社交平台的竖屏优化。',
     values: {
-      art_style: 'high contrast, bold composition',
+      art_style: '高对比度、强构图',
       video_ratio: '9:16',
       video_resolution: '1080p',
     },
@@ -63,7 +63,7 @@ function normalizeDraft(settings: UserSettings | undefined): SettingsDraft {
     image_model: settings?.image_model ?? '',
     video_model: settings?.video_model ?? '',
     audio_model: settings?.audio_model ?? '',
-    art_style: settings?.art_style ?? 'cinematic anime realism',
+    art_style: settings?.art_style ?? '电影级二次元写实',
     video_ratio: settings?.video_ratio ?? '16:9',
     video_resolution: settings?.video_resolution ?? '1080p',
   }
@@ -75,7 +75,7 @@ function toPatchPayload(draft: SettingsDraft): Partial<UserSettings> {
     image_model: draft.image_model.trim() || null,
     video_model: draft.video_model.trim() || null,
     audio_model: draft.audio_model.trim() || null,
-    art_style: draft.art_style.trim() || 'cinematic anime realism',
+    art_style: draft.art_style.trim() || '电影级二次元写实',
     video_ratio: draft.video_ratio.trim() || '16:9',
     video_resolution: draft.video_resolution.trim() || '1080p',
   }
@@ -106,10 +106,10 @@ export function SettingsPage() {
     onSuccess: (updated) => {
       queryClient.setQueryData(queryKeys.settings.current(), updated)
       queryClient.invalidateQueries({ queryKey: queryKeys.settings.current() })
-      setFeedback('Settings saved successfully.')
+      setFeedback('设置已成功保存。')
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : 'Failed to save settings.'
+      const message = error instanceof Error ? error.message : '保存设置失败。'
       setFeedback(message)
     },
   })
@@ -119,12 +119,12 @@ export function SettingsPage() {
       ...previous,
       ...preset.values,
     }))
-    setFeedback(`Preset applied: ${preset.title}`)
+    setFeedback(`已应用预设：${preset.title}`)
   }
 
   const handleReset = () => {
     setDraft(baseline)
-    setFeedback('Draft reset to last saved settings.')
+    setFeedback('草稿已重置为上次保存的配置。')
   }
 
   return (
@@ -132,47 +132,47 @@ export function SettingsPage() {
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-xl font-semibold">Settings Console</h1>
+            <h1 className="text-xl font-semibold">设置中心</h1>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
-              Refactored configuration center for model defaults and output policy.
+              管理模型默认值与出片策略，全局生效于每个项目。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" onClick={handleReset} disabled={!dirty || mutation.isPending}>
-              Reset Draft
+              重置草稿
             </Button>
             <Button type="button" onClick={() => mutation.mutate()} disabled={!dirty || mutation.isPending}>
-              {mutation.isPending ? 'Saving...' : 'Save Settings'}
+              {mutation.isPending ? '保存中...' : '保存设置'}
             </Button>
           </div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Draft State</p>
-            <p className="mt-1 text-lg font-semibold">{dirty ? 'Unsaved Changes' : 'Synced'}</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">草稿状态</p>
+            <p className="mt-1 text-lg font-semibold">{dirty ? '有未保存修改' : '已同步'}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Video Ratio</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">画面比例</p>
             <p className="mt-1 text-lg font-semibold">{draft.video_ratio}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Resolution</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">分辨率</p>
             <p className="mt-1 text-lg font-semibold">{draft.video_resolution}</p>
           </article>
           <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Style</p>
+            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">画风</p>
             <p className="mt-1 line-clamp-1 text-lg font-semibold">{draft.art_style}</p>
           </article>
         </div>
       </SectionCard>
 
-      {settingsQuery.isLoading ? <LoadingState message="Loading settings..." /> : null}
-      {settingsQuery.isError ? <ErrorState message="Failed to load settings." /> : null}
+      {settingsQuery.isLoading ? <LoadingState message="正在加载设置..." /> : null}
+      {settingsQuery.isError ? <ErrorState message="加载设置失败。" /> : null}
       {feedback ? <SectionCard className="glass-success rounded-2xl p-4 text-sm">{feedback}</SectionCard> : null}
 
       <SectionCard className="grid gap-3">
-        <h2 className="text-base font-semibold">Workflow Presets</h2>
+        <h2 className="text-base font-semibold">工作流预设</h2>
         <div className="grid gap-3 md:grid-cols-3">
           {presets.map((preset) => (
             <button
@@ -189,61 +189,61 @@ export function SettingsPage() {
       </SectionCard>
 
       <SectionCard className="grid gap-4">
-        <h2 className="text-base font-semibold">Model Defaults</h2>
+        <h2 className="text-base font-semibold">模型默认值</h2>
         <div className="grid gap-3 md:grid-cols-2">
           <label className="grid gap-1">
-            <span className="text-sm text-[var(--glass-text-secondary)]">Analysis Model</span>
+            <span className="text-sm text-[var(--glass-text-secondary)]">分析模型</span>
             <input
               className="glass-input"
               value={draft.analysis_model}
               onChange={(event) => setDraft((previous) => ({ ...previous, analysis_model: event.target.value }))}
-              placeholder="e.g. gpt-5.4-mini"
+              placeholder="例如：gpt-5.4-mini"
             />
           </label>
           <label className="grid gap-1">
-            <span className="text-sm text-[var(--glass-text-secondary)]">Image Model</span>
+            <span className="text-sm text-[var(--glass-text-secondary)]">图像模型</span>
             <input
               className="glass-input"
               value={draft.image_model}
               onChange={(event) => setDraft((previous) => ({ ...previous, image_model: event.target.value }))}
-              placeholder="e.g. flux-dev"
+              placeholder="例如：flux-dev"
             />
           </label>
           <label className="grid gap-1">
-            <span className="text-sm text-[var(--glass-text-secondary)]">Video Model</span>
+            <span className="text-sm text-[var(--glass-text-secondary)]">视频模型</span>
             <input
               className="glass-input"
               value={draft.video_model}
               onChange={(event) => setDraft((previous) => ({ ...previous, video_model: event.target.value }))}
-              placeholder="e.g. runway-gen4"
+              placeholder="例如：runway-gen4"
             />
           </label>
           <label className="grid gap-1">
-            <span className="text-sm text-[var(--glass-text-secondary)]">Audio Model</span>
+            <span className="text-sm text-[var(--glass-text-secondary)]">音频模型</span>
             <input
               className="glass-input"
               value={draft.audio_model}
               onChange={(event) => setDraft((previous) => ({ ...previous, audio_model: event.target.value }))}
-              placeholder="e.g. fish-speech"
+              placeholder="例如：fish-speech"
             />
           </label>
         </div>
       </SectionCard>
 
       <SectionCard className="grid gap-4">
-        <h2 className="text-base font-semibold">Output Policy</h2>
+        <h2 className="text-base font-semibold">出片策略</h2>
         <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_220px_220px]">
           <label className="grid gap-1">
-            <span className="text-sm text-[var(--glass-text-secondary)]">Art Style</span>
+            <span className="text-sm text-[var(--glass-text-secondary)]">画风</span>
             <input
               className="glass-input"
               value={draft.art_style}
               onChange={(event) => setDraft((previous) => ({ ...previous, art_style: event.target.value }))}
-              placeholder="e.g. cinematic anime realism"
+              placeholder="例如：电影级二次元写实"
             />
           </label>
           <label className="grid gap-1">
-            <span className="text-sm text-[var(--glass-text-secondary)]">Video Ratio</span>
+            <span className="text-sm text-[var(--glass-text-secondary)]">画面比例</span>
             <select
               className="glass-input"
               value={draft.video_ratio}
@@ -257,7 +257,7 @@ export function SettingsPage() {
             </select>
           </label>
           <label className="grid gap-1">
-            <span className="text-sm text-[var(--glass-text-secondary)]">Resolution</span>
+            <span className="text-sm text-[var(--glass-text-secondary)]">分辨率</span>
             <select
               className="glass-input"
               value={draft.video_resolution}
@@ -278,7 +278,7 @@ export function SettingsPage() {
         disabled={!dirty || mutation.isPending}
         className="fixed bottom-6 right-6 z-40 rounded-2xl bg-[var(--glass-accent-from)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--glass-shadow-lg)] transition-colors hover:bg-[var(--glass-accent-to)] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {mutation.isPending ? 'Saving...' : 'Save Settings'}
+        {mutation.isPending ? '保存中...' : '保存设置'}
       </button>
     </div>
   )
