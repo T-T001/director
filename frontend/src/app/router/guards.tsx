@@ -10,7 +10,7 @@ import { buildWorkspaceStagePath } from './routes'
 import { LoadingState } from '../../components/common/PageState'
 import type { AuthUser } from '../../types/auth'
 
-const SKIP_AUTH = (import.meta.env.VITE_SKIP_AUTH ?? 'true') !== 'false'
+const SKIP_AUTH = import.meta.env.VITE_SKIP_AUTH === 'true'
 
 const MOCK_USER: AuthUser = {
   id: 'dev-user',

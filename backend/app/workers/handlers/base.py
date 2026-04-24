@@ -43,11 +43,11 @@ def resolve_model_for_capability(
         }
         name_hint = hint_map.get(capability)
 
-    models = svc.list_models(ctx.user_id, capability)
+    models = [m for m in svc.list_models(ctx.user_id, capability) if getattr(m, "enabled", True)]
     if not models:
         raise HTTPException(
             status_code=400,
-            detail={"message": f"No model configured with capability={capability}"},
+            detail={"message": f"No enabled model configured with capability={capability}"},
         )
 
     if name_hint:

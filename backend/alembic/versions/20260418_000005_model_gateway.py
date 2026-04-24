@@ -21,7 +21,7 @@ def upgrade() -> None:
         sa.Column("user_id", sa.String(length=36), nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
         sa.Column("base_url", sa.String(length=500), nullable=False),
-        sa.Column("api_key_encrypted", sa.Text(), nullable=False, server_default=""),
+        sa.Column("api_key_encrypted", sa.Text(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),

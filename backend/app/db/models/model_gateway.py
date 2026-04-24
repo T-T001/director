@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, Numeric, String, Text, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.db import Base
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class ModelProvider(Base):
-    """OpenAI-compatible provider (e.g. OneAPI relay)."""
+    """User-configured provider / relay definition."""
 
     __tablename__ = "model_providers"
 
@@ -23,6 +23,7 @@ class ModelProvider(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     name: Mapped[str] = mapped_column(String(100))
     base_url: Mapped[str] = mapped_column(String(500))
+    api_type: Mapped[str] = mapped_column(String(32), default="openai", server_default="openai")
     api_key_encrypted: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC)
@@ -51,6 +52,8 @@ class ModelConfig(Base):
     model_id: Mapped[str] = mapped_column(String(200))
     display_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
     capability: Mapped[str] = mapped_column(String(32), index=True)
+    protocol: Mapped[str] = mapped_column(String(32), default="openai", server_default="openai")
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("1"))
     request_path: Mapped[str] = mapped_column(String(500))
     extra_headers: Mapped[str | None] = mapped_column(Text, nullable=True)
     default_params: Mapped[str | None] = mapped_column(Text, nullable=True)

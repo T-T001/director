@@ -20,6 +20,7 @@ def _provider_to_dict(provider: ModelProvider) -> dict[str, Any]:
         "id": provider.id,
         "name": provider.name,
         "base_url": provider.base_url,
+        "api_type": provider.api_type or "openai",
         "has_api_key": bool(provider.api_key_encrypted),
         "created_at": provider.created_at,
         "updated_at": provider.updated_at,
@@ -46,6 +47,7 @@ class ModelGatewayService:
             user_id=user_id,
             name=payload.name.strip(),
             base_url=payload.base_url.strip(),
+            api_type=payload.api_type or "openai",
             api_key_encrypted=encrypt(payload.api_key) if payload.api_key else "",
         )
         self.db.add(provider)
@@ -73,6 +75,8 @@ class ModelGatewayService:
             provider.name = payload.name.strip()
         if payload.base_url is not None:
             provider.base_url = payload.base_url.strip()
+        if payload.api_type is not None:
+            provider.api_type = payload.api_type
         if payload.api_key is not None:
             provider.api_key_encrypted = encrypt(payload.api_key) if payload.api_key else ""
         self.db.commit()
@@ -114,6 +118,8 @@ class ModelGatewayService:
             model_id=payload.model_id.strip(),
             display_name=payload.display_name,
             capability=payload.capability,
+            protocol=payload.protocol or "openai",
+            enabled=payload.enabled if payload.enabled is not None else True,
             request_path=payload.request_path.strip(),
             extra_headers=payload.extra_headers,
             default_params=payload.default_params,
@@ -169,6 +175,7 @@ class ModelGatewayService:
             api_key=api_key,
             request_path=model.request_path,
             capability=model.capability,
+            protocol=(model.protocol or "openai"),
             extra_headers=extra_headers,
             default_params=default_params,
         )
@@ -177,35 +184,12 @@ class ModelGatewayService:
         resolved = self.resolve(user_id, model_id)
         client = ModelClient(timeout=30.0, retries=0)
         try:
-            if resolved.capability == "chat":
-                response = await client.chat(
-                    resolved,
-                    messages=[{"role": "user", "content": "ping"}],
-                    extra={"max_tokens": 8},
-                )
-                preview = json.dumps(response)[:400]
-            elif resolved.capability in {"image", "image_edit"}:
-                response = await client.image(resolved, prompt="a red apple")
-                preview = json.dumps(response)[:400]
-            elif resolved.capability == "tts":
-                response = await client.tts(resolved, text="hello")
-                preview = json.dumps(response)[:400]
-            else:
-                return {
-                    "success": False,
-                    "request_url": resolved.full_url,
-                    "error": f"capability '{resolved.capability}' test not implemented",
-                }
-            return {
-                "success": True,
-                "request_url": resolved.full_url,
-                "status_code": 200,
-                "response_preview": preview,
-            }
+            return await client.ping(resolved)
         except ModelClientError as exc:
             return {
                 "success": False,
                 "request_url": exc.url or resolved.full_url,
                 "status_code": exc.status_code,
+                "response_preview": None,
                 "error": str(exc),
             }

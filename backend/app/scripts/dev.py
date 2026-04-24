@@ -80,8 +80,15 @@ def main() -> None:
     print("Seeding default user...")
     seed_main()
 
-    print(f"Starting backend on http://{args.host}:{args.port} ...")
-    uvicorn.run("app.main:app", host=args.host, port=args.port, reload=args.reload)
+    mode = "hot reload enabled" if args.reload else "hot reload disabled"
+    print(f"Starting backend on http://{args.host}:{args.port} ({mode}) ...")
+    uvicorn.run(
+        "app.main:app",
+        host=args.host,
+        port=args.port,
+        reload=args.reload,
+        reload_dirs=[str(Path(__file__).resolve().parents[1])] if args.reload else None,
+    )
 
 
 if __name__ == "__main__":

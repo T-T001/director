@@ -237,7 +237,7 @@ cd E:/PyCharm/director/backend
 uv sync
 ```
 
-之后后端可以直接一条命令启动：
+之后后端可以直接一条命令启动（默认开启热重载）：
 
 ```bash
 cd E:/PyCharm/director/backend
@@ -248,7 +248,7 @@ uv run director-dev
 - 检查并创建 `director` 数据库（MySQL 场景）
 - 执行 Alembic 迁移
 - seed 默认管理员账号
-- 启动 FastAPI（默认 `http://localhost:18000`）
+- 以热重载模式启动 FastAPI（默认 `http://localhost:18000`）
 
 如果你不用 `uv`，也可以直接运行：
 
@@ -257,12 +257,28 @@ cd E:/PyCharm/director/backend
 python -m app.scripts.dev
 ```
 
+如需关闭后端热重载：
+
+```bash
+cd E:/PyCharm/director/backend
+python -m app.scripts.dev --no-reload
+```
+
 ## 前端本地开发启动
+
+前端使用 Vite，默认就是热更新（HMR）：
 
 ```bash
 cd E:/PyCharm/director/frontend
 npm install
-npm run dev -- --host 0.0.0.0 --port 15173
+npm run dev
+```
+
+如果你需要显式监听局域网地址：
+
+```bash
+cd E:/PyCharm/director/frontend
+npm run dev:host
 ```
 
 ## Docker Compose 启动

@@ -29,6 +29,10 @@ export const queryKeys = {
   settings: {
     current: () => ['settings'] as const,
   },
+  modelGateway: {
+    providers: () => ['mg', 'providers'] as const,
+    models: (capability?: string) => ['mg', 'models', capability ?? 'all'] as const,
+  },
   novelPromotion: {
     project: (projectId: string) => ['np', 'project', projectId] as const,
     episodes: (projectId: string) => ['np', 'episodes', projectId] as const,

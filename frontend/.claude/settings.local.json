@@ -1,7 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(python -c \"import ast; [ast.parse\\(open\\(f, encoding='utf-8'\\).read\\(\\)\\) for f in ['app/ai/model_client.py','app/schemas/model_gateway.py','app/db/models/model_gateway.py','app/services/model_gateway_service.py','alembic/versions/20260421_000007_model_protocol.py']]\")",
+      "Bash(python -c \"from app.ai.model_client import ModelClient, ResolvedModel, _build_ping_request; from app.schemas.model_gateway import ModelConfigRead, ModelConfigCreate, Protocol; from app.db.models.model_gateway import ModelConfig; print\\('imports OK'\\)\")",
+      "Bash(python -c ' *)",
+      "Read(//e/pythonProject/**)",
+      "Read(//e//**)",
+      "Bash(python -c \"import ast; [ast.parse\\(open\\(f, encoding='utf-8'\\).read\\(\\)\\) for f in ['app/db/models/model_gateway.py','app/schemas/model_gateway.py','app/services/model_gateway_service.py','app/ai/model_client.py','alembic/versions/20260421_000007_model_protocol.py','alembic/versions/20260421_000008_model_enabled.py']]\")",
+      "Bash(python *)",
+      "Bash(E:/pythonProject/director/backend/.venv/Scripts/python.exe *)",
+      "Bash(\".venv/Scripts/python.exe\" -m alembic current)",
+      "Bash(\".venv/Scripts/python.exe\" -m alembic heads)",
+      "Bash(\".venv/Scripts/python.exe\" -m alembic upgrade head)",
+      "Bash(\".venv/Scripts/python.exe\" -m app.scripts.dev --help)",
+      "Bash(npm *)"
     ]
   }
 }
