@@ -88,7 +88,7 @@ def list_models(
     items = service.list_models(current_user.id, capability)
     return {
         "success": True,
-        "data": {"models": [ModelConfigRead.model_validate(m).model_dump() for m in items]},
+        "data": {"models": [ModelConfigRead.model_validate(service.model_to_read_dict(m)).model_dump() for m in items]},
     }
 
 
@@ -102,7 +102,7 @@ def create_model(
     model = service.create_model(current_user.id, payload)
     return {
         "success": True,
-        "data": {"model": ModelConfigRead.model_validate(model).model_dump()},
+        "data": {"model": ModelConfigRead.model_validate(service.model_to_read_dict(model)).model_dump()},
     }
 
 
@@ -117,7 +117,7 @@ def update_model(
     model = service.update_model(current_user.id, model_id, payload)
     return {
         "success": True,
-        "data": {"model": ModelConfigRead.model_validate(model).model_dump()},
+        "data": {"model": ModelConfigRead.model_validate(service.model_to_read_dict(model)).model_dump()},
     }
 
 

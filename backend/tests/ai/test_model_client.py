@@ -9,6 +9,7 @@ import httpx
 import pytest
 
 from app.ai.model_client import ModelClient, ResolvedModel
+from app.schemas.model_gateway import CompatMediaTemplate
 
 
 def _resolved(path: str, capability: str = "chat", **kwargs) -> ResolvedModel:
@@ -20,10 +21,11 @@ def _resolved(path: str, capability: str = "chat", **kwargs) -> ResolvedModel:
         capability=capability,
         extra_headers=kwargs.get("extra_headers", {}),
         default_params=kwargs.get("default_params", {}),
+        compat_media_template=kwargs.get("compat_media_template"),
     )
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_chat_hits_exact_request_path(monkeypatch):
     captured: dict = {}
 
@@ -35,8 +37,10 @@ async def test_chat_hits_exact_request_path(monkeypatch):
 
     transport = httpx.MockTransport(handler)
 
+    real_client = httpx.AsyncClient
+
     def mk_client(*args, **kwargs):
-        return httpx.AsyncClient(transport=transport, timeout=kwargs.get("timeout", 10))
+        return real_client(transport=transport, timeout=kwargs.get("timeout", 10))
 
     monkeypatch.setattr("app.ai.model_client.httpx.AsyncClient", mk_client)
 
@@ -50,7 +54,7 @@ async def test_chat_hits_exact_request_path(monkeypatch):
     assert result["choices"][0]["message"]["content"] == "ok"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_image_uses_custom_path_for_nanobanana(monkeypatch):
     captured: dict = {}
 
@@ -61,8 +65,10 @@ async def test_image_uses_custom_path_for_nanobanana(monkeypatch):
 
     transport = httpx.MockTransport(handler)
 
+    real_client = httpx.AsyncClient
+
     def mk_client(*args, **kwargs):
-        return httpx.AsyncClient(transport=transport, timeout=kwargs.get("timeout", 10))
+        return real_client(transport=transport, timeout=kwargs.get("timeout", 10))
 
     monkeypatch.setattr("app.ai.model_client.httpx.AsyncClient", mk_client)
 
@@ -81,7 +87,7 @@ async def test_image_uses_custom_path_for_nanobanana(monkeypatch):
     assert captured["body"]["size"] == "1024x1024"
 
 
-@pytest.mark.asyncio
+@pytest.mark.anyio
 async def test_extra_headers_are_sent(monkeypatch):
     captured: dict = {}
 
@@ -91,8 +97,10 @@ async def test_extra_headers_are_sent(monkeypatch):
 
     transport = httpx.MockTransport(handler)
 
+    real_client = httpx.AsyncClient
+
     def mk_client(*args, **kwargs):
-        return httpx.AsyncClient(transport=transport, timeout=kwargs.get("timeout", 10))
+        return real_client(transport=transport, timeout=kwargs.get("timeout", 10))
 
     monkeypatch.setattr("app.ai.model_client.httpx.AsyncClient", mk_client)
 
@@ -101,3 +109,67 @@ async def test_extra_headers_are_sent(monkeypatch):
     await client.chat(model, messages=[{"role": "user", "content": "hi"}])
 
     assert captured["x_custom"] == "abc"
+
+
+@pytest.mark.anyio
+async def test_ping_treats_http_200_business_error_as_failed(monkeypatch):
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"message": "Unauthorized, invalid access token", "success": False})
+
+    transport = httpx.MockTransport(handler)
+
+    real_client = httpx.AsyncClient
+
+    def mk_client(*args, **kwargs):
+        return real_client(transport=transport, timeout=kwargs.get("timeout", 10))
+
+    monkeypatch.setattr("app.ai.model_client.httpx.AsyncClient", mk_client)
+
+    result = await ModelClient(retries=0).ping(_resolved("/pg/chat/completions", capability="image"))
+
+    assert result["success"] is False
+    assert result["status_code"] == 200
+    assert result["error"] == "Unauthorized, invalid access token"
+
+
+@pytest.mark.anyio
+async def test_image_uses_compat_template(monkeypatch):
+    captured: dict = {}
+    template = CompatMediaTemplate.model_validate({
+        "version": 1,
+        "mediaType": "image",
+        "mode": "sync",
+        "create": {
+            "method": "POST",
+            "path": "/images/generations",
+            "contentType": "application/json",
+            "bodyTemplate": {"model": "{{model}}", "prompt": "{{prompt}}"},
+        },
+        "response": {"outputUrlPath": "$.data[0].url", "errorPath": "$.error.message"},
+    })
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured["url"] = str(request.url)
+        captured["auth"] = request.headers.get("Authorization")
+        captured["body"] = json.loads(request.content.decode())
+        return httpx.Response(200, json={"data": [{"url": "https://img.example.com/a.png"}]})
+
+    transport = httpx.MockTransport(handler)
+
+    real_client = httpx.AsyncClient
+
+    def mk_client(*args, **kwargs):
+        return real_client(transport=transport, timeout=kwargs.get("timeout", 10))
+
+    monkeypatch.setattr("app.ai.model_client.httpx.AsyncClient", mk_client)
+
+    result = await ModelClient(retries=0).image(
+        _resolved("/ignored", capability="image", compat_media_template=template),
+        prompt="banana",
+        size="1024x1024",
+    )
+
+    assert captured["url"] == "https://relay.example.com/images/generations"
+    assert captured["auth"] == "Bearer sk-test"
+    assert captured["body"] == {"model": "test-model", "prompt": "banana"}
+    assert result["data"][0]["url"] == "https://img.example.com/a.png"

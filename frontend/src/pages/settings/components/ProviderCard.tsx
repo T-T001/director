@@ -25,6 +25,7 @@ import {
   PROTOCOL_LABEL,
 } from '../../../constants/modelCatalog'
 import type {
+  CompatMediaTemplate,
   ModelConfig,
   ModelConfigCreatePayload,
   ModelConfigUpdatePayload,
@@ -104,6 +105,7 @@ type NewModelDraft = {
   capability: Capability
   protocol: Protocol
   request_path: string
+  compat_media_template: string
 }
 
 type EditModelDraft = NewModelDraft & { id: string }
@@ -146,6 +148,17 @@ function formatFullUrl(baseUrl: string, path: string): string {
   const b = baseUrl.replace(/\/+$/, '')
   const p = path.startsWith('/') ? path : `/${path}`
   return `${b}${p}`
+}
+
+function stringifyTemplate(template: CompatMediaTemplate | null | undefined): string {
+  if (!template) return ''
+  return JSON.stringify(template, null, 2)
+}
+
+function parseTemplate(raw: string): CompatMediaTemplate | null {
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+  return JSON.parse(trimmed) as CompatMediaTemplate
 }
 
 function inferProviderBadge(models: ModelConfig[], baseUrl: string): string | null {
@@ -204,6 +217,7 @@ export function ProviderCard({
     capability: 'chat',
     protocol: 'openai',
     request_path: '/v1/chat/completions',
+    compat_media_template: '',
   })
 
   // --- model edit state ---
@@ -263,6 +277,7 @@ export function ProviderCard({
       capability: TAB_DEFAULT_CAPABILITY[tab],
       protocol: getDefaultProtocol(provider, tab),
       request_path: TAB_DEFAULT_PATH[tab],
+      compat_media_template: '',
     })
   }
 
@@ -278,6 +293,8 @@ export function ProviderCard({
       protocol: newModel.protocol,
       enabled: true,
       request_path: newModel.request_path.trim(),
+      compat_media_template: parseTemplate(newModel.compat_media_template),
+      compat_media_template_source: newModel.compat_media_template.trim() ? 'manual' : null,
     })
     closeAddForm()
   }
@@ -290,6 +307,7 @@ export function ProviderCard({
       capability: model.capability,
       protocol: model.protocol,
       request_path: model.request_path,
+      compat_media_template: stringifyTemplate(model.compat_media_template),
     })
   }
 
@@ -301,6 +319,8 @@ export function ProviderCard({
       capability: editingModel.capability,
       protocol: editingModel.protocol,
       request_path: editingModel.request_path.trim(),
+      compat_media_template: parseTemplate(editingModel.compat_media_template),
+      compat_media_template_source: editingModel.compat_media_template.trim() ? 'manual' : null,
     })
     setEditingModel(null)
   }
@@ -724,6 +744,12 @@ export function ProviderCard({
           <p className="mt-2 line-clamp-2 text-[10px] text-[var(--glass-text-tertiary)]">
             {PROTOCOL_DESCRIPTION[newModel.protocol]}
           </p>
+          <textarea
+            value={newModel.compat_media_template}
+            onChange={(e) => setNewModel({ ...newModel, compat_media_template: e.target.value })}
+            placeholder="Compat Media Template(JSON，可选)"
+            className="glass-input mt-2 min-h-[120px] w-full px-3 py-2 font-mono text-[11px]"
+          />
         </div>
       ) : null}
 
@@ -808,6 +834,14 @@ export function ProviderCard({
                         className="glass-input px-3 py-1.5 font-mono text-[11px]"
                       />
                     </div>
+                    <textarea
+                      value={editingModel.compat_media_template}
+                      onChange={(e) =>
+                        setEditingModel({ ...editingModel, compat_media_template: e.target.value })
+                      }
+                      placeholder="Compat Media Template(JSON，可选)"
+                      className="glass-input mb-2 min-h-[140px] w-full px-3 py-2 font-mono text-[11px]"
+                    />
                     <div className="flex items-center justify-between">
                       <p className="truncate text-[10px] text-sky-600">
                         Full URL → {formatFullUrl(provider.base_url, editingModel.request_path)}

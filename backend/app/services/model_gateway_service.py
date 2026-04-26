@@ -5,9 +5,11 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.ai import ModelClient, ModelClientError, ResolvedModel
+from app.ai.compat_template_validator import validate_compat_media_template
 from app.core.crypto import decrypt, encrypt
 from app.db.models.model_gateway import ModelConfig, ModelProvider
 from app.schemas.model_gateway import (
+    CompatMediaTemplate,
     ModelConfigCreate,
     ModelConfigUpdate,
     ProviderCreate,
@@ -24,6 +26,43 @@ def _provider_to_dict(provider: ModelProvider) -> dict[str, Any]:
         "has_api_key": bool(provider.api_key_encrypted),
         "created_at": provider.created_at,
         "updated_at": provider.updated_at,
+    }
+
+
+def _template_to_string(template: CompatMediaTemplate | None) -> str | None:
+    if template is None:
+        return None
+    return json.dumps(template.model_dump(mode="json", exclude_none=True), ensure_ascii=False)
+
+
+def _template_from_string(raw: str | CompatMediaTemplate | dict[str, Any] | None) -> CompatMediaTemplate | None:
+    if raw is None or raw == "":
+        return None
+    if isinstance(raw, CompatMediaTemplate):
+        return raw
+    if isinstance(raw, dict):
+        return CompatMediaTemplate.model_validate(raw)
+    parsed = json.loads(raw)
+    return CompatMediaTemplate.model_validate(parsed)
+
+
+def _model_to_dict(model: ModelConfig) -> dict[str, Any]:
+    return {
+        "id": model.id,
+        "provider_id": model.provider_id,
+        "model_id": model.model_id,
+        "display_name": model.display_name,
+        "capability": model.capability,
+        "protocol": model.protocol or "openai",
+        "enabled": model.enabled,
+        "request_path": model.request_path,
+        "extra_headers": model.extra_headers,
+        "default_params": model.default_params,
+        "compat_media_template": _template_from_string(model.compat_media_template),
+        "compat_media_template_source": model.compat_media_template_source,
+        "compat_media_template_checked_at": model.compat_media_template_checked_at,
+        "created_at": model.created_at,
+        "updated_at": model.updated_at,
     }
 
 
@@ -112,6 +151,8 @@ class ModelGatewayService:
 
     def create_model(self, user_id: str, payload: ModelConfigCreate) -> ModelConfig:
         self.get_provider(user_id, payload.provider_id)
+        if payload.compat_media_template is not None:
+            validate_compat_media_template(payload.compat_media_template)
         model = ModelConfig(
             user_id=user_id,
             provider_id=payload.provider_id,
@@ -123,20 +164,30 @@ class ModelGatewayService:
             request_path=payload.request_path.strip(),
             extra_headers=payload.extra_headers,
             default_params=payload.default_params,
+            compat_media_template=_template_to_string(payload.compat_media_template),
+            compat_media_template_source=payload.compat_media_template_source,
+            compat_media_template_checked_at=payload.compat_media_template_checked_at,
         )
         self.db.add(model)
         self.db.commit()
         self.db.refresh(model)
         return model
 
+    def model_to_read_dict(self, model: ModelConfig) -> dict[str, Any]:
+        return _model_to_dict(model)
+
     def update_model(
         self, user_id: str, model_id: str, payload: ModelConfigUpdate
     ) -> ModelConfig:
         model = self.get_model(user_id, model_id)
         data = payload.model_dump(exclude_unset=True)
+        if "compat_media_template" in data and payload.compat_media_template is not None:
+            validate_compat_media_template(payload.compat_media_template)
         for field_name, value in data.items():
             if isinstance(value, str) and field_name in {"model_id", "request_path"}:
                 value = value.strip()
+            if field_name == "compat_media_template":
+                value = _template_to_string(payload.compat_media_template)
             setattr(model, field_name, value)
         self.db.commit()
         self.db.refresh(model)
@@ -178,6 +229,7 @@ class ModelGatewayService:
             protocol=(model.protocol or "openai"),
             extra_headers=extra_headers,
             default_params=default_params,
+            compat_media_template=_template_from_string(model.compat_media_template),
         )
 
     async def test_model(self, user_id: str, model_id: str) -> dict[str, Any]:

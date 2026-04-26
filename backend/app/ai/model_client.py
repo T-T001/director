@@ -16,6 +16,9 @@ from typing import Any, AsyncIterator
 
 import httpx
 
+from app.ai.compat_template_runtime import execute_template_request, extract_template_outputs
+from app.schemas.model_gateway import CompatMediaTemplate
+
 
 class ModelClientError(Exception):
     def __init__(self, message: str, *, status_code: int | None = None, url: str | None = None):
@@ -34,6 +37,7 @@ class ResolvedModel:
     protocol: str = "openai"
     extra_headers: dict[str, str] = field(default_factory=dict)
     default_params: dict[str, Any] = field(default_factory=dict)
+    compat_media_template: CompatMediaTemplate | None = None
 
     @property
     def full_url(self) -> str:
@@ -104,6 +108,25 @@ def _normalize_audio_response(response: httpx.Response) -> dict[str, Any]:
         "audio": base64.b64encode(response.content).decode("utf-8"),
         "mime_type": content_type or "audio/mpeg",
     }
+
+
+def _extract_error_message(payload: Any) -> str | None:
+    if isinstance(payload, dict):
+        if payload.get("success") is False and isinstance(payload.get("message"), str):
+            return payload["message"]
+        error = payload.get("error")
+        if isinstance(error, str) and error.strip():
+            return error.strip()
+        if isinstance(error, dict):
+            nested_message = error.get("message")
+            if isinstance(nested_message, str) and nested_message.strip():
+                return nested_message.strip()
+        message = payload.get("message")
+        if isinstance(message, str) and message.strip():
+            lowered = message.lower()
+            if any(token in lowered for token in ("unauthorized", "invalid", "forbidden", "auth")):
+                return message.strip()
+    return None
 
 
 def _build_request(model: ResolvedModel, payload: dict[str, Any]) -> tuple[str, dict[str, str], dict[str, Any]]:
@@ -322,14 +345,31 @@ class ModelClient:
         Returns a structured dict so the caller (test endpoint) can surface the
         raw HTTP result to the user.
         """
-        url, headers, payload = _build_ping_request(model)
+        body: Any = None
+        template_error: str | None = None
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
-                resp = await client.post(url, json=payload, headers=headers)
+                if model.compat_media_template and model.capability in {"image", "video"}:
+                    resp, url, template_error = await execute_template_request(
+                        client=client,
+                        template=model.compat_media_template,
+                        base_url=model.base_url,
+                        api_key=model.api_key,
+                        default_headers=model.extra_headers,
+                        variables={
+                            "model": model.model_id,
+                            "prompt": "ping",
+                            "size": "1024x1024",
+                            **(model.default_params or {}),
+                        },
+                    )
+                else:
+                    url, headers, payload = _build_ping_request(model)
+                    resp = await client.post(url, json=payload, headers=headers)
         except httpx.HTTPError as exc:
             return {
                 "success": False,
-                "request_url": url,
+                "request_url": locals().get("url", model.full_url),
                 "status_code": None,
                 "response_preview": None,
                 "error": f"network error: {exc}",
@@ -345,13 +385,17 @@ class ModelClient:
             except Exception:
                 preview = f"<binary {len(resp.content)} bytes>"
 
-        ok = resp.status_code < 400
+        body_error = template_error or _extract_error_message(body)
+        ok = resp.status_code < 400 and body_error is None
+        error = None
+        if not ok:
+            error = body_error or f"HTTP {resp.status_code}"
         return {
             "success": ok,
             "request_url": url,
             "status_code": resp.status_code,
             "response_preview": preview,
-            "error": None if ok else f"HTTP {resp.status_code}",
+            "error": error,
         }
 
     async def chat(
@@ -434,6 +478,34 @@ class ModelClient:
             payload["size"] = size
         if extra:
             payload.update(extra)
+        if model.compat_media_template and model.capability in {"image", "video"}:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                resp, url, template_error = await execute_template_request(
+                    client=client,
+                    template=model.compat_media_template,
+                    base_url=model.base_url,
+                    api_key=model.api_key,
+                    default_headers=model.extra_headers,
+                    variables=payload,
+                )
+            if resp.status_code >= 400:
+                raise ModelClientError(
+                    f"upstream {resp.status_code}: {resp.text[:500]}",
+                    status_code=resp.status_code,
+                    url=url,
+                )
+            try:
+                data = resp.json()
+            except Exception as exc:
+                raise ModelClientError(f"invalid json response: {exc}", url=url) from exc
+            if template_error:
+                raise ModelClientError(template_error, status_code=resp.status_code, url=url)
+            if isinstance(data, dict):
+                out_url, out_b64 = extract_template_outputs(data, model.compat_media_template)
+                if out_url or out_b64:
+                    return {"data": [{k: v for k, v in {"url": out_url, "b64_json": out_b64}.items() if v}]}
+                return data
+            return {"raw": data}
         return await self._post_json(model, payload)
 
     async def tts(

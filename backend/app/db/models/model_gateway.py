@@ -57,6 +57,11 @@ class ModelConfig(Base):
     request_path: Mapped[str] = mapped_column(String(500))
     extra_headers: Mapped[str | None] = mapped_column(Text, nullable=True)
     default_params: Mapped[str | None] = mapped_column(Text, nullable=True)
+    compat_media_template: Mapped[str | None] = mapped_column(Text, nullable=True)
+    compat_media_template_source: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    compat_media_template_checked_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC)
     )

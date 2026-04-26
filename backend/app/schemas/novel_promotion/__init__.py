@@ -3,6 +3,73 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class NovelIntakeCharacterInsight(BaseModel):
+    name: str
+    lineCount: int
+    wordCount: int
+    sampleQuote: str | None = None
+    firstAppearanceRatio: float
+
+
+class NovelIntakeSceneInsight(BaseModel):
+    index: int
+    location: str
+    positionRatio: float
+    preview: str
+
+
+class NovelIntakeKeywordInsight(BaseModel):
+    word: str
+    frequency: int
+
+
+class NovelIntakeDialogueInsight(BaseModel):
+    totalLines: int
+    averageLength: int
+    longestLength: int
+    ratioOfTotalText: float
+
+
+class NovelIntakeEmotionInsight(BaseModel):
+    key: str
+    label: str
+    count: int
+
+
+class NovelIntakeAnalysis(BaseModel):
+    totalChars: int
+    totalWords: int
+    paragraphCount: int
+    sentenceCount: int
+    characters: list[NovelIntakeCharacterInsight]
+    scenes: list[NovelIntakeSceneInsight]
+    dialogue: NovelIntakeDialogueInsight
+    keywords: list[NovelIntakeKeywordInsight]
+    emotions: list[NovelIntakeEmotionInsight]
+    genre: str
+    sentimentScore: float
+    pace: str
+
+
+class NovelIntakeSplitEpisode(BaseModel):
+    number: int
+    title: str
+    summary: str
+    content: str
+    wordCount: int
+
+
+class NovelIntakePreviewRequest(BaseModel):
+    content: str = Field(min_length=80)
+
+
+class NovelIntakePreviewResponse(BaseModel):
+    analysis: NovelIntakeAnalysis
+    split_episodes: list[NovelIntakeSplitEpisode]
+    model_used: str
+    request_url: str
+
+
 class NovelPromotionProjectRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

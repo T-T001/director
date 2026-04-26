@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 
 from app.db.models.novel_promotion import NovelPromotionClip, NovelPromotionEpisode
+from app.services.novel_promotion.intake_preview import IntakePreviewService
 from app.workers.handlers.base import make_client, progress, resolve_model_for_capability
 from app.workers.registry import TaskContext, handler
 
@@ -43,6 +44,34 @@ _SCREENPLAY_SYSTEM = (
     "  - 不要出现 \"作者\"、\"旁白\"、\"读者\" 等跳出叙事的词；\n"
     "  - 不要输出注释、不要输出 JSON 以外的任何字符。"
 )
+
+
+@handler("np_intake_preview")
+async def intake_preview(ctx: TaskContext) -> dict:
+    content = str(ctx.payload.get("content") or "").strip()
+    if not content:
+        raise ValueError("intake preview requires content")
+
+    service = IntakePreviewService(ctx.db)
+    progress(ctx, "resolve-model", 5)
+    model = service.resolve_model(user_id=ctx.user_id, project_id=ctx.project_id)
+
+    progress(ctx, "prepare-input", 15)
+    messages = service.build_messages(content)
+
+    progress(ctx, "llm-call", 55, f"model={model.model_id}")
+    client = make_client()
+    response = await client.chat(model, messages=messages, temperature=0.4)
+
+    progress(ctx, "parse-output", 75)
+    raw_content = _extract_content(response)
+    payload = _safe_json(raw_content)
+
+    progress(ctx, "normalize-preview", 90)
+    preview = service.normalize_preview(model=model, content=content, payload=payload)
+
+    progress(ctx, "completed", 100)
+    return preview.model_dump()
 
 
 @handler("np_analyze")

@@ -1,15 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Sparkles, Wand2, Users, MapPin, MessageSquare, Mic2, Activity,
   Loader2, ArrowLeft, ChevronRight, FolderHeart, Tag, Clapperboard, Gauge, BookOpen,
   Flame, Quote, Layers,
 } from 'lucide-react'
 
-import { analyzeNovel, type NovelAnalysis } from '../../../lib/novel-analyzer'
-import {
-  detectEpisodeMarkers, splitByMarkers, splitByWordCount, type SplitEpisode,
-} from '../../../lib/episode-marker-detector'
+import type { NPTaskQueued, NovelIntakeAnalysis, NovelIntakePreview } from '../../../types/novel-promotion'
+import { type SplitEpisode } from '../../../lib/episode-marker-detector'
 import { countWords } from '../../../lib/word-count'
+import { getTaskDetail } from '../../../services/api/tasks'
 
 const RATIOS = [
   { value: '9:16', label: '9:16 · 竖屏短视频', tag: '推荐' },
@@ -27,16 +26,36 @@ const STYLES = [
 ]
 
 const ANALYZING_MESSAGES = [
-  '连接角色识别模型...',
-  '提取对白与语气...',
-  '识别场景与时空切换...',
-  '拆解主要剧情节点...',
-  '聚合情绪曲线...',
-  '生成剧集骨架...',
+  '任务已创建，等待后端开始分析...',
+  '正在连接分析模型...',
+  '正在整理正文并构建提示词...',
 ]
+
+const TASK_STAGE_LABEL: Record<string, string> = {
+  queued: '任务已排队',
+  created: '任务已创建',
+  started: '任务已开始执行',
+  running: '任务执行中',
+  'resolve-model': '正在解析模型配置',
+  'prepare-input': '正在整理正文内容',
+  'llm-call': '正在调用分析模型',
+  'parse-output': '正在解析模型结果',
+  'normalize-preview': '正在整理分析结果',
+  completed: '分析完成',
+  failed: '分析失败',
+  canceled: '任务已取消',
+}
 
 type ViewState = 'input' | 'analyzing' | 'results'
 type SplitMode = 'markers' | 'wordcount' | 'single'
+
+type AnalyzeTaskProgress = {
+  taskId: string | null
+  progress: number
+  stage: string
+  message: string
+  status: string
+}
 
 export type IntakeSubmitProgress = {
   stage: 'create' | 'analyze' | 'screenplay'
@@ -56,6 +75,7 @@ type Props = {
   episodeCount: number
   enableNarration: boolean
   onEnableNarrationChange: (value: boolean) => void
+  onAnalyzePreview: (payload: { content: string }) => Promise<NPTaskQueued>
   onCreateEpisodes: (
     episodes: SplitEpisode[],
   ) => Promise<{ created: number; failed: number; analyzeFailed: number; screenplayFailed: number }>
@@ -69,6 +89,7 @@ export function NovelIntakeStage({
   episodeCount,
   enableNarration,
   onEnableNarrationChange,
+  onAnalyzePreview,
   onCreateEpisodes,
   onOpenAssetHub,
   submitProgress,
@@ -77,13 +98,18 @@ export function NovelIntakeStage({
   const [novelText, setNovelText] = useState('')
   const [ratio, setRatio] = useState('9:16')
   const [artStyle, setArtStyle] = useState('anime-realism')
-  const [analysis, setAnalysis] = useState<NovelAnalysis | null>(null)
+  const [analysis, setAnalysis] = useState<NovelIntakeAnalysis | null>(null)
   const [splitEpisodes, setSplitEpisodes] = useState<SplitEpisode[]>([])
   const [splitMode, setSplitMode] = useState<SplitMode>('markers')
-  const [analyzingMessageIndex, setAnalyzingMessageIndex] = useState(0)
+  const [analyzeTask, setAnalyzeTask] = useState<AnalyzeTaskProgress>({
+    taskId: null,
+    progress: 0,
+    stage: 'queued',
+    message: ANALYZING_MESSAGES[0],
+    status: 'idle',
+  })
   const [feedback, setFeedback] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const intervalRef = useRef<number | null>(null)
 
   const wordCount = useMemo(() => countWords(novelText), [novelText])
   const charCount = novelText.length
@@ -92,25 +118,17 @@ export function NovelIntakeStage({
   const styleLabel = STYLES.find((s) => s.value === artStyle)?.label ?? artStyle
 
   useEffect(() => {
-    return () => {
-      if (intervalRef.current) window.clearInterval(intervalRef.current)
-    }
-  }, [])
-
-  const computeSplit = (source: string, mode: SplitMode): SplitEpisode[] => {
-    if (mode === 'single') {
-      return [{
-        number: episodeCount + 1,
-        title: `第 ${episodeCount + 1} 集`,
-        summary: '',
-        content: source.trim(),
-        wordCount: countWords(source),
-      }]
-    }
-    const detection = detectEpisodeMarkers(source)
-    if (mode === 'markers' && detection.hasMarkers) return splitByMarkers(source, detection)
-    return splitByWordCount(source, 5000)
-  }
+    if (view !== 'analyzing' || analyzeTask.progress > 0 || analyzeTask.status === 'failed') return undefined
+    const timer = window.setInterval(() => {
+      setAnalyzeTask((current) => {
+        if (current.progress > 0 || current.status === 'failed') return current
+        const currentIndex = ANALYZING_MESSAGES.indexOf(current.message)
+        const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % ANALYZING_MESSAGES.length : 0
+        return { ...current, message: ANALYZING_MESSAGES[nextIndex] }
+      })
+    }, 650)
+    return () => window.clearInterval(timer)
+  }, [analyzeTask.progress, analyzeTask.message, analyzeTask.status, view])
 
   const handleStart = async () => {
     const trimmed = novelText.trim()
@@ -126,30 +144,86 @@ export function NovelIntakeStage({
     setError(null)
     setFeedback(null)
     setView('analyzing')
-    setAnalyzingMessageIndex(0)
+    setAnalyzeTask({
+      taskId: null,
+      progress: 0,
+      stage: 'queued',
+      message: ANALYZING_MESSAGES[0],
+      status: 'queued',
+    })
 
-    if (intervalRef.current) window.clearInterval(intervalRef.current)
-    intervalRef.current = window.setInterval(() => {
-      setAnalyzingMessageIndex((index) => (index + 1) % ANALYZING_MESSAGES.length)
-    }, 550) as unknown as number
+    try {
+      const queued = await onAnalyzePreview({ content: trimmed })
+      const taskId = queued.task_id
+      setAnalyzeTask({
+        taskId,
+        progress: 0,
+        stage: queued.status || 'queued',
+        message: TASK_STAGE_LABEL[queued.status || 'queued'] || ANALYZING_MESSAGES[0],
+        status: queued.status || 'queued',
+      })
 
-    await new Promise((resolve) => setTimeout(resolve, 1600))
+      for (;;) {
+        const detail = await getTaskDetail(taskId, true)
+        const task = detail.task
+        const events = detail.events ?? []
+        const lastEvent = events[events.length - 1]?.payload_json
+        const stage = typeof lastEvent?.stage === 'string' ? lastEvent.stage : task.status
+        const message = typeof lastEvent?.message === 'string' && lastEvent.message.trim()
+          ? lastEvent.message.trim()
+          : (TASK_STAGE_LABEL[stage] || TASK_STAGE_LABEL[task.status] || '正在分析中')
+        const progress = typeof lastEvent?.progress === 'number'
+          ? lastEvent.progress
+          : task.progress
 
-    const result = analyzeNovel(trimmed)
-    const detection = detectEpisodeMarkers(trimmed)
-    const initialMode: SplitMode = detection.hasMarkers ? 'markers' : trimmed.length > 1200 ? 'wordcount' : 'single'
-    const episodes = computeSplit(trimmed, initialMode)
+        setAnalyzeTask({
+          taskId,
+          progress: Math.max(0, Math.min(100, progress || 0)),
+          stage,
+          message,
+          status: task.status,
+        })
 
-    if (intervalRef.current) window.clearInterval(intervalRef.current)
-    setAnalysis(result)
-    setSplitMode(initialMode)
-    setSplitEpisodes(episodes)
-    setView('results')
+        if (task.status === 'completed') {
+          const preview = task.result_json as NovelIntakePreview | null
+          if (!preview?.analysis || !Array.isArray(preview.split_episodes)) {
+            throw new Error('分析任务已完成，但未返回预览结果。')
+          }
+          setAnalysis(preview.analysis)
+          setSplitEpisodes(preview.split_episodes)
+          setSplitMode(preview.split_episodes.length > 1 ? 'markers' : 'single')
+          setView('results')
+          return
+        }
+
+        if (task.status === 'failed' || task.status === 'canceled') {
+          const failureMessage = task.error_message || (task.status === 'canceled' ? '分析任务已取消。' : '智能分析失败。')
+          setAnalyzeTask((current) => ({
+            ...current,
+            stage: task.status,
+            message: failureMessage,
+            status: task.status,
+          }))
+          setError(failureMessage)
+          return
+        }
+
+        await new Promise((resolve) => window.setTimeout(resolve, 1200))
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : '智能分析失败。'
+      setAnalyzeTask((current) => ({
+        ...current,
+        stage: 'failed',
+        message,
+        status: 'failed',
+      }))
+      setError(message)
+    }
   }
 
   const handleSplitModeChange = (mode: SplitMode) => {
     setSplitMode(mode)
-    setSplitEpisodes(computeSplit(novelText, mode))
   }
 
   const handleConfirm = async () => {
@@ -182,6 +256,13 @@ export function NovelIntakeStage({
     setView('input')
     setAnalysis(null)
     setSplitEpisodes([])
+    setAnalyzeTask({
+      taskId: null,
+      progress: 0,
+      stage: 'queued',
+      message: ANALYZING_MESSAGES[0],
+      status: 'idle',
+    })
   }
 
   return (
@@ -212,8 +293,13 @@ export function NovelIntakeStage({
 
       {view === 'analyzing' && (
         <AnalyzingView
-          message={ANALYZING_MESSAGES[analyzingMessageIndex]}
+          taskId={analyzeTask.taskId}
+          progress={analyzeTask.progress}
+          stage={analyzeTask.stage}
+          message={analyzeTask.message}
+          status={analyzeTask.status}
           wordCount={wordCount}
+          onBack={handleReset}
         />
       )}
 
@@ -407,44 +493,82 @@ function CapabilityCard({ icon: Icon, title, desc, tone }: { icon: typeof Users;
   )
 }
 
-function AnalyzingView({ message, wordCount }: { message: string; wordCount: number }) {
+function AnalyzingView(props: {
+  taskId: string | null
+  progress: number
+  stage: string
+  message: string
+  status: string
+  wordCount: number
+  onBack: () => void
+}) {
+  const taskSuffix = props.taskId ? props.taskId.slice(-6) : null
+  const isFailed = props.status === 'failed' || props.status === 'canceled'
+  const stageLabel = TASK_STAGE_LABEL[props.stage] || TASK_STAGE_LABEL[props.status] || '正在分析中'
+
   return (
     <div className="glass-surface-elevated rounded-3xl p-10">
       <div className="mx-auto flex max-w-md flex-col items-center">
         <div className="relative h-24 w-24">
-          <div className="absolute inset-0 animate-ping rounded-full bg-[var(--glass-accent-from)]/20" />
-          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] shadow-[var(--glass-shadow-lg)]" />
+          {!isFailed ? <div className="absolute inset-0 animate-ping rounded-full bg-[var(--glass-accent-from)]/20" /> : null}
+          <div className={[
+            'absolute inset-2 rounded-full shadow-[var(--glass-shadow-lg)]',
+            isFailed
+              ? 'bg-gradient-to-br from-[var(--glass-tone-danger-bg)] to-[var(--glass-tone-danger-fg)]'
+              : 'bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)]',
+          ].join(' ')} />
           <div className="absolute inset-0 flex items-center justify-center text-white">
-            <Sparkles className="h-10 w-10 animate-spin-slow" />
+            {isFailed ? <Wand2 className="h-10 w-10" /> : <Sparkles className="h-10 w-10 animate-spin-slow" />}
           </div>
         </div>
 
-        <h2 className="mt-6 text-xl font-bold text-[var(--glass-text-primary)]">正在智能分析中</h2>
-        <p className="mt-1 text-sm text-[var(--glass-text-secondary)]">分析约 {wordCount.toLocaleString()} 字内容，预计 2 秒完成</p>
+        <h2 className="mt-6 text-xl font-bold text-[var(--glass-text-primary)]">
+          {isFailed ? '智能分析未完成' : '正在智能分析中'}
+        </h2>
+        <p className="mt-1 text-sm text-[var(--glass-text-secondary)]">
+          分析约 {props.wordCount.toLocaleString()} 字内容 · {stageLabel}
+        </p>
 
-        <div className="mt-5 w-full overflow-hidden rounded-full bg-[var(--glass-bg-muted)]">
-          <div className="h-1.5 w-full animate-[progress_1.4s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-[var(--glass-accent-from)] to-[var(--glass-accent-to)]" />
+        <div className="mt-5 w-full">
+          <div className="flex items-center justify-between text-xs text-[var(--glass-text-secondary)]">
+            <span>{stageLabel}</span>
+            <span>{props.progress}%</span>
+          </div>
+          <div className="mt-2 overflow-hidden rounded-full bg-[var(--glass-bg-muted)]">
+            <div
+              className={[
+                'h-2 rounded-full transition-all duration-500',
+                isFailed
+                  ? 'bg-[var(--glass-tone-danger-fg)]'
+                  : 'bg-gradient-to-r from-[var(--glass-accent-from)] to-[var(--glass-accent-to)]',
+              ].join(' ')}
+              style={{ width: `${Math.max(0, props.progress)}%` }}
+            />
+          </div>
         </div>
 
-        <div className="mt-5 flex items-center gap-2 rounded-full border border-[var(--glass-stroke-soft)] bg-white/70 px-4 py-2 text-xs text-[var(--glass-text-secondary)]">
-          <Loader2 className="h-3 w-3 animate-spin" />
-          {message}
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[var(--glass-stroke-soft)] bg-white/70 px-4 py-3 text-xs text-[var(--glass-text-secondary)]">
+          {!isFailed ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+          <span>{props.message}</span>
+          {taskSuffix ? <span className="glass-chip text-[10px]">任务 #{taskSuffix}</span> : null}
         </div>
+
+        {isFailed ? (
+          <button
+            type="button"
+            onClick={props.onBack}
+            className="glass-btn-base glass-btn-ghost mt-5 inline-flex items-center gap-1 rounded-xl px-3 py-2 text-xs"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" /> 返回编辑
+          </button>
+        ) : null}
       </div>
-
-      <style>{`
-        @keyframes progress {
-          0% { transform: translateX(-100%); }
-          50% { transform: translateX(0%); }
-          100% { transform: translateX(100%); }
-        }
-      `}</style>
     </div>
   )
 }
 
 function ResultsView(props: {
-  analysis: NovelAnalysis
+  analysis: NovelIntakeAnalysis
   splitMode: SplitMode
   onSplitModeChange: (mode: SplitMode) => void
   splitEpisodes: SplitEpisode[]

@@ -1,5 +1,15 @@
 import { apiClient } from './client'
 
+export type TaskEventItem = {
+  id: number
+  task_id: string
+  project_id: string
+  user_id: string
+  event_type: string
+  payload_json?: Record<string, unknown> | null
+  created_at: string
+}
+
 export type TaskItem = {
   id: string
   project_id?: string
@@ -10,6 +20,7 @@ export type TaskItem = {
   target_type?: string | null
   target_id?: string | null
   run_id?: string | null
+  result_json?: Record<string, unknown> | null
   updated_at: string
   created_at?: string
   error_message?: string | null
@@ -23,6 +34,13 @@ export async function createTask(payload: Record<string, unknown>) {
 export async function getTask(taskId: string) {
   const response = await apiClient.get(`/tasks/${taskId}`)
   return response.data.data.task as TaskItem
+}
+
+export async function getTaskDetail(taskId: string, includeEvents = false) {
+  const response = await apiClient.get(`/tasks/${taskId}`, {
+    params: includeEvents ? { includeEvents: 1 } : undefined,
+  })
+  return response.data.data as { task: TaskItem; events?: TaskEventItem[] }
 }
 
 export type TaskListFilters = {

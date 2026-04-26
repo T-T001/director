@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Settings, Trash2, Calendar, Activity, Clapperboard } from 'lucide-react'
 
 import { createEpisode, deleteEpisode, updateEpisode } from '../../services/api/episodes'
-import { analyzeNPEpisode, convertNPScreenplay } from '../../services/api/novel-promotion'
+import { analyzeNPIntakePreview, analyzeNPEpisode, convertNPScreenplay } from '../../services/api/novel-promotion'
 import { deleteProject, getWorkspace, updateProject } from '../../services/api/projects'
 import { getTask } from '../../services/api/tasks'
 import { buildWorkspaceStagePath } from '../../app/router/routes'
@@ -282,6 +282,7 @@ export function ProjectDetailPage() {
           episodeCount={sortedEpisodes.length}
           enableNarration={enableNarration}
           onEnableNarrationChange={setEnableNarration}
+          onAnalyzePreview={(payload) => analyzeNPIntakePreview(projectId, payload)}
           onCreateEpisodes={handleCreateEpisodes}
           onOpenAssetHub={() => navigate('/asset-hub')}
           submitProgress={submitProgress}

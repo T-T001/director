@@ -513,3 +513,66 @@ export type NPTaskQueued = {
   run_id?: string
   deduped?: boolean
 }
+
+export type NovelIntakeCharacterInsight = {
+  name: string
+  lineCount: number
+  wordCount: number
+  sampleQuote: string | null
+  firstAppearanceRatio: number
+}
+
+export type NovelIntakeSceneInsight = {
+  index: number
+  location: string
+  positionRatio: number
+  preview: string
+}
+
+export type NovelIntakeKeywordInsight = {
+  word: string
+  frequency: number
+}
+
+export type NovelIntakeDialogueInsight = {
+  totalLines: number
+  averageLength: number
+  longestLength: number
+  ratioOfTotalText: number
+}
+
+export type NovelIntakeEmotionInsight = {
+  key: string
+  label: string
+  count: number
+}
+
+export type NovelIntakeAnalysis = {
+  totalChars: number
+  totalWords: number
+  paragraphCount: number
+  sentenceCount: number
+  characters: NovelIntakeCharacterInsight[]
+  scenes: NovelIntakeSceneInsight[]
+  dialogue: NovelIntakeDialogueInsight
+  keywords: NovelIntakeKeywordInsight[]
+  emotions: NovelIntakeEmotionInsight[]
+  genre: string
+  sentimentScore: number
+  pace: 'slow' | 'steady' | 'fast'
+}
+
+export type NovelIntakeSplitEpisode = {
+  number: number
+  title: string
+  summary: string
+  content: string
+  wordCount: number
+}
+
+export type NovelIntakePreview = {
+  analysis: NovelIntakeAnalysis
+  split_episodes: NovelIntakeSplitEpisode[]
+  model_used: string
+  request_url: string
+}

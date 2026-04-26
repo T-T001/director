@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -45,6 +45,48 @@ class ProviderUpdate(BaseModel):
     api_key: str | None = None
 
 
+CompatMediaTemplateSource = Literal["manual", "ai"]
+
+
+class TemplateEndpoint(BaseModel):
+    method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"]
+    path: str = Field(min_length=1, max_length=2000)
+    contentType: Literal[
+        "application/json",
+        "multipart/form-data",
+        "application/x-www-form-urlencoded",
+    ] | None = None
+    headers: dict[str, str] | None = None
+    bodyTemplate: dict[str, Any] | list[Any] | str | int | float | bool | None = None
+    multipartFileFields: list[str] | None = None
+
+
+class TemplateResponseMap(BaseModel):
+    taskIdPath: str | None = None
+    statusPath: str | None = None
+    outputUrlPath: str | None = None
+    outputUrlsPath: str | None = None
+    errorPath: str | None = None
+
+
+class TemplatePollingConfig(BaseModel):
+    intervalMs: int
+    timeoutMs: int
+    doneStates: list[str]
+    failStates: list[str]
+
+
+class CompatMediaTemplate(BaseModel):
+    version: Literal[1]
+    mediaType: Literal["image", "video"]
+    mode: Literal["sync", "async"]
+    create: TemplateEndpoint
+    status: TemplateEndpoint | None = None
+    content: TemplateEndpoint | None = None
+    response: TemplateResponseMap
+    polling: TemplatePollingConfig | None = None
+
+
 class ModelConfigRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -58,6 +100,9 @@ class ModelConfigRead(BaseModel):
     request_path: str
     extra_headers: str | None = None
     default_params: str | None = None
+    compat_media_template: CompatMediaTemplate | None = None
+    compat_media_template_source: CompatMediaTemplateSource | None = None
+    compat_media_template_checked_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -72,6 +117,9 @@ class ModelConfigCreate(BaseModel):
     request_path: str = Field(min_length=1, max_length=500)
     extra_headers: str | None = None
     default_params: str | None = None
+    compat_media_template: CompatMediaTemplate | None = None
+    compat_media_template_source: CompatMediaTemplateSource | None = None
+    compat_media_template_checked_at: datetime | None = None
 
 
 class ModelConfigUpdate(BaseModel):
@@ -83,6 +131,9 @@ class ModelConfigUpdate(BaseModel):
     request_path: str | None = Field(default=None, min_length=1, max_length=500)
     extra_headers: str | None = None
     default_params: str | None = None
+    compat_media_template: CompatMediaTemplate | None = None
+    compat_media_template_source: CompatMediaTemplateSource | None = None
+    compat_media_template_checked_at: datetime | None = None
 
 
 class ModelTestResponse(BaseModel):

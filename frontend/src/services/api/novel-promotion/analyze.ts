@@ -1,6 +1,14 @@
 import type { NPTaskQueued } from '../../../types/novel-promotion'
 import { apiClient } from '../client'
 
+export async function analyzeNPIntakePreview(
+  projectId: string,
+  payload: Record<string, unknown>,
+) {
+  const response = await apiClient.post(`/novel-promotion/${projectId}/intake-preview`, payload)
+  return response.data.data as NPTaskQueued
+}
+
 export async function analyzeNPEpisode(
   projectId: string,
   payload: Record<string, unknown> = {},
