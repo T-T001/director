@@ -147,23 +147,23 @@ export function EditorPage() {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">播放状态</p>
-            <p className="mt-1 text-lg font-semibold">{playing ? '播放中' : '已暂停'}</p>
+          <article className="metric-card p-4">
+            <p className="field-label">Playback</p>
+            <p className="mt-2 text-lg font-black">{playing ? '播放中' : '已暂停'}</p>
           </article>
-          <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">时间线缩放</p>
-            <p className="mt-1 text-lg font-semibold">{timelineLabel}</p>
+          <article className="metric-card p-4">
+            <p className="field-label">Timeline zoom</p>
+            <p className="mt-2 text-lg font-black text-[var(--glass-accent-cyan)]">{timelineLabel}</p>
           </article>
-          <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">就绪 / 渲染中</p>
-            <p className="mt-1 text-lg font-semibold">
+          <article className="metric-card p-4">
+            <p className="field-label">Ready / render</p>
+            <p className="mt-2 text-lg font-black">
               {readyClipCount} / {renderClipCount}
             </p>
           </article>
-          <article className="card-base px-3 py-3">
-            <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">当前 / 总时长</p>
-            <p className="mt-1 text-lg font-semibold">
+          <article className="metric-card p-4">
+            <p className="field-label">Timecode</p>
+            <p className="mt-2 text-lg font-black">
               {timeLabel} / {totalDurationLabel}
             </p>
           </article>
@@ -228,7 +228,7 @@ export function EditorPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-3">
+          <div className="rounded-2xl border border-[var(--glass-stroke-base)] bg-black/24 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
             <div className="relative h-6">
               {timelineTicks.map((tick) => (
                 <div key={tick.id} className="absolute top-0" style={{ left: `${tick.left}%` }}>
@@ -253,8 +253,8 @@ export function EditorPage() {
                         className={[
                           'absolute top-2 h-16 rounded-md border px-2 py-1 text-left',
                           selectedClipId === clip.id
-                            ? 'border-[var(--glass-accent-from)] bg-[var(--glass-accent-from)] text-white'
-                            : 'border-[var(--glass-stroke-base)] bg-white/90 text-[var(--glass-text-secondary)]',
+                            ? 'border-amber-200/30 bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-stone-950 shadow-[0_10px_24px_rgba(255,179,71,0.22)]'
+                            : 'border-[var(--glass-stroke-base)] bg-white/[0.06] text-[var(--glass-text-secondary)] hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10',
                         ].join(' ')}
                         style={{ left: `${left}%`, width: `${Math.min(width, 96 - left)}%` }}
                         title={clip.title}
@@ -335,7 +335,7 @@ export function EditorPage() {
 
       <Link
         to="/projects"
-        className="fixed bottom-6 right-6 z-40 rounded-2xl bg-[var(--glass-accent-from)] px-6 py-3 text-sm font-semibold text-white shadow-[var(--glass-shadow-lg)] transition-colors hover:bg-[var(--glass-accent-to)]"
+        className="page-command fixed bottom-6 right-6 z-40 px-6 py-3 text-sm font-black text-[var(--glass-text-primary)] transition hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10"
       >
         返回项目中心
       </Link>

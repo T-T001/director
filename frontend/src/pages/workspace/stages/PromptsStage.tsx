@@ -501,9 +501,10 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">提示词阶段</h2>
+            <p className="field-label text-[var(--glass-accent-cyan)]">Prompt continuity desk</p>
+            <h2 className="mt-1 text-xl font-black">镜头提示词审校台</h2>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
-              Prompt editing with storyboard-backed save, append source, and AI modify workflows.
+              逐镜头检查角色、场景、镜头语言和画面连续性，再把提示词写回分镜面板。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -516,10 +517,10 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
               onClick={() => saveSelectedMutation.mutate()}
               disabled={!selectedShot || saveSelectedMutation.isPending || saveAllMutation.isPending}
             >
-              {saveSelectedMutation.isPending ? 'Saving...' : 'Save Selected'}
+{saveSelectedMutation.isPending ? '保存中...' : '保存当前镜头'}
             </Button>
             <Button type="button" onClick={() => saveAllMutation.mutate()} disabled={saveSelectedMutation.isPending || saveAllMutation.isPending}>
-              {saveAllMutation.isPending ? 'Saving All...' : 'Save All'}
+{saveAllMutation.isPending ? '批量保存中...' : '保存全部提示词'}
             </Button>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'voice')}>
               <Button variant="secondary">进入配音</Button>
@@ -552,13 +553,13 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
       {episodeQuery.isError || storyboardsQuery.isError ? <ErrorState message="加载提示词源失败。" /> : null}
 
       {shots.length === 0 ? (
-        <EmptyState title="尚无提示词源" description="请先创建剧本或分镜内容。" />
+<EmptyState title="尚无镜头提示词源" description="请先生成分镜面板，再在这里统一审校每个镜头的图像与视频提示词。" />
       ) : (
         <>
           <SectionCard className="grid gap-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-base font-semibold">提示词工作台</h3>
+<h3 className="text-base font-semibold">镜头提示词队列</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">
                   Visible {visibleShots.length} · Mention tagged {mentionedShotCount} · Dirty drafts {dirtyCount}
                 </p>
@@ -572,7 +573,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                   ].join(' ')}
                   onClick={() => setViewMode('cards')}
                 >
-                  Cards
+                  卡片视图
                 </button>
                 <button
                   type="button"
@@ -582,7 +583,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                   ].join(' ')}
                   onClick={() => setViewMode('table')}
                 >
-                  Table
+                  表格视图
                 </button>
                 <button
                   type="button"

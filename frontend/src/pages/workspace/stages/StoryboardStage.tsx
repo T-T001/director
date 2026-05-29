@@ -342,20 +342,21 @@ export function StoryboardStage({ projectId, episodeId }: WorkspaceStagePageProp
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">分镜阶段</h2>
+            <p className="field-label text-[var(--glass-accent-cyan)]">Storyboard panel desk</p>
+            <h2 className="mt-1 text-xl font-black">镜头分镜面板</h2>
             <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">
-              可编辑的分镜工作台，支持面板草稿、批量工具与保存流程。
+              按剧本片段组织分镜组，逐面板确认画面描述、图像提示词和视频提示词。
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'script')}>
-              <Button variant="secondary">返回</Button>
+<Button variant="secondary">返回剧本片段</Button>
             </Link>
             <Button
               onClick={() => scriptToStoryboardMutation.mutate()}
               disabled={scriptToStoryboardMutation.isPending}
             >
-              {scriptToStoryboardMutation.isPending ? '提交中...' : '生成分镜'}
+{scriptToStoryboardMutation.isPending ? '提交中...' : '由剧本生成分镜'}
             </Button>
             <Button
               variant="secondary"

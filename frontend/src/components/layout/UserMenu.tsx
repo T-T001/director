@@ -57,9 +57,9 @@ export function UserMenu() {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-full border border-[var(--glass-stroke-base)] bg-white/70 py-1 pl-1 pr-2.5 text-sm transition hover:bg-white"
+        className="flex items-center gap-2 rounded-full border border-[var(--glass-stroke-base)] bg-white/[0.055] py-1 pl-1 pr-3 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10"
       >
-        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-[12px] font-semibold text-white">
+        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-[12px] font-black text-stone-950">
           {initial}
         </span>
         <span className="max-w-[120px] truncate text-[var(--glass-text-secondary)]">{username}</span>

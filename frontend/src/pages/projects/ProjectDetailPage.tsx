@@ -202,7 +202,7 @@ export function ProjectDetailPage() {
   }
 
   const handleDeleteProject = () => {
-    const ok = confirm('确定要删除本项目及其全部剧集吗？此操作不可恢复。')
+    const ok = confirm('确定要删除这条漫剧制作线及其全部剧集吗？此操作不可恢复。')
     if (!ok) return
     deleteProjectMutation.mutate()
   }
@@ -230,10 +230,11 @@ export function ProjectDetailPage() {
                 <Clapperboard className="h-4 w-4" />
               </span>
               <h1 className="truncate text-lg font-bold text-[var(--glass-text-primary)]">{workspace.project.name}</h1>
+              <span className="glass-chip text-[11px]">漫剧制作台</span>
               <span className="glass-chip text-[11px]">{sortedEpisodes.length} 集</span>
             </div>
             <p className="mt-1 line-clamp-1 pl-9 text-xs text-[var(--glass-text-tertiary)]">
-              {workspace.project.description?.trim() || '暂无描述 · 点击右侧「项目设置」完善信息'}
+{workspace.project.description?.trim() || '暂无项目设定 · 可在「项目设置」补充题材、主角与成片风格'}
             </p>
           </div>
 
@@ -252,7 +253,7 @@ export function ProjectDetailPage() {
               className="glass-btn-base glass-btn-ghost inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs"
             >
               <Settings className="h-3.5 w-3.5" />
-              项目设置
+制作设置
             </button>
           </div>
         </div>
@@ -288,36 +289,36 @@ export function ProjectDetailPage() {
           submitProgress={submitProgress}
         />
       ) : (
-        <SectionCard className="grid gap-3 text-center">
-          <h2 className="text-lg font-semibold text-[var(--glass-text-primary)]">跳转到 {stageTitle} 阶段</h2>
-          <p className="text-sm text-[var(--glass-text-secondary)]">正在跳转到工作区...</p>
+<SectionCard className="grid gap-3 text-center">
+          <h2 className="text-lg font-semibold text-[var(--glass-text-primary)]">正在进入「{stageTitle}」制作阶段</h2>
+          <p className="text-sm text-[var(--glass-text-secondary)]">将打开当前剧集的单集生产台，继续处理镜头、资产、分镜与成片输出。</p>
         </SectionCard>
       )}
 
       <Modal
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
-        title="项目设置"
-        subtitle="修改项目名称、描述或删除项目"
+        title="制作设置"
+        subtitle="修改漫剧项目名称、题材描述或删除整条制作线"
         width={520}
       >
         <div className="grid gap-4">
           <label className="grid gap-1">
-            <span className="text-xs font-medium text-[var(--glass-text-secondary)]">项目名称</span>
+<span className="text-xs font-medium text-[var(--glass-text-secondary)]">漫剧项目名称</span>
             <input
               className="glass-input"
               value={editingName}
               onChange={(e) => setEditingName(e.target.value)}
-              placeholder="项目名称"
+placeholder="漫剧项目名称"
             />
           </label>
           <label className="grid gap-1">
-            <span className="text-xs font-medium text-[var(--glass-text-secondary)]">项目描述</span>
+<span className="text-xs font-medium text-[var(--glass-text-secondary)]">题材与制作说明</span>
             <textarea
               className="glass-input min-h-28"
               value={editingDesc}
               onChange={(e) => setEditingDesc(e.target.value)}
-              placeholder="一两句描述项目主题与风格"
+placeholder="题材、主角、受众、画风或平台方向"
               rows={4}
             />
           </label>
@@ -345,7 +346,7 @@ export function ProjectDetailPage() {
               className="glass-btn-base inline-flex items-center gap-1.5 rounded-xl border border-[var(--glass-tone-danger-fg)]/40 bg-[var(--glass-tone-danger-bg)]/50 px-3 py-2 text-xs text-[var(--glass-tone-danger-fg)] transition hover:brightness-95 disabled:opacity-50"
             >
               <Trash2 className="h-3.5 w-3.5" />
-              {deleteProjectMutation.isPending ? '删除中...' : '删除项目'}
+              {deleteProjectMutation.isPending ? '删除中...' : '删除制作线'}
             </button>
             <div className="flex gap-2">
               <Button variant="secondary" onClick={() => setSettingsOpen(false)}>取消</Button>

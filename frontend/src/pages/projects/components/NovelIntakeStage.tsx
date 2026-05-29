@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import {
   Sparkles, Wand2, Users, MapPin, MessageSquare, Mic2, Activity,
   Loader2, ArrowLeft, ChevronRight, FolderHeart, Tag, Clapperboard, Gauge, BookOpen,
@@ -378,10 +379,10 @@ function InputView(props: {
             className="glass-input min-h-[340px] resize-none text-[15px] leading-relaxed"
           />
 
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white/70 to-transparent" />
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[var(--glass-bg-muted)]/70 via-[var(--glass-bg-surface)]/28 to-transparent" />
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 border-t border-[var(--glass-stroke-soft)] bg-white/60 px-6 py-3.5">
+        <div className="flex flex-wrap items-center gap-3 border-t border-[var(--glass-stroke-soft)] bg-[var(--glass-bg-muted)]/70 px-6 py-3.5 backdrop-blur-xl">
           <SelectField label="比例" value={props.ratio} onChange={props.onChangeRatio} options={RATIOS} />
           <SelectField label="画风" value={props.artStyle} onChange={props.onChangeArtStyle} options={STYLES} />
 
@@ -416,7 +417,7 @@ function InputView(props: {
           </button>
         </div>
 
-        <div className="border-t border-[var(--glass-stroke-soft)] bg-gradient-to-r from-[var(--glass-bg-muted)]/60 to-white/60 px-6 py-2.5 text-center">
+        <div className="border-t border-[var(--glass-stroke-soft)] bg-gradient-to-r from-[var(--glass-bg-muted)]/80 to-[var(--glass-bg-surface)]/50 px-6 py-2.5 text-center">
           <p className="text-[11px] text-[var(--glass-text-tertiary)]">
             当前配置 · <strong className="text-[var(--glass-text-secondary)]">{props.ratioLabel}</strong> · <strong className="text-[var(--glass-text-secondary)]">{props.styleLabel}</strong>
           </p>
@@ -459,21 +460,110 @@ function InputView(props: {
 }
 
 function SelectField(props: { label: string; value: string; onChange: (v: string) => void; options: Array<{ value: string; label: string; tag?: string }> }) {
+  const [open, setOpen] = useState(false)
+  const [menuRect, setMenuRect] = useState({ left: 0, top: 0, width: 220 })
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+  const current = props.options.find((option) => option.value === props.value) ?? props.options[0]
+
+  const syncMenuPosition = () => {
+    const rect = rootRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const width = Math.max(220, rect.width + 28)
+    const left = Math.min(Math.max(12, rect.left + 28), window.innerWidth - width - 12)
+    setMenuRect({ left, top: rect.bottom + 8, width })
+  }
+
+  useEffect(() => {
+    if (!open) return
+    syncMenuPosition()
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node
+      if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return
+      }
+      setOpen(false)
+    }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    const handleViewportChange = () => syncMenuPosition()
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('resize', handleViewportChange)
+    window.addEventListener('scroll', handleViewportChange, true)
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('resize', handleViewportChange)
+      window.removeEventListener('scroll', handleViewportChange, true)
+    }
+  }, [open])
+
+  const menu = open
+    ? createPortal(
+        <div
+          ref={menuRef}
+          role="listbox"
+          className="fixed z-[9999] overflow-hidden rounded-2xl border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)]/95 p-1.5 shadow-[0_24px_70px_-28px_rgba(0,0,0,0.7)] backdrop-blur-2xl"
+          style={{ left: menuRect.left, top: menuRect.top, width: menuRect.width }}
+        >
+          <div className="pointer-events-none absolute inset-x-3 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+          {props.options.map((option) => {
+            const selected = option.value === props.value
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={selected}
+                onClick={() => {
+                  props.onChange(option.value)
+                  setOpen(false)
+                }}
+                className={[
+                  'flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2 text-left text-xs transition-all',
+                  selected
+                    ? 'bg-gradient-to-r from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-stone-950 shadow-[var(--glass-shadow-sm)]'
+                    : 'text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)]',
+                ].join(' ')}
+              >
+                <span className="truncate font-semibold">{option.label}</span>
+                {option.tag ? (
+                  <span className={['rounded-full px-1.5 py-0.5 text-[10px] font-black', selected ? 'bg-stone-950/12 text-stone-950' : 'glass-chip'].join(' ')}>
+                    {option.tag}
+                  </span>
+                ) : null}
+              </button>
+            )
+          })}
+        </div>,
+        document.body,
+      )
+    : null
+
   return (
-    <label className="flex items-center gap-1.5 text-xs text-[var(--glass-text-tertiary)]">
+    <div ref={rootRef} className="relative flex items-center gap-1.5 text-xs text-[var(--glass-text-tertiary)]">
       <span>{props.label}</span>
-      <select
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-        className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/90 px-2.5 py-1.5 text-xs font-medium text-[var(--glass-text-primary)] shadow-[var(--glass-shadow-sm)] focus:border-[var(--glass-stroke-focus)] focus:outline-none"
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className={[
+          'group inline-flex min-w-[154px] items-center justify-between gap-2 rounded-xl border px-3 py-1.5 text-left text-xs font-semibold transition-all',
+          open
+            ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)] shadow-[0_12px_28px_-18px_rgba(0,0,0,0.45)]'
+            : 'border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)]/72 text-[var(--glass-text-primary)] hover:border-[var(--glass-stroke-strong)] hover:bg-[var(--glass-bg-surface-strong)]',
+        ].join(' ')}
       >
-        {props.options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}{option.tag ? ` · ${option.tag}` : ''}
-          </option>
-        ))}
-      </select>
-    </label>
+        <span className="truncate">{current?.label ?? props.value}</span>
+        <ChevronRight className={['h-3.5 w-3.5 transition-transform', open ? 'rotate-90' : ''].join(' ')} />
+      </button>
+      {menu}
+    </div>
   )
 }
 

@@ -608,12 +608,13 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">配音阶段</h2>
-            <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">Editable voice-line workflow with transcript sync and persisted episode audio.</p>
+            <p className="field-label text-[var(--glass-accent-cyan)]">Voice casting desk</p>
+            <h2 className="mt-1 text-xl font-black">台词配音与音色绑定</h2>
+            <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">按说话人管理台词、音色、情绪和字幕时间轴，生成后交给视频阶段做口型同步。</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="secondary" onClick={() => void analyzeLines()} disabled={analyzeMutation.isPending}>
-              {analyzeMutation.isPending ? 'Analyzing...' : 'Analyze'}
+{analyzeMutation.isPending ? '解析中...' : '解析台词'}
             </Button>
             <Button type="button" variant="secondary" onClick={addLineAfterSelected}>添加台词</Button>
             <Button
@@ -621,7 +622,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
               onClick={() => void generateAllLines()}
               disabled={voiceGenerateMutation.isPending || !allSpeakersHaveVoice || visibleVoiceLines.length === 0}
             >
-              {voiceGenerateMutation.isPending ? 'Generating...' : 'Generate All'}
+{voiceGenerateMutation.isPending ? '生成中...' : '生成整集配音'}
             </Button>
             <Button
               type="button"
@@ -629,7 +630,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
               onClick={() => void downloadAllAudio()}
               disabled={!episodeAudioUrl}
             >
-              Download All
+下载整集音频
             </Button>
             <Link to={buildWorkspaceStagePath(projectId, episodeId, 'prompts')}>
               <Button variant="secondary">返回提示词</Button>
@@ -685,11 +686,11 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                     <span className="text-xs text-[var(--glass-text-tertiary)]">{speakerLineCounts[speaker] ?? 0} line(s)</span>
                   </div>
                   <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">
-                    {profile ? `Bound voice: ${profile.name}` : 'No voice binding yet'}
+                    {profile ? `Bound voice: ${profile.name}` : '尚未绑定音色'}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-2 py-1 text-xs" onClick={() => openSpeakerBinding(speaker)}>
-                      {profile ? 'Rebind Voice' : 'Bind Voice'}
+                      {profile ? '重绑音色' : '绑定音色'}
                     </button>
                     {profile ? <span className="glass-chip px-2 py-0.5">{profile.gender}</span> : <span className="glass-warning rounded-full px-2 py-0.5">未绑定</span>}
                   </div>
@@ -697,7 +698,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
               )
             })}
           </div>
-          {!allSpeakersHaveVoice ? <p className="text-xs text-[var(--glass-tone-warning-fg)]">Some lines are missing speaker bindings. Use `Fill Missing Speakers` before batch generation.</p> : null}
+{!allSpeakersHaveVoice ? <p className="text-xs text-[var(--glass-tone-warning-fg)]">还有台词缺少说话人或音色绑定，补齐后才能稳定生成整集配音。</p> : null}
           {episodeAudioUrl ? (
             <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--glass-text-tertiary)]">
               <span className="glass-success rounded-full px-2 py-0.5">剧集音频就绪</span>
@@ -736,7 +737,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
               ].join(' ')}
               onClick={() => setShowNeedsSpeakerOnly((current) => !current)}
             >
-              {showNeedsSpeakerOnly ? 'Missing Speaker Only' : 'Show Missing Speaker'}
+              {showNeedsSpeakerOnly ? '仅缺失说话人' : '筛出缺失说话人'}
             </button>
             <Button type="button" variant="secondary" onClick={fillMissingSpeaker}>补全缺失发言者</Button>
             <Button type="button" variant="secondary" onClick={resetLineDrafts}>重置台词草稿</Button>
@@ -804,7 +805,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                     <div className="mt-2 flex flex-wrap items-center gap-1.5">
                       {hasSpeaker ? (
                         <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-2 py-1 text-xs" onClick={() => openSpeakerBinding(speaker)}>
-                          {boundProfile ? `Rebind: ${boundProfile.name}` : 'Bind Voice'}
+                          {boundProfile ? `Rebind: ${boundProfile.name}` : '绑定音色'}
                         </button>
                       ) : (
                         <span className="glass-warning rounded-full px-2 py-0.5 text-[11px]">绑定音色前请先设置发言者</span>
@@ -815,7 +816,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                         onClick={() => setExpandedEmotionLineId((current) => (current === line.id ? null : line.id))}
                         disabled={!hasSpeaker || !boundProfile}
                       >
-                        {emotionExpanded ? 'Hide Emotion' : boundProfile ? 'Emotion Settings' : 'Bind Voice First'}
+                        {emotionExpanded ? 'Hide Emotion' : boundProfile ? 'Emotion Settings' : '绑定音色 First'}
                       </button>
                     </div>
 

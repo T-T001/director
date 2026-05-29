@@ -42,14 +42,14 @@ export function Modal({ open, onClose, title, subtitle, width = 480, children }:
         style={{ maxWidth: width }}
       >
         {(title || subtitle) && (
-          <div className="flex items-start justify-between gap-3 border-b border-[var(--glass-stroke-soft)] px-6 py-4">
+          <div className="flex items-start justify-between gap-3 border-b border-[var(--glass-stroke-soft)] bg-white/[0.025] px-6 py-4">
             <div>
-              {title && <h2 className="text-base font-semibold text-[var(--glass-text-primary)]">{title}</h2>}
+              {title && <h2 className="text-base font-black tracking-wide text-[var(--glass-text-primary)]">{title}</h2>}
               {subtitle && <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">{subtitle}</p>}
             </div>
             <button
               onClick={onClose}
-              className="rounded-full p-1.5 text-[var(--glass-text-tertiary)] transition hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-text-primary)]"
+              className="rounded-full border border-[var(--glass-stroke-soft)] bg-white/[0.04] p-1.5 text-[var(--glass-text-tertiary)] transition hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10 hover:text-[var(--glass-text-primary)]"
               aria-label="关闭"
             >
               <X className="h-4 w-4" />

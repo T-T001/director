@@ -571,12 +571,13 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
       <SectionCard className="glass-surface-elevated grid gap-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">视频阶段</h2>
-            <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">分镜面板渲染队列，提示词持久化与媒体产出同步管理。</p>
+            <p className="field-label text-[var(--glass-accent-cyan)]">Render and delivery desk</p>
+            <h2 className="mt-1 text-xl font-black">分镜视频化与成片输出</h2>
+            <p className="mt-1 text-sm text-[var(--glass-text-tertiary)]">按分镜面板排队生成视频，管理单镜、首尾帧、口型同步与最新成片媒体。</p>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
               <span className="glass-chip">共 {stageLines.length}</span>
               <span className={['rounded-full px-2 py-0.5', runningRenderCount > 0 || renderActionBusyKey ? 'glass-warning' : 'glass-success'].join(' ')}>
-                Running {runningRenderCount + (renderActionBusyKey ? 1 : 0)}
+运行中 {runningRenderCount + (renderActionBusyKey ? 1 : 0)}
               </span>
               <span className="glass-success rounded-full px-2 py-0.5">已完成 {videosWithUrl}</span>
               <span className={['rounded-full px-2 py-0.5', failedCount > 0 ? 'glass-danger' : 'glass-chip'].join(' ')}>失败 {failedCount}</span>
@@ -589,10 +590,10 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
               <Button variant="secondary">返回配音</Button>
             </Link>
             <Button type="button" variant="secondary" onClick={fillAllPrompts}>补全空提示词</Button>
-            <Button type="button" variant="secondary" onClick={() => saveSelectedPromptMutation.mutate()} disabled={!selectedLine || saveSelectedPromptMutation.isPending || saveAllPromptsMutation.isPending}>{saveSelectedPromptMutation.isPending ? 'Saving...' : 'Save Selected'}</Button>
-            <Button type="button" variant="secondary" onClick={() => saveAllPromptsMutation.mutate()} disabled={saveSelectedPromptMutation.isPending || saveAllPromptsMutation.isPending}>{saveAllPromptsMutation.isPending ? 'Saving All...' : 'Save All'}</Button>
+<Button type="button" variant="secondary" onClick={() => saveSelectedPromptMutation.mutate()} disabled={!selectedLine || saveSelectedPromptMutation.isPending || saveAllPromptsMutation.isPending}>{saveSelectedPromptMutation.isPending ? '保存中...' : '保存当前镜头'}</Button>
+<Button type="button" variant="secondary" onClick={() => saveAllPromptsMutation.mutate()} disabled={saveSelectedPromptMutation.isPending || saveAllPromptsMutation.isPending}>{saveAllPromptsMutation.isPending ? '批量保存中...' : '保存全部镜头'}</Button>
             <Button type="button" variant="secondary" onClick={() => tasksQuery.refetch()} disabled={tasksQuery.isFetching}>{tasksQuery.isFetching ? 'Refreshing...' : 'Refresh Tasks'}</Button>
-            <Button type="button" onClick={() => void runBatchRender()} disabled={isAnyTaskRunning || queueLines.length === 0}>{renderActionBusyKey === 'batch-render' ? 'Queueing...' : 'Batch Render'}</Button>
+<Button type="button" onClick={() => void runBatchRender()} disabled={isAnyTaskRunning || queueLines.length === 0}>{renderActionBusyKey === 'batch-render' ? '排队中...' : '批量生成视频'}</Button>
             <Link to={`/editor/${episodeId}`}>
               <Button variant="secondary">打开剪辑台</Button>
             </Link>
@@ -634,7 +635,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">跨镜头与渲染状态的快速导航。</p>
               </div>
               <button type="button" className="glass-btn-base glass-btn-ghost rounded-lg px-3 py-1.5 text-xs" onClick={() => setIsTimelineExpanded((value) => !value)}>
-                {isTimelineExpanded ? 'Collapse Timeline' : 'Expand Timeline'}
+                {isTimelineExpanded ? '收起时间线' : '展开时间线'}
               </button>
             </div>
 
@@ -800,7 +801,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                           disabled={isLipSyncing || generateMutation.isPending || !currentEpisode.audio_media_id}
                           className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-[11px] text-[var(--glass-text-secondary)] disabled:opacity-60"
                         >
-                          {isLipSyncing ? '...' : 'Lip Sync'}
+                          {isLipSyncing ? '...' : '口型同步'}
                         </button>
                       </div>
                     </div>
@@ -823,10 +824,10 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                     {saveSelectedPromptMutation.isPending ? 'Saving...' : 'Save Prompt'}
                   </Button>
                   <Button type="button" variant="secondary" onClick={() => void runRenderAction('generate', selectedLine.id, selectedLine.order)}>
-                    {renderActionBusyKey === `generate-${selectedLine.id}` ? 'Generating...' : 'Generate Shot'}
+                    {renderActionBusyKey === `generate-${selectedLine.id}` ? 'Generating...' : '生成当前镜头'}
                   </Button>
                   <Button type="button" variant="secondary" onClick={() => void runRenderAction('lip-sync', selectedLine.id, selectedLine.order)} disabled={!currentEpisode.audio_media_id}>
-                    {renderActionBusyKey === `lip-sync-${selectedLine.id}` ? 'Lip Sync...' : 'Lip Sync'}
+                    {renderActionBusyKey === `lip-sync-${selectedLine.id}` ? '口型同步...' : '口型同步'}
                   </Button>
                   <Button type="button" variant="secondary" onClick={copySelectedPrompt}>复制提示词</Button>
                   <Button type="button" variant="secondary" onClick={() => openPromptModal(selectedLine)}>提示词弹窗</Button>
@@ -890,7 +891,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                       onClick={() => void runRenderAction('generate', selectedLine.id, selectedLine.order)}
                       disabled={renderActionBusyKey === `generate-${selectedLine.id}` || !selectedNextLine}
                     >
-                      {renderActionBusyKey === `generate-${selectedLine.id}` ? 'Generating...' : 'Generate First/Last'}
+                      {renderActionBusyKey === `generate-${selectedLine.id}` ? 'Generating...' : '生成首尾帧镜头'}
                     </Button>
                   </div>
                 </div>
@@ -1079,7 +1080,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
           <section className="glass-modal-shell relative z-10 grid w-full max-w-xl gap-4 p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 className="text-lg font-semibold">Lip Sync Voice Picker</h3>
+                <h3 className="text-lg font-semibold">口型同步 Voice Picker</h3>
                 <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">Shot {pendingLipSyncLine.order} · choose a voice line reference before lip sync.</p>
               </div>
               <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsLipSyncModalOpen(false)}>
@@ -1125,7 +1126,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                 onClick={() => void confirmLipSyncSelection()}
                 disabled={generateMutation.isPending || lipSyncVoiceOptions.length > 0 && !selectedLipSyncVoiceId}
               >
-                {generateMutation.isPending ? 'Queueing...' : 'Confirm Lip Sync'}
+                {generateMutation.isPending ? 'Queueing...' : 'Confirm 口型同步'}
               </Button>
             </div>
           </section>
