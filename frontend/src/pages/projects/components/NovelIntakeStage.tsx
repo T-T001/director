@@ -347,7 +347,7 @@ function InputView(props: {
   return (
     <div className="grid gap-5">
       <div className="text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--glass-stroke-base)] bg-white/80 px-3 py-1 text-xs text-[var(--glass-text-secondary)] shadow-[var(--glass-shadow-sm)]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-[var(--glass-stroke-base)] bg-white/[0.07] px-3 py-1 text-xs text-[var(--glass-text-secondary)] shadow-[var(--glass-shadow-sm)]">
           <Sparkles className="h-3.5 w-3.5 text-[var(--glass-accent-from)]" />
           {props.hasEpisodes ? `「${props.projectName}」· 共 ${props.episodeCount} 集` : `新项目：${props.projectName}`}
         </div>
@@ -637,7 +637,7 @@ function AnalyzingView(props: {
           </div>
         </div>
 
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[var(--glass-stroke-soft)] bg-white/70 px-4 py-3 text-xs text-[var(--glass-text-secondary)]">
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2 rounded-2xl border border-[var(--glass-stroke-soft)] bg-white/[0.03] px-4 py-3 text-xs text-[var(--glass-text-secondary)]">
           {!isFailed ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
           <span>{props.message}</span>
           {taskSuffix ? <span className="glass-chip text-[10px]">任务 #{taskSuffix}</span> : null}
@@ -680,9 +680,9 @@ function ResultsView(props: {
   return (
     <div className="grid gap-5">
       <div className="glass-surface-elevated overflow-hidden rounded-3xl">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--glass-stroke-soft)] bg-gradient-to-br from-[var(--glass-bg-muted)] to-white/70 px-6 py-5">
+        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[var(--glass-stroke-soft)] bg-gradient-to-br from-[var(--glass-bg-muted)] to-white/[0.04] px-6 py-5">
           <div className="min-w-0 flex-1">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs text-[var(--glass-text-secondary)] shadow-[var(--glass-shadow-sm)]">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/[0.07] px-3 py-1 text-xs text-[var(--glass-text-secondary)] shadow-[var(--glass-shadow-sm)]">
               <Sparkles className="h-3.5 w-3.5 text-[var(--glass-accent-from)]" /> 分析完成
             </div>
             <h1 className="mt-2.5 text-2xl font-bold text-[var(--glass-text-primary)]">AI 已完成剧本拆解</h1>
@@ -715,10 +715,10 @@ function ResultsView(props: {
         </div>
 
         <div className="grid gap-3 px-6 py-5 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard icon={BookOpen} label="总字数" value={analysis.totalWords.toLocaleString()} sub={`${analysis.paragraphCount} 段 · ${analysis.sentenceCount} 句`} tone="from-sky-100" />
-          <StatCard icon={Users} label="角色" value={analysis.characters.length.toString()} sub={`主角：${analysis.characters[0]?.name ?? '—'}`} tone="from-violet-100" />
-          <StatCard icon={MapPin} label="场景切换" value={analysis.scenes.length.toString()} sub={analysis.scenes[0]?.location ? `首场：${analysis.scenes[0].location}` : '未识别'} tone="from-amber-100" />
-          <StatCard icon={MessageSquare} label="对白条数" value={analysis.dialogue.totalLines.toString()} sub={`约占正文 ${totalDialogueRatio}%`} tone="from-emerald-100" />
+          <StatCard icon={BookOpen} label="总字数" value={analysis.totalWords.toLocaleString()} sub={`${analysis.paragraphCount} 段 · ${analysis.sentenceCount} 句`} tone="from-[#48d1cc]" />
+          <StatCard icon={Users} label="角色" value={analysis.characters.length.toString()} sub={`主角：${analysis.characters[0]?.name ?? '—'}`} tone="from-[#a871ff]" />
+          <StatCard icon={MapPin} label="场景切换" value={analysis.scenes.length.toString()} sub={analysis.scenes[0]?.location ? `首场：${analysis.scenes[0].location}` : '未识别'} tone="from-[#ffb347]" />
+          <StatCard icon={MessageSquare} label="对白条数" value={analysis.dialogue.totalLines.toString()} sub={`约占正文 ${totalDialogueRatio}%`} tone="from-[#4fd18f]" />
         </div>
       </div>
 
@@ -895,7 +895,7 @@ function ResultsView(props: {
             <EmptyHint text="当前方案下未能生成剧集。" />
           ) : (
             splitEpisodes.slice(0, 8).map((ep) => (
-              <div key={ep.number} className="flex items-center gap-3 rounded-xl border border-[var(--glass-stroke-base)] bg-white/80 px-3 py-2">
+              <div key={ep.number} className="flex items-center gap-3 rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.07] px-3 py-2">
                 <span className="inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-[11px] font-bold text-white">
                   {ep.number}
                 </span>
@@ -940,13 +940,17 @@ function ResultsView(props: {
 
 function StatCard({ icon: Icon, label, value, sub, tone }: { icon: typeof Users; label: string; value: string; sub: string; tone: string }) {
   return (
-    <div className={`relative overflow-hidden rounded-2xl border border-[var(--glass-stroke-base)] bg-gradient-to-br ${tone} to-white/70 p-4`}>
-      <div className="flex items-center justify-between">
+    <div className="metric-card relative overflow-hidden p-4">
+      <span
+        className={`pointer-events-none absolute -right-7 -top-7 h-20 w-20 rounded-full bg-gradient-to-br ${tone} to-transparent opacity-70 blur-2xl`}
+        aria-hidden
+      />
+      <div className="relative flex items-center justify-between">
         <Icon className="h-4 w-4 text-[var(--glass-text-secondary)]" />
         <span className="text-[10px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">{label}</span>
       </div>
-      <p className="mt-2 text-2xl font-bold text-[var(--glass-text-primary)]">{value}</p>
-      <p className="mt-1 line-clamp-1 text-[11px] text-[var(--glass-text-tertiary)]">{sub}</p>
+      <p className="relative mt-2 text-2xl font-bold text-[var(--glass-text-primary)]">{value}</p>
+      <p className="relative mt-1 line-clamp-1 text-[11px] text-[var(--glass-text-tertiary)]">{sub}</p>
     </div>
   )
 }
@@ -960,7 +964,7 @@ function SplitModeButton({ label, active, onClick }: { label: string; active: bo
         'rounded-lg px-3 py-1.5 text-xs font-medium transition-all',
         active
           ? 'bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-white shadow-[var(--glass-shadow-sm)]'
-          : 'text-[var(--glass-text-secondary)] hover:bg-white/70 hover:text-[var(--glass-text-primary)]',
+              : 'text-[var(--glass-text-secondary)] hover:bg-white/[0.06] hover:text-[var(--glass-text-primary)]',
       ].join(' ')}
     >
       {label}

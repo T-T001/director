@@ -145,19 +145,19 @@ export function ConfigStage({ projectId, episodeId, workspace, episode }: Worksp
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
+          <article className="metric-card px-3 py-3">
             <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">草稿状态</p>
             <p className="mt-1 text-lg font-semibold">{dirty ? '有未保存修改' : '已同步'}</p>
           </article>
-          <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
+          <article className="metric-card px-3 py-3">
             <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">画面比例</p>
             <p className="mt-1 text-lg font-semibold">{draft.video_ratio}</p>
           </article>
-          <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
+          <article className="metric-card px-3 py-3">
             <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">分辨率</p>
             <p className="mt-1 text-lg font-semibold">{draft.video_resolution}</p>
           </article>
-          <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
+          <article className="metric-card px-3 py-3">
             <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">画风</p>
             <p className="mt-1 line-clamp-1 text-lg font-semibold">{draft.art_style}</p>
           </article>
@@ -174,7 +174,7 @@ export function ConfigStage({ projectId, episodeId, workspace, episode }: Worksp
               key={preset.id}
               type="button"
               onClick={() => applyPreset(preset)}
-              className="card-base p-3 text-left transition-colors hover:bg-white"
+              className="card-base p-3 text-left transition-colors hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10"
             >
               <h4 className="text-sm font-semibold">{preset.title}</h4>
               <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">{preset.description}</p>

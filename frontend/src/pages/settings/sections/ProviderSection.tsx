@@ -156,7 +156,7 @@ export function ProviderSection() {
       <div className="grid gap-4">
         <SectionCard className="glass-surface-elevated flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-indigo-500 text-white">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--glass-stroke-base)] bg-gradient-to-br from-[rgba(72,209,204,0.22)] to-[rgba(168,113,255,0.22)] text-base shadow-[var(--glass-shadow-sm)]">
               📦
             </span>
             <div>

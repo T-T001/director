@@ -789,14 +789,14 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                       {timingLabel ? <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">{timingLabel}</p> : <p className="mt-1 text-xs text-[var(--glass-text-tertiary)]">未绑定时间戳</p>}
                     </button>
                     <div className="mt-2 grid grid-cols-2 gap-1.5">
-                      <button type="button" onClick={() => void runLineAction('generate', line)} disabled={generating || voiceGenerateMutation.isPending} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
+                      <button type="button" onClick={() => void runLineAction('generate', line)} disabled={generating || voiceGenerateMutation.isPending} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
                         {generating ? '...' : hasAudio ? 'Regenerate' : 'Generate'}
                       </button>
                       <button type="button" onClick={() => openLineEditor(line.id)} className="glass-btn-base glass-btn-ghost rounded-lg px-2 py-1 text-xs">编辑</button>
-                      <button type="button" onClick={() => void runLineAction('play', line)} disabled={playing || !episodeAudioUrl} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
+                      <button type="button" onClick={() => void runLineAction('play', line)} disabled={playing || !episodeAudioUrl} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
                         {playing ? '...' : 'Play'}
                       </button>
-                      <button type="button" onClick={() => void runLineAction('download', line)} disabled={downloading || !episodeAudioUrl} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
+                      <button type="button" onClick={() => void runLineAction('download', line)} disabled={downloading || !episodeAudioUrl} className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60">
                         {downloading ? '...' : 'Download'}
                       </button>
                       <button type="button" onClick={() => void runLineAction('delete', line)} className="glass-btn-base col-span-2 rounded-lg border border-[var(--glass-tone-danger-fg)] bg-[var(--glass-tone-danger-bg)] px-2 py-1 text-xs text-[var(--glass-tone-danger-fg)]">删除台词</button>
@@ -868,7 +868,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                           </button>
                           <button
                             type="button"
-                            className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60"
+                            className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-xs text-[var(--glass-text-secondary)] disabled:opacity-60"
                             onClick={() => {
                               saveEmotionSettings(line.id)
                               void runLineAction('generate', line)
@@ -910,7 +910,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
               </div>
             </div>
 
-            <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">Preview: {composeDialogue(selectedLine) || '-'}</p>
+            <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">Preview: {composeDialogue(selectedLine) || '-'}</p>
             {lineTimeLabel({ startTime: selectedLine.startTime || null, endTime: selectedLine.endTime || null }) ? (
               <p className="text-xs text-[var(--glass-text-tertiary)]">Timing: {lineTimeLabel({ startTime: selectedLine.startTime || null, endTime: selectedLine.endTime || null })}</p>
             ) : null}
@@ -953,7 +953,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
         {tasksQuery.isError ? <ErrorState message="加载任务失败。" /> : null}
         {!tasksQuery.isLoading && !tasksQuery.isError && voiceTasks.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">No voice-related tasks yet.</p> : null}
         {voiceTasks.map((task) => (
-          <article key={task.id} className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm">
+          <article key={task.id} className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="font-medium text-[var(--glass-text-secondary)]">{task.task_type}</p>
               <span className={['rounded-full px-2 py-0.5 text-xs', statusClass(task.status)].join(' ')}>{task.status.replace(/_/g, ' ')}</span>
@@ -990,7 +990,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
 
             <textarea className="glass-input min-h-36" value={selectedLine.text} onChange={(event) => updateLine(selectedLine.id, { text: event.target.value })} placeholder="台词内容..." />
 
-            <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">Preview: {composeDialogue(selectedLine) || '-'}</p>
+            <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">Preview: {composeDialogue(selectedLine) || '-'}</p>
 
             <div className="flex flex-wrap justify-end gap-2">
               <Button type="button" variant="secondary" onClick={() => setIsLineModalOpen(false)}>取消</Button>
@@ -1030,7 +1030,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                   onChange={(event) => setVoiceSearch(event.target.value)}
                   placeholder="按名称或风格搜索音色"
                 />
-                <div className="max-h-72 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
+                <div className="max-h-72 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] p-2">
                   {filteredVoiceProfiles.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">No profile matches the current search.</p> : null}
                   {filteredVoiceProfiles.map((profile) => {
                     const selected = selectedVoiceProfileId === profile.id
@@ -1043,7 +1043,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                           'w-full rounded-lg border px-3 py-2 text-left transition-colors',
                           selected
                             ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]'
-                            : 'border-[var(--glass-stroke-base)] bg-white text-[var(--glass-text-secondary)] hover:bg-white/80',
+                            : 'border-[var(--glass-stroke-base)] bg-white/[0.03] text-[var(--glass-text-secondary)] hover:bg-white/[0.07]',
                         ].join(' ')}
                       >
                         <div className="flex items-center justify-between gap-2">
@@ -1057,7 +1057,7 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
                 </div>
               </div>
 
-              <aside className="space-y-2 rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-3">
+              <aside className="space-y-2 rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] p-3">
                 <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">绑定汇总</p>
                 <p className="text-xs text-[var(--glass-text-tertiary)]">Speaker: <span className="font-medium text-[var(--glass-text-secondary)]">{bindingSpeaker}</span></p>
                 <p className="text-xs text-[var(--glass-text-tertiary)]">

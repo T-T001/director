@@ -1,4 +1,8 @@
 :root {
+  /* Render native form controls (select popups, date pickers, scrollbars, autofill)
+     in dark mode so they stop flashing the OS white/grey chrome on our dark canvas. */
+  color-scheme: dark;
+
   --glass-bg-canvas: #08090d;
   --glass-bg-surface: rgba(18, 20, 27, 0.84);
   --glass-bg-surface-strong: rgba(25, 28, 36, 0.94);

@@ -88,7 +88,7 @@ export function AddProviderModal({ open, onClose, onSubmit, submitting }: Props)
       width={520}
     >
       <div className="grid gap-4">
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5 text-[12px] leading-5 text-amber-800">
+        <div className="rounded-xl border border-[var(--glass-stroke-strong)] glass-warning px-3 py-2.5 text-[12px] leading-5">
           ⚠ 项目目前为测试版,由于市面上各厂商自定义 API 格式差异较大,自定义 API 兼容性尚不完善,建议优先使用官方内置 API。后续版本将持续更新以兼容更多厂商。
         </div>
 

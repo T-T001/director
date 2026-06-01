@@ -675,7 +675,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                             event.stopPropagation()
                             generateShotImage(shot)
                           }}
-                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-[11px] text-[var(--glass-text-secondary)]"
+                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-[11px] text-[var(--glass-text-secondary)] transition-colors hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10"
                         >
                           Generate
                         </button>
@@ -718,7 +718,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 {visibleShots.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">当前筛选没有镜头。</p> : null}
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70">
+              <div className="overflow-x-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03]">
                 <table className="min-w-full text-sm">
                   <thead className="text-left text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">
                     <tr>
@@ -736,7 +736,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                       const shotDirty = isShotDirty(shot)
                       const prompt = getPrompt(shot)
                       return (
-                        <tr key={shot.id} onClick={() => setSelectedShotId(shot.id)} className="cursor-pointer border-t border-[var(--glass-stroke-base)] hover:bg-white">
+                        <tr key={shot.id} onClick={() => setSelectedShotId(shot.id)} className="cursor-pointer border-t border-[var(--glass-stroke-base)] hover:bg-white/[0.04]">
                           <td className="px-3 py-2 font-medium">#{shot.order}</td>
                           <td className="px-3 py-2">
                             <div className="h-10 w-16 rounded border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)]" />
@@ -828,7 +828,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 </div>
               </div>
 
-              <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm text-[var(--glass-text-secondary)]">{selectedShot.text}</p>
+              <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--glass-text-secondary)]">{selectedShot.text}</p>
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className={['rounded-full px-2 py-0.5', getPrompt(selectedShot).trim() ? 'glass-success' : 'glass-warning'].join(' ')}>
                   {getPrompt(selectedShot).trim() ? 'Prompt Ready' : 'Prompt Missing'}
@@ -894,7 +894,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
         {tasksQuery.isError ? <ErrorState message="加载任务失败。" /> : null}
         {!tasksQuery.isLoading && !tasksQuery.isError && promptTasks.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">当前没有提示词相关任务。</p> : null}
         {promptTasks.map((task) => (
-          <article key={task.id} className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm">
+          <article key={task.id} className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="font-medium text-[var(--glass-text-secondary)]">{task.task_type}</p>
               <span className={['rounded-full px-2 py-0.5 text-xs', statusClass(task.status)].join(' ')}>{task.status.replace(/_/g, ' ')}</span>
@@ -919,8 +919,8 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
               <h3 className="text-lg font-semibold">AI 润色提示词</h3>
               <button type="button" className="glass-btn-base glass-btn-ghost rounded-xl px-2 py-1.5 text-xs" onClick={() => setIsAiModalOpen(false)}>关闭</button>
             </div>
-            <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm text-[var(--glass-text-secondary)]">{selectedShot.text}</p>
-            <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2">
+            <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--glass-text-secondary)]">{selectedShot.text}</p>
+            <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2">
               <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">Referenced Assets</p>
               <div className="mt-2 flex flex-wrap gap-1.5">
                 {selectedAssetsForCurrentShot.length === 0 ? <span className="text-xs text-[var(--glass-text-tertiary)]">No asset mentions selected for this shot.</span> : null}
@@ -947,7 +947,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
               </div>
             </div>
             <div className="grid gap-2 md:grid-cols-2">
-              <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 p-2">
+              <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] p-2">
                 <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">角色资产</p>
                 <div className="mt-2 flex max-h-32 flex-wrap gap-1 overflow-y-auto">
                   {assetLibrary.characterAssets.map((asset) => {
@@ -959,7 +959,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                         onClick={() => toggleAssetSelectionForShot(selectedShot.id, asset)}
                         className={[
                           'rounded-md border px-2 py-1 text-xs',
-                          selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'border-[var(--glass-stroke-base)] bg-white text-[var(--glass-text-secondary)]',
+                          selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'border-[var(--glass-stroke-base)] bg-white/[0.03] text-[var(--glass-text-secondary)]',
                         ].join(' ')}
                       >
                         @{asset.name}
@@ -968,7 +968,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                   })}
                 </div>
               </div>
-              <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 p-2">
+              <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] p-2">
                 <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">场景资产</p>
                 <div className="mt-2 flex max-h-32 flex-wrap gap-1 overflow-y-auto">
                   {assetLibrary.locationAssets.map((asset) => {
@@ -980,7 +980,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                         onClick={() => toggleAssetSelectionForShot(selectedShot.id, asset)}
                         className={[
                           'rounded-md border px-2 py-1 text-xs',
-                          selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-warning-bg)] text-[var(--glass-tone-warning-fg)]' : 'border-[var(--glass-stroke-base)] bg-white text-[var(--glass-text-secondary)]',
+                          selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-warning-bg)] text-[var(--glass-tone-warning-fg)]' : 'border-[var(--glass-stroke-base)] bg-white/[0.03] text-[var(--glass-text-secondary)]',
                         ].join(' ')}
                       >
                         @{asset.name}
@@ -1011,7 +1011,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
             <input className="glass-input" value={mentionSearch} onChange={(event) => setMentionSearch(event.target.value)} placeholder="搜索资产" />
 
             <div className="grid gap-2 lg:grid-cols-3">
-              <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
+              <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] p-2">
                 <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">角色候选</p>
                 {filteredCharacters.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">暂无候选。</p> : null}
                 {filteredCharacters.map((item) => {
@@ -1025,7 +1025,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                       onClick={() => toggleMention('character', item)}
                       className={[
                         'w-full rounded-lg border px-2 py-1.5 text-left text-xs transition-colors',
-                        selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'border-[var(--glass-stroke-base)] bg-white text-[var(--glass-text-secondary)] hover:bg-white/80',
+                        selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'border-[var(--glass-stroke-base)] bg-white/[0.03] text-[var(--glass-text-secondary)] hover:bg-white/[0.07]',
                       ].join(' ')}
                     >
                       {selected ? 'Added | ' : ''}
@@ -1046,7 +1046,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                           onClick={() => toggleAssetSelectionForShot(selectedShot.id, asset)}
                           className={[
                             'rounded-md border px-2 py-1 text-[11px]',
-                            selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'border-[var(--glass-stroke-base)] bg-white text-[var(--glass-text-secondary)]',
+                            selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'border-[var(--glass-stroke-base)] bg-white/[0.03] text-[var(--glass-text-secondary)]',
                           ].join(' ')}
                         >
                           @{asset.name}
@@ -1057,7 +1057,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 </div>
               </div>
 
-              <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
+              <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] p-2">
                 <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">场景候选</p>
                 {filteredLocations.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">暂无候选。</p> : null}
                 {filteredLocations.map((item) => {
@@ -1071,7 +1071,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                       onClick={() => toggleMention('location', item)}
                       className={[
                         'w-full rounded-lg border px-2 py-1.5 text-left text-xs transition-colors',
-                        selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'border-[var(--glass-stroke-base)] bg-white text-[var(--glass-text-secondary)] hover:bg-white/80',
+                        selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]' : 'border-[var(--glass-stroke-base)] bg-white/[0.03] text-[var(--glass-text-secondary)] hover:bg-white/[0.07]',
                       ].join(' ')}
                     >
                       {selected ? 'Added | ' : ''}
@@ -1092,7 +1092,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                           onClick={() => toggleAssetSelectionForShot(selectedShot.id, asset)}
                           className={[
                             'rounded-md border px-2 py-1 text-[11px]',
-                            selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-warning-bg)] text-[var(--glass-tone-warning-fg)]' : 'border-[var(--glass-stroke-base)] bg-white text-[var(--glass-text-secondary)]',
+                            selected ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-warning-bg)] text-[var(--glass-tone-warning-fg)]' : 'border-[var(--glass-stroke-base)] bg-white/[0.03] text-[var(--glass-text-secondary)]',
                           ].join(' ')}
                         >
                           @{asset.name}
@@ -1103,7 +1103,7 @@ export function PromptsStage({ projectId, episodeId, episode }: WorkspaceStagePa
                 </div>
               </div>
 
-              <div className="max-h-64 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
+              <div className="max-h-64 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] p-2">
                 <p className="mb-1 text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">已选资产提及</p>
                 {selectedAssetsForCurrentShot.length === 0 ? <p className="text-xs text-[var(--glass-text-tertiary)]">当前镜头尚未选择资产。</p> : null}
                 <div className="flex flex-wrap gap-1.5">

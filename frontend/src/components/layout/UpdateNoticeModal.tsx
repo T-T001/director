@@ -37,7 +37,7 @@ export function UpdateNoticeModal({
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/60 px-3 py-2">
+          <div className="rounded-xl glass-field px-3 py-2">
             <p className="text-[10px] uppercase tracking-wide text-[var(--glass-text-tertiary)]">当前版本</p>
             <p className="mt-0.5 text-sm font-semibold text-[var(--glass-text-secondary)]">v{currentVersion}</p>
           </div>

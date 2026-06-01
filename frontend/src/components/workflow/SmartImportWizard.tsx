@@ -73,7 +73,7 @@ export function SmartImportWizard({ open, onClose, onBatchSave, onManualCreate }
               <div className="grid gap-4 md:grid-cols-2">
                 <button
                   onClick={handleManualCreate}
-                  className="group relative overflow-hidden rounded-2xl border-2 border-[var(--glass-stroke-base)] bg-white/70 p-6 text-left transition hover:-translate-y-0.5 hover:border-[var(--glass-stroke-focus)] hover:shadow-[var(--glass-shadow-md)]"
+                  className="group relative overflow-hidden rounded-2xl border-2 border-[var(--glass-stroke-base)] bg-white/[0.03] p-6 text-left transition hover:-translate-y-0.5 hover:border-[var(--glass-stroke-focus)] hover:shadow-[var(--glass-shadow-md)]"
                 >
                   <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--glass-bg-muted)] text-[var(--glass-text-secondary)] transition group-hover:bg-[var(--glass-tone-info-bg)] group-hover:text-[var(--glass-tone-info-fg)]">
                     <Edit3 className="h-6 w-6" />
@@ -85,7 +85,7 @@ export function SmartImportWizard({ open, onClose, onBatchSave, onManualCreate }
                   </span>
                 </button>
 
-                <div className="rounded-2xl border-2 border-[var(--glass-accent-from)]/30 bg-gradient-to-br from-[var(--glass-bg-muted)] to-white/70 p-6">
+                <div className="rounded-2xl border-2 border-[var(--glass-accent-from)]/30 bg-gradient-to-br from-[var(--glass-bg-muted)] to-white/[0.05] p-6">
                   <div className="flex items-center gap-3">
                     <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] text-white shadow-[var(--glass-shadow-md)]">
                       <Zap className="h-6 w-6" />
@@ -207,7 +207,7 @@ export function SmartImportWizard({ open, onClose, onBatchSave, onManualCreate }
                             'group relative cursor-pointer rounded-xl border p-3 transition',
                             isActive
                               ? 'border-[var(--glass-accent-from)] bg-[var(--glass-bg-muted)] shadow-[var(--glass-shadow-sm)]'
-                              : 'border-[var(--glass-stroke-base)] bg-white/70 hover:border-[var(--glass-stroke-focus)] hover:bg-white',
+                              : 'border-[var(--glass-stroke-base)] bg-white/[0.03] hover:border-[var(--glass-stroke-focus)] hover:bg-white/[0.07]',
                           ].join(' ')}
                         >
                           <div className="flex items-center gap-2">
@@ -220,7 +220,7 @@ export function SmartImportWizard({ open, onClose, onBatchSave, onManualCreate }
                               className="w-14 rounded-md border border-transparent bg-transparent px-1.5 py-0.5 text-sm font-semibold text-[var(--glass-accent-from)] hover:border-[var(--glass-stroke-base)] focus:border-[var(--glass-stroke-focus)] focus:outline-none"
                             />
                             <span className="text-xs text-[var(--glass-text-tertiary)]">集</span>
-                            <span className="ml-auto rounded-full bg-white/80 px-2 py-0.5 text-[11px] text-[var(--glass-text-tertiary)]">
+                            <span className="ml-auto rounded-full bg-white/[0.05] px-2 py-0.5 text-[11px] text-[var(--glass-text-tertiary)]">
                               {ep.wordCount.toLocaleString()} 字
                             </span>
                             {wizard.episodes.length > 1 && (
@@ -264,7 +264,7 @@ export function SmartImportWizard({ open, onClose, onBatchSave, onManualCreate }
                   </button>
                 </div>
 
-                <div className="rounded-2xl border border-[var(--glass-stroke-base)] bg-white/80 p-4">
+                <div className="rounded-2xl border border-[var(--glass-stroke-base)] bg-white/[0.05] p-4">
                   {active ? (
                     <>
                       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -327,7 +327,7 @@ export function SmartImportWizard({ open, onClose, onBatchSave, onManualCreate }
         <Modal open onClose={wizard.closeMarkerConfirm} title="检测到章节标记" subtitle="可以直接按标记拆分，也可以退回使用字数均分" width={560}>
           <div className="grid gap-4">
             <div className="flex items-center gap-3 rounded-xl border border-[var(--glass-tone-info-fg)]/30 bg-[var(--glass-tone-info-bg)]/30 px-4 py-3">
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-[var(--glass-tone-info-fg)]">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]">
                 <FileText className="h-5 w-5" />
               </span>
               <div>

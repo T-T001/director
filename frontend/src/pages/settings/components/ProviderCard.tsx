@@ -379,7 +379,7 @@ export function ProviderCard({
           ) : null}
           <span
             title={provider.has_api_key ? '已连接' : '未配置 Key'}
-            className={provider.has_api_key ? 'text-emerald-500' : 'text-rose-400'}
+            className={provider.has_api_key ? 'text-[var(--glass-tone-success-fg)]' : 'text-[var(--glass-tone-danger-fg)]'}
           >
             {provider.has_api_key ? <Zap className="h-3.5 w-3.5" /> : <ZapOff className="h-3.5 w-3.5" />}
           </span>
@@ -407,7 +407,7 @@ export function ProviderCard({
                 onDeleteProvider()
               }
             }}
-            className="rounded p-1 text-[var(--glass-text-tertiary)] transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-rose-500"
+            className="rounded p-1 text-[var(--glass-text-tertiary)] transition-colors hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-tone-danger-fg)]"
             title="删除"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -428,7 +428,7 @@ export function ProviderCard({
 
       {/* API Key row */}
       <div className="px-3.5 pt-1">
-        <div className="flex items-center gap-2.5 rounded-xl border border-[var(--glass-stroke-soft)] bg-white/60 px-3 py-2">
+        <div className="flex items-center gap-2.5 rounded-xl glass-field px-3 py-2">
           <span className="w-[64px] shrink-0 whitespace-nowrap text-[12px] font-semibold text-[var(--glass-text-primary)]">
             API Key
           </span>
@@ -483,7 +483,7 @@ export function ProviderCard({
                 </button>
                 <button
                   onClick={clearKey}
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)] hover:text-rose-500"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-tone-danger-fg)]"
                   title="清空"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -493,7 +493,7 @@ export function ProviderCard({
           ) : (
             <button
               onClick={startEditKey}
-              className="inline-flex h-7 items-center gap-1 rounded-md bg-sky-100 px-2.5 text-[12px] font-semibold text-sky-700 hover:bg-sky-200"
+              className="inline-flex h-7 items-center gap-1 rounded-md border border-[var(--glass-stroke-strong)] bg-[var(--glass-tone-info-bg)] px-2.5 text-[12px] font-semibold text-[var(--glass-tone-info-fg)] transition-colors hover:bg-[rgba(72,209,204,0.22)]"
             >
               <Plus className="h-3.5 w-3.5" />
               连接
@@ -504,7 +504,7 @@ export function ProviderCard({
 
       {/* Base URL row */}
       <div className="px-3.5 pb-2 pt-2">
-        <div className="flex items-center gap-2.5 rounded-xl border border-[var(--glass-stroke-soft)] bg-white/60 px-3 py-2">
+        <div className="flex items-center gap-2.5 rounded-xl glass-field px-3 py-2">
           <span className="w-[64px] shrink-0 whitespace-nowrap text-[12px] font-semibold text-[var(--glass-text-tertiary)]">
             Base URL
           </span>
@@ -561,10 +561,10 @@ export function ProviderCard({
             className={[
               'space-y-1 rounded-xl border p-3 text-[12px]',
               test.status === 'passed'
-                ? 'border-emerald-300/60 bg-emerald-50'
+                ? 'border-[rgba(79,209,143,0.4)] glass-success'
                 : test.status === 'failed'
-                  ? 'border-rose-300/60 bg-rose-50'
-                  : 'border-[var(--glass-stroke-base)] bg-white/70',
+                  ? 'border-[rgba(255,107,95,0.4)] glass-danger'
+                  : 'glass-field',
             ].join(' ')}
           >
             <div className="flex items-center justify-between">
@@ -576,17 +576,17 @@ export function ProviderCard({
                   </>
                 ) : test.status === 'passed' ? (
                   <>
-                    <Check className="h-3.5 w-3.5 text-emerald-600" />
-                    <span className="text-emerald-700">测试通过</span>
-                    <span className="rounded bg-white/70 px-1.5 py-0.5 font-mono text-[10px] text-[var(--glass-text-secondary)]">
+                    <Check className="h-3.5 w-3.5 text-[var(--glass-tone-success-fg)]" />
+                    <span className="text-[var(--glass-tone-success-fg)]">测试通过</span>
+                    <span className="rounded bg-black/25 px-1.5 py-0.5 font-mono text-[10px] text-[var(--glass-text-secondary)]">
                       {test.modelDisplay}
                     </span>
                   </>
                 ) : (
                   <>
-                    <X className="h-3.5 w-3.5 text-rose-600" />
-                    <span className="text-rose-700">测试失败</span>
-                    <span className="rounded bg-white/70 px-1.5 py-0.5 font-mono text-[10px] text-[var(--glass-text-secondary)]">
+                    <X className="h-3.5 w-3.5 text-[var(--glass-tone-danger-fg)]" />
+                    <span className="text-[var(--glass-tone-danger-fg)]">测试失败</span>
+                    <span className="rounded bg-black/25 px-1.5 py-0.5 font-mono text-[10px] text-[var(--glass-text-secondary)]">
                       {test.modelDisplay}
                     </span>
                   </>
@@ -620,7 +620,7 @@ export function ProviderCard({
                   </p>
                 ) : null}
                 {test.result.error ? (
-                  <p className="line-clamp-2 text-[11px] text-rose-600">错误: {test.result.error}</p>
+                  <p className="line-clamp-2 text-[11px] text-[var(--glass-tone-danger-fg)]">错误: {test.result.error}</p>
                 ) : null}
               </>
             ) : null}
@@ -630,7 +630,7 @@ export function ProviderCard({
 
       {/* Tab bar */}
       <div className="px-3.5">
-        <div className="flex items-center gap-1 rounded-xl border border-[var(--glass-stroke-soft)] bg-white/50 p-1">
+        <div className="glass-segment">
           {TAB_ORDER.map((tab) => {
             const active = tab === activeTab
             return (
@@ -639,10 +639,8 @@ export function ProviderCard({
                 type="button"
                 onClick={() => setActiveTab(tab)}
                 className={[
-                  'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[12px] font-medium transition',
-                  active
-                    ? 'bg-white text-[var(--glass-text-primary)] shadow-sm'
-                    : 'text-[var(--glass-text-secondary)] hover:text-[var(--glass-text-primary)]',
+                  'glass-segment-btn flex-1 px-2 py-1.5 text-[12px] font-medium',
+                  active ? 'glass-segment-btn-active' : '',
                 ].join(' ')}
               >
                 <TabIcon type={tab} />
@@ -665,7 +663,7 @@ export function ProviderCard({
         {addFormTab !== activeTab ? (
           <button
             onClick={() => openAddForm(activeTab)}
-            className="inline-flex items-center gap-1 rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-[12px] font-medium text-[var(--glass-text-secondary)] hover:bg-[var(--glass-bg-muted)]"
+            className="inline-flex items-center gap-1 rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-[12px] font-medium text-[var(--glass-text-secondary)] transition-colors hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10 hover:text-[var(--glass-text-primary)]"
           >
             <Plus className="h-3.5 w-3.5" />
             添加
@@ -675,7 +673,7 @@ export function ProviderCard({
 
       {/* Add form */}
       {addFormTab === activeTab ? (
-        <div className="mx-3.5 mt-2 rounded-xl border border-[var(--glass-stroke-base)] bg-white/80 p-3">
+        <div className="mx-3.5 mt-2 rounded-xl border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-surface-strong)] p-3 shadow-[var(--glass-shadow-sm)]">
           <div className="mb-2 flex items-center gap-2">
             <input
               type="text"
@@ -756,7 +754,7 @@ export function ProviderCard({
       {/* Model list */}
       <div className="px-3.5 pb-3 pt-2">
         <div
-          className="max-h-[280px] overflow-y-auto rounded-xl border border-[var(--glass-stroke-soft)] bg-white/40 p-2"
+          className="max-h-[280px] overflow-y-auto rounded-xl glass-field p-2"
           style={{ scrollbarGutter: 'stable' }}
         >
           {currentModels.length === 0 ? (
@@ -769,7 +767,7 @@ export function ProviderCard({
                 editingModel && editingModel.id === model.id ? (
                   <div
                     key={model.id}
-                    className="rounded-xl border border-sky-200 bg-white p-3"
+                    className="rounded-xl border border-[var(--glass-stroke-strong)] bg-[var(--glass-bg-surface-strong)] p-3 shadow-[var(--glass-shadow-sm)]"
                   >
                     <div className="mb-2 grid gap-2 md:grid-cols-2">
                       <input
@@ -843,7 +841,7 @@ export function ProviderCard({
                       className="glass-input mb-2 min-h-[140px] w-full px-3 py-2 font-mono text-[11px]"
                     />
                     <div className="flex items-center justify-between">
-                      <p className="truncate text-[10px] text-sky-600">
+                      <p className="truncate text-[10px] text-[var(--glass-accent-cyan)]">
                         Full URL → {formatFullUrl(provider.base_url, editingModel.request_path)}
                       </p>
                       <div className="flex items-center gap-2">
@@ -905,7 +903,7 @@ function ModelRow({ model, baseUrl, isDefault, hasApiKey, onEdit, onDelete, onTo
   return (
     <div
       className={[
-        'group flex items-center justify-between gap-2 rounded-xl bg-white px-3 py-2 transition-colors hover:bg-[var(--glass-bg-muted)]',
+        'group flex items-center justify-between gap-2 rounded-xl border border-[var(--glass-stroke-soft)] bg-white/[0.025] px-3 py-2 transition-colors hover:border-[var(--glass-stroke-base)] hover:bg-[var(--glass-bg-muted)]',
         model.enabled ? '' : 'opacity-55',
       ].join(' ')}
     >
@@ -915,21 +913,21 @@ function ModelRow({ model, baseUrl, isDefault, hasApiKey, onEdit, onDelete, onTo
             {model.display_name ?? model.model_id}
           </span>
           {isDefault ? (
-            <span className="shrink-0 rounded-md bg-[var(--glass-text-primary)] px-1.5 py-0.5 text-[10px] leading-none text-white">
+            <span className="shrink-0 rounded-md bg-gradient-to-br from-[var(--glass-accent-from)] to-[var(--glass-accent-to)] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-[var(--glass-text-on-accent)]">
               默认
             </span>
           ) : null}
-          <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600">
+          <span className="shrink-0 rounded-full border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] px-1.5 py-0.5 text-[10px] text-[var(--glass-text-tertiary)]">
             {CAPABILITY_LABEL[model.capability]}
           </span>
-          <span className="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600">
+          <span className="shrink-0 rounded-full border border-[var(--glass-stroke-base)] bg-[var(--glass-bg-muted)] px-1.5 py-0.5 text-[10px] text-[var(--glass-text-tertiary)]">
             {PROTOCOL_LABEL[model.protocol ?? 'openai']}
           </span>
         </div>
         <span className="truncate font-mono text-[11px] text-[var(--glass-text-tertiary)]">
           {model.model_id}
         </span>
-        <span className="truncate font-mono text-[10px] text-sky-600">
+        <span className="truncate font-mono text-[10px] text-[var(--glass-accent-cyan)]">
           path: {model.request_path}
         </span>
         <span className="truncate font-mono text-[10px] text-[var(--glass-text-tertiary)]">
@@ -954,7 +952,7 @@ function ModelRow({ model, baseUrl, isDefault, hasApiKey, onEdit, onDelete, onTo
         </button>
         <button
           onClick={onDelete}
-          className="rounded p-1 text-[var(--glass-text-tertiary)] opacity-0 transition-opacity group-hover:opacity-100 hover:bg-[var(--glass-bg-muted)] hover:text-rose-500"
+          className="rounded p-1 text-[var(--glass-text-tertiary)] opacity-0 transition-opacity group-hover:opacity-100 hover:bg-[var(--glass-bg-muted)] hover:text-[var(--glass-tone-danger-fg)]"
           title="删除"
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -966,10 +964,8 @@ function ModelRow({ model, baseUrl, isDefault, hasApiKey, onEdit, onDelete, onTo
           }}
           disabled={toggleDisabled}
           className={[
-            'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border transition-colors',
-            model.enabled
-              ? 'border-sky-500 bg-sky-500'
-              : 'border-[var(--glass-stroke-base)] bg-slate-200',
+            'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors',
+            model.enabled ? 'glass-switch glass-switch-on' : 'glass-switch',
             toggleDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer',
           ].join(' ')}
           title={toggleDisabled ? '请先配置 API Key' : model.enabled ? '停用' : '启用'}

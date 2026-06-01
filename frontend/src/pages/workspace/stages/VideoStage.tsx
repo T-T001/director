@@ -657,7 +657,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                             'rounded-xl border px-3 py-2 text-left text-xs transition-colors',
                             active
                               ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]'
-                              : 'border-[var(--glass-stroke-base)] bg-white/80 text-[var(--glass-text-secondary)] hover:bg-white',
+                              : 'border-[var(--glass-stroke-base)] bg-white/[0.04] text-[var(--glass-text-secondary)] hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/[0.08]',
                           ].join(' ')}
                         >
                           <p className="font-semibold">镜头 {line.order}</p>
@@ -768,7 +768,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                             void runRenderAction('generate', line.id, line.order)
                           }}
                           disabled={isGenerating || generateMutation.isPending}
-                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-[11px] text-[var(--glass-text-secondary)] disabled:opacity-60"
+                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-[11px] text-[var(--glass-text-secondary)] disabled:opacity-60"
                         >
                           {isGenerating ? '...' : 'Generate'}
                         </button>
@@ -778,7 +778,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                             event.stopPropagation()
                             void runRenderAction('model', line.id, line.order)
                           }}
-                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-[11px] text-[var(--glass-text-secondary)]"
+                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-[11px] text-[var(--glass-text-secondary)]"
                         >
                           Config
                         </button>
@@ -788,7 +788,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                             event.stopPropagation()
                             openPromptModal(line)
                           }}
-                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-[11px] text-[var(--glass-text-secondary)]"
+                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-[11px] text-[var(--glass-text-secondary)]"
                         >
                           Prompt Modal
                         </button>
@@ -799,7 +799,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                             void runRenderAction('lip-sync', line.id, line.order)
                           }}
                           disabled={isLipSyncing || generateMutation.isPending || !currentEpisode.audio_media_id}
-                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white px-2 py-1 text-[11px] text-[var(--glass-text-secondary)] disabled:opacity-60"
+                          className="glass-btn-base rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.05] px-2 py-1 text-[11px] text-[var(--glass-text-secondary)] disabled:opacity-60"
                         >
                           {isLipSyncing ? '...' : '口型同步'}
                         </button>
@@ -836,7 +836,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                 </div>
               </div>
 
-              <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">{selectedLine.text}</p>
+              <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">{selectedLine.text}</p>
               {selectedConfig?.mode === 'first-last-frame' ? (
                 <div className="grid gap-3 rounded-xl border border-[var(--glass-stroke-focus)]/50 bg-[var(--glass-tone-info-bg)]/50 p-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -852,7 +852,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                       {selectedFirstFrameUrl ? (
                         <img src={selectedFirstFrameUrl} alt={`Shot ${selectedLine.order} first frame`} className="aspect-video w-full rounded-lg border border-[var(--glass-stroke-base)] object-cover" />
                       ) : (
-                        <div className="aspect-video rounded-lg border border-dashed border-[var(--glass-stroke-base)] bg-white/70" />
+                        <div className="aspect-video rounded-lg border border-dashed border-[var(--glass-stroke-base)] bg-white/[0.03]" />
                       )}
                     </div>
                     <span className="text-center text-xs text-[var(--glass-text-tertiary)]">{'->'}</span>
@@ -861,7 +861,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                       {selectedLastFrameUrl ? (
                         <img src={selectedLastFrameUrl} alt={`Shot ${selectedNextLine?.order ?? selectedLine.order} last frame`} className="aspect-video w-full rounded-lg border border-[var(--glass-stroke-base)] object-cover" />
                       ) : (
-                        <div className="aspect-video rounded-lg border border-dashed border-[var(--glass-stroke-base)] bg-white/70" />
+                        <div className="aspect-video rounded-lg border border-dashed border-[var(--glass-stroke-base)] bg-white/[0.03]" />
                       )}
                     </div>
                   </div>
@@ -936,7 +936,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
               {isVoicePanelExpanded ? 'Hide Voice Context' : 'Show Voice Context'}
             </button>
             {isVoicePanelExpanded ? (
-              <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-xs text-[var(--glass-text-tertiary)]">{currentEpisode.srt_content?.trim() || 'No voice transcript bound to this episode yet.'}</p>
+              <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-xs text-[var(--glass-text-tertiary)]">{currentEpisode.srt_content?.trim() || 'No voice transcript bound to this episode yet.'}</p>
             ) : null}
 
             {currentEpisode.audio_media_id ? (
@@ -949,7 +949,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
             {tasksQuery.isError ? <ErrorState message="Failed to load runtime tasks." /> : null}
             {!tasksQuery.isLoading && !tasksQuery.isError && renderTasks.length === 0 ? <p className="text-sm text-[var(--glass-text-tertiary)]">No runtime tasks for this episode yet.</p> : null}
             {renderTasks.map((task) => (
-              <article key={task.id} className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm">
+              <article key={task.id} className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="font-medium text-[var(--glass-text-secondary)]">{task.task_type}</p>
                   <span className={['rounded-full px-2 py-0.5 text-xs', statusClass(task.status)].join(' ')}>{task.status.replace(/_/g, ' ')}</span>
@@ -1018,7 +1018,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                 </select>
               </label>
 
-              <label className="flex items-center gap-2 rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2">
+              <label className="flex items-center gap-2 rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2">
                 <input type="checkbox" checked={selectedConfig.enableLipSync} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { enableLipSync: event.target.checked })} />
                 <span className="text-sm text-[var(--glass-text-secondary)]">启用口型同步</span>
               </label>
@@ -1054,7 +1054,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
               </button>
             </div>
 
-            <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-xs text-[var(--glass-text-tertiary)]">
+            <div className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-xs text-[var(--glass-text-tertiary)]">
               <p>模式：{modeLabel(promptModalConfig.mode)} · 预设：{presetLabel(promptModalConfig.preset)}</p>
               <p className="mt-1">镜头文本：{promptModalShot.text}</p>
             </div>
@@ -1089,11 +1089,11 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
             </div>
 
             {lipSyncVoiceOptions.length === 0 ? (
-              <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">
+              <p className="rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--glass-text-tertiary)]">
                 No transcript voice lines found. This is still a UI shell; lip sync can continue with default episode audio.
               </p>
             ) : (
-              <div className="max-h-72 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 p-2">
+              <div className="max-h-72 space-y-1 overflow-y-auto rounded-xl border border-[var(--glass-stroke-base)] bg-white/[0.03] p-2">
                 {lipSyncVoiceOptions.map((voiceLine) => {
                   const selected = selectedLipSyncVoiceId === voiceLine.id
                   return (
@@ -1105,7 +1105,7 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                         'w-full rounded-lg border px-3 py-2 text-left transition-colors',
                         selected
                           ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]'
-                          : 'border-[var(--glass-stroke-base)] bg-white text-[var(--glass-text-secondary)] hover:bg-white/80',
+                          : 'border-[var(--glass-stroke-base)] bg-white/[0.03] text-[var(--glass-text-secondary)] hover:bg-white/[0.07]',
                       ].join(' ')}
                     >
                       <div className="flex items-center justify-between gap-2">

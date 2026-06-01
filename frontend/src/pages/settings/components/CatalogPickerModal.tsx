@@ -117,7 +117,7 @@ export function CatalogPickerModal(props: Props) {
                     <button
                       key={provider.key}
                       type="button"
-                      className="card-base grid gap-1 p-3 text-left transition-colors hover:bg-white"
+                      className="card-base grid gap-1 p-3 text-left transition-colors hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10"
                       onClick={() => (props as ProviderModeProps).onPick(provider)}
                     >
                       <div className="flex items-center justify-between">
@@ -158,7 +158,7 @@ export function CatalogPickerModal(props: Props) {
                 <button
                   key={`${provider.key}::${model.model_id}`}
                   type="button"
-                  className="card-base flex items-start justify-between gap-3 p-3 text-left transition-colors hover:bg-white"
+                  className="card-base flex items-start justify-between gap-3 p-3 text-left transition-colors hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10"
                   onClick={() => (props as ModelModeProps).onPick(model, provider)}
                 >
                   <div className="grid gap-1">

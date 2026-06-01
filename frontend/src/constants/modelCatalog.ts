@@ -65,14 +65,14 @@ export const CAPABILITY_LABEL: Record<Capability, string> = {
 }
 
 export const CAPABILITY_TONE: Record<Capability, string> = {
-  chat: 'bg-blue-50 text-blue-700 border-blue-200',
-  image: 'bg-purple-50 text-purple-700 border-purple-200',
-  image_edit: 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200',
-  tts: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  stt: 'bg-teal-50 text-teal-700 border-teal-200',
-  embedding: 'bg-slate-50 text-slate-700 border-slate-200',
-  video: 'bg-orange-50 text-orange-700 border-orange-200',
-  lipsync: 'bg-rose-50 text-rose-700 border-rose-200',
+  chat: 'bg-[rgba(72,209,204,0.12)] text-[#8ee9e4] border-[rgba(72,209,204,0.30)]',
+  image: 'bg-[rgba(168,113,255,0.14)] text-[#cbb6ff] border-[rgba(168,113,255,0.32)]',
+  image_edit: 'bg-[rgba(232,121,198,0.14)] text-[#f0b6e0] border-[rgba(232,121,198,0.32)]',
+  tts: 'bg-[rgba(79,209,143,0.14)] text-[#8be4b4] border-[rgba(79,209,143,0.30)]',
+  stt: 'bg-[rgba(45,212,191,0.13)] text-[#7fe6d4] border-[rgba(45,212,191,0.30)]',
+  embedding: 'bg-[rgba(255,229,180,0.08)] text-[var(--glass-text-secondary)] border-[var(--glass-stroke-base)]',
+  video: 'bg-[rgba(255,179,71,0.14)] text-[#ffd08a] border-[rgba(255,179,71,0.32)]',
+  lipsync: 'bg-[rgba(255,107,95,0.14)] text-[#ff9b92] border-[rgba(255,107,95,0.32)]',
 }
 
 export const PROTOCOL_LABEL: Record<Protocol, string> = {

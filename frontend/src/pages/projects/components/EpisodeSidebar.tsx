@@ -102,7 +102,7 @@ export function EpisodeSidebar({
               'flex items-center gap-1.5 rounded-r-2xl border-y border-r px-2.5 py-3 text-xs font-medium transition-all',
               expanded
                 ? 'border-[var(--glass-stroke-focus)] bg-[var(--glass-tone-info-bg)] text-[var(--glass-tone-info-fg)]'
-                : 'border-[var(--glass-stroke-base)] bg-white/90 text-[var(--glass-text-secondary)] hover:bg-white',
+                : 'border-[var(--glass-stroke-base)] bg-white/[0.04] text-[var(--glass-text-secondary)] hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/[0.08]',
             ].join(' ')}
           >
             <ChevronRight className={['h-3.5 w-3.5 transition-transform', expanded ? 'rotate-180' : ''].join(' ')} />
@@ -119,7 +119,7 @@ export function EpisodeSidebar({
             className="glass-modal-shell fixed left-[52px] z-50 flex max-h-[70vh] w-72 flex-col overflow-hidden rounded-r-2xl"
             style={{ top: Math.max(40, posY - 50) }}
           >
-            <div className="border-b border-[var(--glass-stroke-base)] bg-white/80 p-4">
+            <div className="border-b border-[var(--glass-stroke-base)] bg-white/[0.03] p-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="min-w-0">
                   <h3 className="flex items-center gap-1.5 text-sm font-bold text-[var(--glass-text-primary)]">
@@ -182,7 +182,7 @@ export function EpisodeSidebar({
                           <button
                             type="button"
                             onClick={() => setDeleteId(null)}
-                            className="flex-1 rounded-md border border-[var(--glass-stroke-base)] bg-white py-1 text-xs"
+                            className="flex-1 rounded-md border border-[var(--glass-stroke-base)] bg-white/[0.05] py-1 text-xs text-[var(--glass-text-secondary)] transition-colors hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/10"
                           >
                             取消
                           </button>
@@ -238,7 +238,7 @@ export function EpisodeSidebar({
               )}
             </div>
 
-            <div className="border-t border-[var(--glass-stroke-base)] bg-white/80 p-3">
+            <div className="border-t border-[var(--glass-stroke-base)] bg-white/[0.03] p-3">
               {creating ? (
                 <form className="grid gap-2" onSubmit={handleCreateSubmit}>
                   <input

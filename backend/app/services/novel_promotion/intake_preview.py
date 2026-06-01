@@ -26,7 +26,7 @@ _STOP_WORDS = {
 _ANALYZE_PREVIEW_SYSTEM = (
     "你是资深短剧改编策划，请阅读用户粘贴的小说或剧情文本，输出严格 JSON，不能输出任何额外解释。"
     "JSON 顶层键固定为 analysis 与 split_episodes。"
-    "analysis 必须包含：totalChars,totalWords,paragraphCount,sentenceCount,characters,scenes,dialogue,keywords,emotions,genre,sentimentScore,pace。"
+    "analysis 必须包含：characters,scenes,dialogue,keywords,emotions,genre,sentimentScore,pace。"
     "characters 是数组，元素包含 name,lineCount,wordCount,sampleQuote,firstAppearanceRatio。"
     "scenes 是数组，元素包含 index,location,positionRatio,preview。"
     "dialogue 包含 totalLines,averageLength,longestLength,ratioOfTotalText。"

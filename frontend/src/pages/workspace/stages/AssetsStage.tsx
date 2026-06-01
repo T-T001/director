@@ -63,7 +63,7 @@ function AssetMiniCard({
       onClick={onSelect}
       className={[
         'card-base grid gap-2 rounded-2xl p-3 text-left transition-all',
-        active ? 'border-[var(--glass-accent-from)] bg-[var(--glass-bg-muted)] shadow-[var(--glass-shadow-sm)]' : 'hover:bg-white/80',
+        active ? 'border-[var(--glass-accent-from)] bg-[var(--glass-bg-muted)] shadow-[var(--glass-shadow-sm)]' : 'hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/[0.08]',
       ].join(' ')}
     >
       <div className="flex items-center justify-between gap-2">

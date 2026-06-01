@@ -381,19 +381,19 @@ export function StoryboardStage({ projectId, episodeId }: WorkspaceStagePageProp
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
+          <article className="metric-card px-3 py-3">
             <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">分镜组数</p>
             <p className="mt-1 text-2xl font-semibold">{storyboards.length}</p>
           </article>
-          <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
+          <article className="metric-card px-3 py-3">
             <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">面板总数</p>
             <p className="mt-1 text-2xl font-semibold">{totalPanels(storyboards)}</p>
           </article>
-          <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
+          <article className="metric-card px-3 py-3">
             <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">已生成图片</p>
             <p className="mt-1 text-2xl font-semibold">{generatedImageCount}</p>
           </article>
-          <article className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/70 px-3 py-3">
+          <article className="metric-card px-3 py-3">
             <p className="text-xs uppercase tracking-wide text-[var(--glass-text-tertiary)]">待保存 / 提示词就绪</p>
             <p className="mt-1 text-2xl font-semibold">
               {dirtyPanelCount} / {readyPromptCount}
@@ -521,7 +521,7 @@ export function StoryboardStage({ projectId, episodeId }: WorkspaceStagePageProp
                     'rounded-xl border px-3 py-2 text-left transition-colors',
                     selectedStoryboardId === storyboard.id
                       ? 'border-[var(--glass-accent-from)] bg-[var(--glass-bg-muted)]'
-                      : 'border-[var(--glass-stroke-base)] bg-white/70 hover:bg-white',
+                      : 'border-[var(--glass-stroke-base)] bg-white/[0.025] hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/[0.08]',
                   ].join(' ')}
                 >
                   <p className="text-sm font-medium">分镜 {storyboard.id.slice(0, 8)}</p>
@@ -568,7 +568,7 @@ export function StoryboardStage({ projectId, episodeId }: WorkspaceStagePageProp
                       'grid gap-2 rounded-xl border p-3 text-left transition-colors',
                       selectedPanelId === panel.id
                         ? 'border-[var(--glass-accent-from)] bg-[var(--glass-bg-muted)]'
-                        : 'border-[var(--glass-stroke-base)] bg-white/70 hover:bg-white',
+                        : 'border-[var(--glass-stroke-base)] bg-white/[0.025] hover:border-[var(--glass-stroke-strong)] hover:bg-amber-200/[0.08]',
                     ].join(' ')}
                   >
                     {isPanelDirty(panel, getPanelDraft(panel)) ? (

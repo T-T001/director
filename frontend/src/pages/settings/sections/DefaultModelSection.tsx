@@ -244,13 +244,13 @@ export function DefaultModelSection() {
                   </div>
 
                   {currentValue ? (
-                    <div className="rounded-xl border border-[var(--glass-stroke-base)] bg-white/60 px-3 py-2 text-[12px] text-[var(--glass-text-secondary)]">
+                    <div className="rounded-xl glass-field px-3 py-2 text-[12px] text-[var(--glass-text-secondary)]">
                       当前选择：<span className="font-medium text-[var(--glass-text-primary)]">{currentValue}</span>
                     </div>
                   ) : null}
 
                   {availableGroups.length === 0 ? (
-                    <div className="rounded-xl border border-dashed border-[var(--glass-stroke-base)] bg-white/40 px-3 py-3 text-xs text-[var(--glass-text-tertiary)]">
+                    <div className="rounded-xl border border-dashed border-[var(--glass-stroke-base)] bg-white/[0.02] px-3 py-3 text-xs text-[var(--glass-text-tertiary)]">
                       {config.emptyHint}
                     </div>
                   ) : null}

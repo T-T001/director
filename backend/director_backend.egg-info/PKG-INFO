@@ -5,6 +5,7 @@ Summary: FastAPI backend for the director rewrite
 Requires-Python: >=3.12
 Requires-Dist: alembic>=1.16.0
 Requires-Dist: boto3>=1.38.0
+Requires-Dist: cryptography>=42.0.0
 Requires-Dist: fastapi>=0.115.0
 Requires-Dist: httpx>=0.28.0
 Requires-Dist: passlib>=1.7.4

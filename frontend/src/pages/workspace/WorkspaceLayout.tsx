@@ -126,7 +126,7 @@ export function WorkspaceLayout() {
     return (
       <div className="grid gap-4">
         <EmptyState title="未找到剧集" description="请先创建剧集，再重新打开工作区。" />
-        <Link className="w-fit rounded-lg bg-white px-3 py-2 text-sm" to={`/projects/${projectId}`}>
+        <Link className="glass-btn-base glass-btn-secondary w-fit px-3 py-2 text-sm" to={`/projects/${projectId}`}>
           返回项目
         </Link>
       </div>

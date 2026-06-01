@@ -212,7 +212,7 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
               </Link>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-[var(--glass-stroke-base)] bg-white/60 p-3">
+              <div className="rounded-2xl glass-field p-3">
                 <p className="field-label">说话人</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {Array.from(speakerSet).slice(0, 12).map((speaker) => (
@@ -221,7 +221,7 @@ export function ScriptStage({ projectId, episodeId, episode }: WorkspaceStagePag
                   {speakerSet.size === 0 ? <span className="text-xs text-[var(--glass-text-tertiary)]">尚未识别对白角色</span> : null}
                 </div>
               </div>
-              <div className="rounded-2xl border border-[var(--glass-stroke-base)] bg-white/60 p-3">
+              <div className="rounded-2xl glass-field p-3">
                 <p className="field-label">场景线索</p>
                 <div className="mt-2 flex flex-wrap gap-2">
                   {sceneHints.map((scene) => (
