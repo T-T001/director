@@ -45,10 +45,13 @@ class ProjectService:
 
     def update_project(self, user_id: str, project_id: str, payload: ProjectUpdate) -> Project:
         project = self.get_project(user_id, project_id)
+        update_data = payload.model_dump(exclude_unset=True)
         if payload.name is not None:
             project.name = payload.name.strip()
         if payload.description is not None:
             project.description = payload.description
+        if "intake_novel_text" in update_data:
+            project.intake_novel_text = payload.intake_novel_text
         self.db.add(project)
         self.db.commit()
         self.db.refresh(project)

@@ -5,6 +5,7 @@ import { getSettings, updateSettings } from '../../../services/api/settings'
 import { listModels, listProviders } from '../../../services/api/modelGateway'
 import { queryKeys } from '../../../services/queryKeys'
 import { Button } from '../../../components/ui/Button'
+import { GlassSelect } from '../../../components/ui/GlassSelect'
 import { ErrorState, LoadingState, SectionCard } from '../../../components/common/PageState'
 import { CAPABILITY_LABEL } from '../../../constants/modelCatalog'
 import { Sparkles } from 'lucide-react'
@@ -214,33 +215,30 @@ export function DefaultModelSection() {
                 <div className="grid gap-3">
                   <div className="grid gap-1.5">
                     <label className="text-xs font-medium text-[var(--glass-text-secondary)]">默认模型</label>
-                    <select
-                      className="glass-input"
+                    <GlassSelect
                       value={currentValue}
-                      onChange={(event) =>
-                        setDraft((previous) => ({ ...previous, [config.key]: event.target.value }))
+                      onChange={(nextValue) =>
+                        setDraft((previous) => ({ ...previous, [config.key]: nextValue }))
                       }
-                    >
-                      <option value="">（未设置）</option>
-                      {currentValue &&
-                      !availableGroups.some((group) =>
-                        group.items.some((item) => item.model_id === currentValue),
-                      ) ? (
-                        <option value={currentValue}>{currentValue}（自定义）</option>
-                      ) : null}
-                      {availableGroups.map((group) => (
-                        <optgroup
-                          key={group.provider?.id ?? '__orphan__'}
-                          label={group.provider?.name ?? '未知供应商'}
-                        >
-                          {group.items.map((model) => (
-                            <option key={model.id} value={model.model_id}>
-                              {model.display_name ?? model.model_id} · {CAPABILITY_LABEL[model.capability]}
-                            </option>
-                          ))}
-                        </optgroup>
-                      ))}
-                    </select>
+                      ariaLabel={`${config.label}默认模型`}
+                      options={[
+                        { value: '', label: '（未设置）' },
+                        ...(currentValue &&
+                        !availableGroups.some((group) =>
+                          group.items.some((item) => item.model_id === currentValue),
+                        )
+                          ? [{ value: currentValue, label: `${currentValue}（自定义）` }]
+                          : []),
+                        ...availableGroups.map((group) => ({
+                          label: group.provider?.name ?? '未知供应商',
+                          options: group.items.map((model) => ({
+                            value: model.model_id,
+                            label: model.display_name ?? model.model_id,
+                            caption: `${model.model_id} · ${CAPABILITY_LABEL[model.capability]}`,
+                          })),
+                        })),
+                      ]}
+                    />
                   </div>
 
                   {currentValue ? (

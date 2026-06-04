@@ -443,6 +443,173 @@
   color: var(--glass-text-tertiary);
 }
 
+.glass-select-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  border-radius: var(--glass-radius-md);
+  border: 1px solid var(--glass-stroke-base);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.038)),
+    rgba(8, 10, 15, 0.76);
+  color: var(--glass-text-primary);
+  padding: 10px 12px;
+  text-align: left;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px rgba(0, 0, 0, 0.16);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease, transform 0.16s ease;
+}
+
+.glass-select-trigger:hover {
+  border-color: var(--glass-stroke-strong);
+  background:
+    linear-gradient(180deg, rgba(255, 229, 180, 0.085), rgba(72, 209, 204, 0.045)),
+    rgba(8, 10, 15, 0.82);
+}
+
+.glass-select-trigger:focus-visible,
+.glass-select-trigger[aria-expanded='true'] {
+  border-color: var(--glass-stroke-focus);
+  box-shadow: 0 0 0 3px rgba(72, 209, 204, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-select-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.glass-select-compact {
+  min-height: 32px;
+  padding: 7px 9px;
+  font-size: 12px;
+}
+
+.glass-select-value,
+.glass-select-placeholder {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.glass-select-placeholder {
+  color: var(--glass-text-tertiary);
+}
+
+.glass-select-caret {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--glass-accent-cyan);
+  transition: transform 0.16s ease, color 0.16s ease;
+}
+
+.glass-select-caret-open {
+  transform: rotate(180deg);
+  color: var(--glass-accent-from);
+}
+
+.glass-select-menu {
+  position: fixed;
+  z-index: 140;
+  max-height: min(360px, calc(100vh - 24px));
+  overflow: auto;
+  padding: 6px;
+  border: 1px solid var(--glass-stroke-base);
+  border-radius: var(--glass-radius-md);
+  background:
+    linear-gradient(145deg, rgba(31, 34, 44, 0.98), rgba(10, 12, 18, 0.98)),
+    var(--glass-bg-surface-modal);
+  box-shadow: 0 22px 62px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+}
+
+.glass-select-menu::-webkit-scrollbar {
+  width: 8px;
+}
+
+.glass-select-menu::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.glass-select-group + .glass-select-group {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--glass-stroke-soft);
+}
+
+.glass-select-group-label {
+  padding: 6px 9px 5px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--glass-text-tertiary);
+}
+
+.glass-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  min-height: 36px;
+  border-radius: var(--glass-radius-sm);
+  padding: 8px 9px;
+  color: var(--glass-text-secondary);
+  text-align: left;
+  transition: color 0.14s ease, background 0.14s ease, box-shadow 0.14s ease;
+}
+
+.glass-select-option:hover,
+.glass-select-option-active {
+  color: var(--glass-text-primary);
+  background: rgba(255, 229, 180, 0.08);
+}
+
+.glass-select-option-selected {
+  color: var(--glass-text-primary);
+  background: linear-gradient(135deg, rgba(255, 179, 71, 0.18), rgba(72, 209, 204, 0.1));
+  box-shadow: inset 0 0 0 1px rgba(255, 229, 180, 0.12);
+}
+
+.glass-select-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.glass-select-option-label,
+.glass-select-option-caption {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.glass-select-option-label {
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.glass-select-option-caption {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--glass-text-tertiary);
+}
+
+.glass-select-check {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  color: var(--glass-accent-from);
+}
+
 /* Native <select> rendered through .glass-input: give it a custom amber caret and
    force the option popup dark (color-scheme:dark covers most engines, this is the
    belt-and-braces fallback for Chromium on Windows). */

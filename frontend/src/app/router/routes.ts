@@ -1,9 +1,8 @@
-export const workspaceStages = ['config', 'script', 'assets', 'storyboard', 'prompts', 'voice', 'video'] as const
+export const workspaceStages = ['script', 'assets', 'storyboard', 'prompts', 'voice', 'video'] as const
 
 export type WorkspaceStage = (typeof workspaceStages)[number]
 
 export const workspaceStageItems: Array<{ stage: WorkspaceStage; label: string; description: string }> = [
-  { stage: 'config', label: '配置', description: '项目基础设置' },
   { stage: 'script', label: '剧本', description: '撰写与拆分剧本' },
   { stage: 'assets', label: '素材', description: '角色与场景素材' },
   { stage: 'storyboard', label: '分镜', description: '镜头分镜规划' },

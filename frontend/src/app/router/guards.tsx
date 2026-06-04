@@ -117,5 +117,5 @@ export function LegacyWorkspaceRedirect() {
     return <Navigate to={`/projects/${projectId}`} replace />
   }
 
-  return <Navigate to={buildWorkspaceStagePath(projectId, firstEpisode.id, 'config')} replace />
+  return <Navigate to={buildWorkspaceStagePath(projectId, firstEpisode.id, 'script')} replace />
 }

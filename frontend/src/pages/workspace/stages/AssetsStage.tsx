@@ -6,6 +6,7 @@ import { createProjectCharacter, createProjectLocation, listProjectAssets } from
 import { queryKeys } from '../../../services/queryKeys'
 import { buildWorkspaceStagePath } from '../../../app/router/routes'
 import { Button } from '../../../components/ui/Button'
+import { GlassSelect } from '../../../components/ui/GlassSelect'
 import { EmptyState, ErrorState, LoadingState, SectionCard } from '../../../components/common/PageState'
 import type { AssetItem } from '../../../types/project'
 import type { WorkspaceStagePageProps } from './types'
@@ -243,25 +244,27 @@ export function AssetsStage({ projectId, episodeId }: WorkspaceStagePageProps) {
             onChange={(event) => setSearch(event.target.value)}
             placeholder="搜索角色、场景、道具或描述"
           />
-          <select
-            className="glass-input"
+          <GlassSelect
             value={kindFilter}
-            onChange={(event) => setKindFilter(event.target.value as AssetKindFilter)}
-          >
-            <option value="all">全部类型</option>
-            <option value="character">角色</option>
-            <option value="location">场景</option>
-            <option value="prop">道具</option>
-            <option value="other">其他</option>
-          </select>
-          <select
-            className="glass-input"
+            onChange={(nextValue) => setKindFilter(nextValue as AssetKindFilter)}
+            ariaLabel="资产类型筛选"
+            options={[
+              { value: 'all', label: '全部类型' },
+              { value: 'character', label: '角色' },
+              { value: 'location', label: '场景' },
+              { value: 'prop', label: '道具' },
+              { value: 'other', label: '其他' },
+            ]}
+          />
+          <GlassSelect
             value={sortMode}
-            onChange={(event) => setSortMode(event.target.value as AssetSortMode)}
-          >
-            <option value="updated-desc">最近更新</option>
-            <option value="name-asc">名称 A→Z</option>
-          </select>
+            onChange={(nextValue) => setSortMode(nextValue as AssetSortMode)}
+            ariaLabel="资产排序"
+            options={[
+              { value: 'updated-desc', label: '最近更新' },
+              { value: 'name-asc', label: '名称 A-Z' },
+            ]}
+          />
         </div>
       </SectionCard>
 

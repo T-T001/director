@@ -9,6 +9,7 @@ import { listTasks, type TaskItem } from '../../../services/api/tasks'
 import { queryKeys } from '../../../services/queryKeys'
 import { buildWorkspaceStagePath } from '../../../app/router/routes'
 import { Button } from '../../../components/ui/Button'
+import { GlassSelect } from '../../../components/ui/GlassSelect'
 import { EmptyState, ErrorState, LoadingState, SectionCard } from '../../../components/common/PageState'
 import { buildDraftPrompt, buildEpisodeStageLines, lineTimeLabel } from './episode-stage-content'
 import type { StoryboardPanel } from '../../../types/project'
@@ -923,11 +924,17 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <select className="glass-input w-44" value={batchPreset} onChange={(event) => setBatchPreset(event.target.value as ShotPreset)}>
-                  <option value="cinematic">电影化</option>
-                  <option value="action">动作</option>
-                  <option value="dialogue">对白</option>
-                </select>
+                <GlassSelect
+                  className="w-44"
+                  value={batchPreset}
+                  onChange={(nextValue) => setBatchPreset(nextValue as ShotPreset)}
+                  ariaLabel="批量镜头预设"
+                  options={[
+                    { value: 'cinematic', label: '电影化' },
+                    { value: 'action', label: '动作' },
+                    { value: 'dialogue', label: '对白' },
+                  ]}
+                />
                 <Button type="button" variant="secondary" onClick={applyBatchPreset}>批量应用预设</Button>
               </div>
             </div>
@@ -983,19 +990,29 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
             <div className="grid gap-2 md:grid-cols-2">
               <label className="grid gap-1">
                 <span className="text-xs text-[var(--glass-text-tertiary)]">渲染模式</span>
-                <select className="glass-input" value={selectedConfig.mode} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { mode: event.target.value as RenderMode })}>
-                  <option value="single-panel">单镜</option>
-                  <option value="first-last-frame">首尾帧</option>
-                </select>
+                <GlassSelect
+                  value={selectedConfig.mode}
+                  onChange={(nextValue) => patchConfig(selectedLine.id, selectedLine.order, { mode: nextValue as RenderMode })}
+                  ariaLabel="渲染模式"
+                  options={[
+                    { value: 'single-panel', label: '单镜' },
+                    { value: 'first-last-frame', label: '首尾帧' },
+                  ]}
+                />
               </label>
 
               <label className="grid gap-1">
                 <span className="text-xs text-[var(--glass-text-tertiary)]">镜头预设</span>
-                <select className="glass-input" value={selectedConfig.preset} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { preset: event.target.value as ShotPreset })}>
-                  <option value="cinematic">电影化</option>
-                  <option value="action">动作</option>
-                  <option value="dialogue">对白</option>
-                </select>
+                <GlassSelect
+                  value={selectedConfig.preset}
+                  onChange={(nextValue) => patchConfig(selectedLine.id, selectedLine.order, { preset: nextValue as ShotPreset })}
+                  ariaLabel="镜头预设"
+                  options={[
+                    { value: 'cinematic', label: '电影化' },
+                    { value: 'action', label: '动作' },
+                    { value: 'dialogue', label: '对白' },
+                  ]}
+                />
               </label>
 
               <label className="grid gap-1 md:col-span-2">
@@ -1010,12 +1027,17 @@ export function VideoStage({ projectId, episodeId, episode }: WorkspaceStagePage
 
               <label className="grid gap-1">
                 <span className="text-xs text-[var(--glass-text-tertiary)]">时长提示</span>
-                <select className="glass-input" value={selectedConfig.durationHint} onChange={(event) => patchConfig(selectedLine.id, selectedLine.order, { durationHint: event.target.value as DurationHint })}>
-                  <option value="auto">自动</option>
-                  <option value="short">短</option>
-                  <option value="medium">中</option>
-                  <option value="long">长</option>
-                </select>
+                <GlassSelect
+                  value={selectedConfig.durationHint}
+                  onChange={(nextValue) => patchConfig(selectedLine.id, selectedLine.order, { durationHint: nextValue as DurationHint })}
+                  ariaLabel="时长提示"
+                  options={[
+                    { value: 'auto', label: '自动' },
+                    { value: 'short', label: '短' },
+                    { value: 'medium', label: '中' },
+                    { value: 'long', label: '长' },
+                  ]}
+                />
               </label>
 
               <label className="flex items-center gap-2 rounded-lg border border-[var(--glass-stroke-base)] bg-white/[0.03] px-3 py-2">

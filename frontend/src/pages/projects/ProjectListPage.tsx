@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { createProject, listProjects } from '../../services/api/projects'
 import { queryKeys } from '../../services/queryKeys'
 import { Button } from '../../components/ui/Button'
+import { GlassSelect } from '../../components/ui/GlassSelect'
 import { EmptyState, ErrorState, LoadingState, SectionCard } from '../../components/common/PageState'
 
 type SortMode = 'updated-desc' | 'name-asc'
@@ -142,10 +143,15 @@ placeholder="题材、主角、受众或成片风格（可选）"
               onChange={(event) => setSearch(event.target.value)}
 placeholder="搜索项目、题材或主角"
             />
-            <select className="glass-input" value={sortMode} onChange={(event) => setSortMode(event.target.value as SortMode)}>
-              <option value="updated-desc">最近更新</option>
-              <option value="name-asc">名称 A→Z</option>
-            </select>
+            <GlassSelect
+              value={sortMode}
+              onChange={(nextValue) => setSortMode(nextValue as SortMode)}
+              ariaLabel="项目排序"
+              options={[
+                { value: 'updated-desc', label: '最近更新' },
+                { value: 'name-asc', label: '名称 A-Z' },
+              ]}
+            />
           </div>
         </div>
 

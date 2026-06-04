@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 
+import { GlassSelect } from '../../components/ui/GlassSelect'
 import { listGlobalAssets } from '../../services/api/assets'
 import { queryKeys } from '../../services/queryKeys'
 import { EmptyState, ErrorState, LoadingState, SectionCard } from '../../components/common/PageState'
@@ -226,25 +227,27 @@ export function AssetHubPage() {
               onChange={(event) => setSearch(event.target.value)}
               placeholder="按名称、类型或描述搜索"
             />
-            <select
-              className="glass-input"
+            <GlassSelect
               value={kindFilter}
-              onChange={(event) => setKindFilter(event.target.value as AssetKindFilter)}
-            >
-              <option value="all">全部类型</option>
-              <option value="character">角色</option>
-              <option value="location">场景</option>
-              <option value="prop">道具</option>
-              <option value="other">其他</option>
-            </select>
-            <select
-              className="glass-input"
+              onChange={(nextValue) => setKindFilter(nextValue as AssetKindFilter)}
+              ariaLabel="资产类型筛选"
+              options={[
+                { value: 'all', label: '全部类型' },
+                { value: 'character', label: '角色' },
+                { value: 'location', label: '场景' },
+                { value: 'prop', label: '道具' },
+                { value: 'other', label: '其他' },
+              ]}
+            />
+            <GlassSelect
               value={sortMode}
-              onChange={(event) => setSortMode(event.target.value as AssetSortMode)}
-            >
-              <option value="updated-desc">最近更新</option>
-              <option value="name-asc">名称 A→Z</option>
-            </select>
+              onChange={(nextValue) => setSortMode(nextValue as AssetSortMode)}
+              ariaLabel="资产排序"
+              options={[
+                { value: 'updated-desc', label: '最近更新' },
+                { value: 'name-asc', label: '名称 A-Z' },
+              ]}
+            />
           </div>
           <p className="text-xs text-[var(--glass-text-tertiary)]">
             「{titleForKind(kindFilter)}」分类下展示 {filteredAssets.length} 项。

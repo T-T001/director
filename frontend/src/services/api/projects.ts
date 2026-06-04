@@ -16,7 +16,10 @@ export async function getProject(projectId: string) {
   return response.data.data.project as Project
 }
 
-export async function updateProject(projectId: string, payload: { name?: string; description?: string | null }) {
+export async function updateProject(
+  projectId: string,
+  payload: { name?: string; description?: string | null; intake_novel_text?: string | null },
+) {
   const response = await apiClient.patch(`/projects/${projectId}`, payload)
   return response.data.data.project as Project
 }

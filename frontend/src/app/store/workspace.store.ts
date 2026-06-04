@@ -13,7 +13,7 @@ type WorkspaceUIState = {
 
 export const useWorkspaceStore = create<WorkspaceUIState>((set) => ({
   selectedPanelId: null,
-  activeStage: 'config',
+  activeStage: 'script',
   sidePanelOpen: true,
   setSelectedPanelId: (selectedPanelId) => set({ selectedPanelId }),
   setActiveStage: (activeStage) => set({ activeStage }),

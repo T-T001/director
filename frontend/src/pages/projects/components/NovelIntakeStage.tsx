@@ -70,10 +70,29 @@ const SUBMIT_STAGE_LABEL: Record<IntakeSubmitProgress['stage'], string> = {
   screenplay: '生成剧本',
 }
 
+const DRAFT_KEY_PREFIX = 'np-intake-draft:'
+
+function readNovelDraft(projectId: string): string {
+  if (typeof window === 'undefined' || !projectId) return ''
+  return window.localStorage.getItem(DRAFT_KEY_PREFIX + projectId) ?? ''
+}
+
+function writeNovelDraft(projectId: string, value: string) {
+  if (typeof window === 'undefined' || !projectId) return
+  if (value) {
+    window.localStorage.setItem(DRAFT_KEY_PREFIX + projectId, value)
+  } else {
+    window.localStorage.removeItem(DRAFT_KEY_PREFIX + projectId)
+  }
+}
+
 type Props = {
+  projectId: string
   projectName: string
   hasEpisodes: boolean
   episodeCount: number
+  initialNovelText: string
+  onPersistNovelText: (value: string) => Promise<unknown>
   enableNarration: boolean
   onEnableNarrationChange: (value: boolean) => void
   onAnalyzePreview: (payload: { content: string }) => Promise<NPTaskQueued>
@@ -85,9 +104,12 @@ type Props = {
 }
 
 export function NovelIntakeStage({
+  projectId,
   projectName,
   hasEpisodes,
   episodeCount,
+  initialNovelText,
+  onPersistNovelText,
   enableNarration,
   onEnableNarrationChange,
   onAnalyzePreview,
@@ -96,7 +118,7 @@ export function NovelIntakeStage({
   submitProgress,
 }: Props) {
   const [view, setView] = useState<ViewState>('input')
-  const [novelText, setNovelText] = useState('')
+  const [novelText, setNovelText] = useState(() => initialNovelText || readNovelDraft(projectId))
   const [ratio, setRatio] = useState('9:16')
   const [artStyle, setArtStyle] = useState('anime-realism')
   const [analysis, setAnalysis] = useState<NovelIntakeAnalysis | null>(null)
@@ -111,12 +133,49 @@ export function NovelIntakeStage({
   })
   const [feedback, setFeedback] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const lastPersistedText = useRef(initialNovelText || readNovelDraft(projectId))
+  const latestNovelText = useRef(novelText)
+  const persistNovelText = useRef(onPersistNovelText)
 
   const wordCount = useMemo(() => countWords(novelText), [novelText])
   const charCount = novelText.length
 
   const ratioLabel = RATIOS.find((r) => r.value === ratio)?.label ?? ratio
   const styleLabel = STYLES.find((s) => s.value === artStyle)?.label ?? artStyle
+
+  useEffect(() => {
+    latestNovelText.current = novelText
+  }, [novelText])
+
+  useEffect(() => {
+    persistNovelText.current = onPersistNovelText
+  }, [onPersistNovelText])
+
+  useEffect(() => {
+    writeNovelDraft(projectId, novelText)
+    if (novelText === lastPersistedText.current) return undefined
+
+    const timer = window.setTimeout(() => {
+      const nextValue = novelText
+      persistNovelText.current(nextValue)
+        .then(() => {
+          lastPersistedText.current = nextValue
+        })
+        .catch((err) => {
+          console.error('failed to persist intake novel draft', err)
+        })
+    }, 800)
+
+    return () => window.clearTimeout(timer)
+  }, [novelText, projectId])
+
+  useEffect(() => {
+    return () => {
+      const nextValue = latestNovelText.current
+      if (nextValue === lastPersistedText.current) return
+      void persistNovelText.current(nextValue)
+    }
+  }, [projectId])
 
   useEffect(() => {
     if (view !== 'analyzing' || analyzeTask.progress > 0 || analyzeTask.status === 'failed') return undefined
@@ -130,6 +189,10 @@ export function NovelIntakeStage({
     }, 650)
     return () => window.clearInterval(timer)
   }, [analyzeTask.progress, analyzeTask.message, analyzeTask.status, view])
+
+  const handleChangeNovelText = (value: string) => {
+    setNovelText(value)
+  }
 
   const handleStart = async () => {
     const trimmed = novelText.trim()
@@ -244,7 +307,6 @@ export function NovelIntakeStage({
       if (result.screenplayFailed > 0) warnings.push(`${result.screenplayFailed} 集剧本生成失败`)
       const suffix = warnings.length ? `（${warnings.join('，')}，可在「剧本」阶段重试）` : ''
       setFeedback(`已成功创建 ${result.created} 集并完成智能分析${suffix}。`)
-      setNovelText('')
       setAnalysis(null)
       setSplitEpisodes([])
       setView('input')
@@ -274,7 +336,7 @@ export function NovelIntakeStage({
           hasEpisodes={hasEpisodes}
           episodeCount={episodeCount}
           novelText={novelText}
-          onChangeNovelText={setNovelText}
+          onChangeNovelText={handleChangeNovelText}
           ratio={ratio}
           onChangeRatio={setRatio}
           artStyle={artStyle}

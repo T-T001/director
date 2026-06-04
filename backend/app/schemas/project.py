@@ -35,6 +35,7 @@ class ProjectRead(BaseModel):
     id: str
     name: str
     description: str | None = None
+    intake_novel_text: str | None = None
     created_at: datetime
     updated_at: datetime
 
@@ -47,6 +48,7 @@ class ProjectCreate(BaseModel):
 class ProjectUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=100)
     description: str | None = Field(default=None, max_length=1000)
+    intake_novel_text: str | None = None
 
 
 class ProjectWorkspaceRead(BaseModel):

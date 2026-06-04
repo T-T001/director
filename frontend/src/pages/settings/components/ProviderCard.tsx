@@ -18,6 +18,7 @@ import {
   ZapOff,
 } from 'lucide-react'
 
+import { GlassSelect } from '../../../components/ui/GlassSelect'
 import type { Capability, Protocol } from '../../../constants/modelCatalog'
 import {
   CAPABILITY_LABEL,
@@ -707,30 +708,25 @@ export function ProviderCard({
             </button>
           </div>
           <div className="grid gap-2 md:grid-cols-3">
-            <select
+            <GlassSelect
+              className="glass-select-compact"
               value={newModel.capability}
-              onChange={(e) => setNewModel({ ...newModel, capability: e.target.value as Capability })}
-              className="glass-input px-2 py-1.5 text-[11px]"
-            >
-              {(Object.keys(CAPABILITY_LABEL) as Capability[])
+              onChange={(nextValue) => setNewModel({ ...newModel, capability: nextValue as Capability })}
+              ariaLabel="新增模型能力"
+              options={(Object.keys(CAPABILITY_LABEL) as Capability[])
                 .filter((cap) => CAPABILITY_TO_TAB[cap] === activeTab)
-                .map((cap) => (
-                  <option key={cap} value={cap}>
-                    能力: {CAPABILITY_LABEL[cap]}
-                  </option>
-                ))}
-            </select>
-            <select
+                .map((cap) => ({ value: cap, label: `能力: ${CAPABILITY_LABEL[cap]}` }))}
+            />
+            <GlassSelect
+              className="glass-select-compact"
               value={newModel.protocol}
-              onChange={(e) => setNewModel({ ...newModel, protocol: e.target.value as Protocol })}
-              className="glass-input px-2 py-1.5 text-[11px]"
-            >
-              {(Object.keys(PROTOCOL_LABEL) as Protocol[]).map((p) => (
-                <option key={p} value={p}>
-                  协议: {PROTOCOL_LABEL[p]}
-                </option>
-              ))}
-            </select>
+              onChange={(nextValue) => setNewModel({ ...newModel, protocol: nextValue as Protocol })}
+              ariaLabel="新增模型协议"
+              options={(Object.keys(PROTOCOL_LABEL) as Protocol[]).map((p) => ({
+                value: p,
+                label: `协议: ${PROTOCOL_LABEL[p]}`,
+              }))}
+            />
             <input
               type="text"
               value={newModel.request_path}
@@ -790,38 +786,36 @@ export function ProviderCard({
                       />
                     </div>
                     <div className="mb-2 grid gap-2 md:grid-cols-3">
-                      <select
+                      <GlassSelect
+                        className="glass-select-compact"
                         value={editingModel.capability}
-                        onChange={(e) =>
+                        onChange={(nextValue) =>
                           setEditingModel({
                             ...editingModel,
-                            capability: e.target.value as Capability,
+                            capability: nextValue as Capability,
                           })
                         }
-                        className="glass-input px-2 py-1.5 text-[11px]"
-                      >
-                        {(Object.keys(CAPABILITY_LABEL) as Capability[]).map((cap) => (
-                          <option key={cap} value={cap}>
-                            {CAPABILITY_LABEL[cap]}
-                          </option>
-                        ))}
-                      </select>
-                      <select
+                        ariaLabel="编辑模型能力"
+                        options={(Object.keys(CAPABILITY_LABEL) as Capability[]).map((cap) => ({
+                          value: cap,
+                          label: CAPABILITY_LABEL[cap],
+                        }))}
+                      />
+                      <GlassSelect
+                        className="glass-select-compact"
                         value={editingModel.protocol}
-                        onChange={(e) =>
+                        onChange={(nextValue) =>
                           setEditingModel({
                             ...editingModel,
-                            protocol: e.target.value as Protocol,
+                            protocol: nextValue as Protocol,
                           })
                         }
-                        className="glass-input px-2 py-1.5 text-[11px]"
-                      >
-                        {(Object.keys(PROTOCOL_LABEL) as Protocol[]).map((p) => (
-                          <option key={p} value={p}>
-                            {PROTOCOL_LABEL[p]}
-                          </option>
-                        ))}
-                      </select>
+                        ariaLabel="编辑模型协议"
+                        options={(Object.keys(PROTOCOL_LABEL) as Protocol[]).map((p) => ({
+                          value: p,
+                          label: PROTOCOL_LABEL[p],
+                        }))}
+                      />
                       <input
                         type="text"
                         value={editingModel.request_path}

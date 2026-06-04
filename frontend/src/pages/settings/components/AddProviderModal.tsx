@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { Modal } from '../../../components/ui/Modal'
 import { Button } from '../../../components/ui/Button'
+import { GlassSelect } from '../../../components/ui/GlassSelect'
 import type { ProviderApiType } from '../../../types/modelGateway'
 
 export type ApiTypePreset = {
@@ -94,17 +95,15 @@ export function AddProviderModal({ open, onClose, onSubmit, submitting }: Props)
 
         <label className="grid gap-1.5">
           <span className="text-sm font-medium text-[var(--glass-text-secondary)]">API 类型</span>
-          <select
-            className="glass-input"
+          <GlassSelect
             value={apiType}
-            onChange={(event) => handleApiTypeChange(event.target.value as ProviderApiType)}
-          >
-            {API_TYPE_PRESETS.map((preset) => (
-              <option key={preset.key} value={preset.key}>
-                {preset.label}
-              </option>
-            ))}
-          </select>
+            onChange={(nextValue) => handleApiTypeChange(nextValue as ProviderApiType)}
+            ariaLabel="API 类型"
+            options={API_TYPE_PRESETS.map((preset) => ({
+              value: preset.key,
+              label: preset.label,
+            }))}
+          />
           <span className="text-[11px] text-[var(--glass-text-tertiary)]">
             {selectedPreset.hint}
           </span>

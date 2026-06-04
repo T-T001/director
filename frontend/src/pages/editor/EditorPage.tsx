@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { Button } from '../../components/ui/Button'
+import { GlassSelect } from '../../components/ui/GlassSelect'
 import { SectionCard } from '../../components/common/PageState'
 import { useEditorStore } from '../../app/store/editor.store'
 
@@ -220,11 +221,17 @@ export function EditorPage() {
                 onChange={(event) => setClipSearch(event.target.value)}
                 placeholder="搜索片段"
               />
-              <select className="glass-input w-32" value={laneFilter} onChange={(event) => setLaneFilter(event.target.value as 'all' | 'video' | 'audio')}>
-                <option value="all">全部轨道</option>
-                <option value="video">视频轨</option>
-                <option value="audio">音频轨</option>
-              </select>
+              <GlassSelect
+                className="w-32"
+                value={laneFilter}
+                onChange={(nextValue) => setLaneFilter(nextValue as 'all' | 'video' | 'audio')}
+                ariaLabel="轨道筛选"
+                options={[
+                  { value: 'all', label: '全部轨道' },
+                  { value: 'video', label: '视频轨' },
+                  { value: 'audio', label: '音频轨' },
+                ]}
+              />
             </div>
           </div>
 

@@ -2,6 +2,7 @@ export type Project = {
   id: string
   name: string
   description: string | null
+  intake_novel_text: string | null
   created_at: string
   updated_at: string
 }

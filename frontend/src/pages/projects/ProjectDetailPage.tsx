@@ -80,13 +80,21 @@ export function ProjectDetailPage() {
   const invalidate = () => queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
 
   const updateProjectMutation = useMutation({
-    mutationFn: (payload: { name?: string; description?: Project['description'] }) => updateProject(projectId, payload),
+    mutationFn: (payload: { name?: string; description?: Project['description']; intake_novel_text?: Project['intake_novel_text'] }) => updateProject(projectId, payload),
     onSuccess: () => {
       invalidate()
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
       setProjectFeedback('已保存项目设置。')
     },
     onError: (err) => setProjectFeedback(err instanceof Error ? err.message : '保存失败。'),
+  })
+
+  const saveIntakeDraftMutation = useMutation({
+    mutationFn: (value: string) => updateProject(projectId, { intake_novel_text: value.trim() ? value : null }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.workspace(projectId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects.all() })
+    },
   })
 
   const deleteProjectMutation = useMutation({
@@ -279,9 +287,13 @@ export function ProjectDetailPage() {
 
       {stage === 'intake' ? (
         <NovelIntakeStage
+          key={projectId}
+          projectId={projectId}
           projectName={workspace.project.name}
           hasEpisodes={sortedEpisodes.length > 0}
           episodeCount={sortedEpisodes.length}
+          initialNovelText={workspace.project.intake_novel_text ?? ''}
+          onPersistNovelText={(value) => saveIntakeDraftMutation.mutateAsync(value)}
           enableNarration={enableNarration}
           onEnableNarrationChange={setEnableNarration}
           onAnalyzePreview={(payload) => analyzeNPIntakePreview(projectId, payload)}

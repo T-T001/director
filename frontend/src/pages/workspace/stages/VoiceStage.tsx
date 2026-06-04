@@ -11,6 +11,7 @@ import { storyToScript } from '../../../services/api/storyboards'
 import { listTasks, type TaskItem } from '../../../services/api/tasks'
 import { queryKeys } from '../../../services/queryKeys'
 import { buildEpisodeStageLines, inferSpeaker, lineTimeLabel, type StageLine } from './episode-stage-content'
+import { GlassSelect } from '../../../components/ui/GlassSelect'
 import type { WorkspaceStagePageProps } from './types'
 
 type VoiceLineDraft = {
@@ -717,12 +718,16 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <select className="glass-input w-40" value={speakerFilter} onChange={(event) => setSpeakerFilter(event.target.value)}>
-              <option value="all">全部发言者</option>
-              {speakerOptions.map((speaker) => (
-                <option key={speaker} value={speaker}>{speaker}</option>
-              ))}
-            </select>
+            <GlassSelect
+              className="w-40"
+              value={speakerFilter}
+              onChange={setSpeakerFilter}
+              ariaLabel="发言者筛选"
+              options={[
+                { value: 'all', label: '全部发言者' },
+                ...speakerOptions.map((speaker) => ({ value: speaker, label: speaker })),
+              ]}
+            />
             <input
               className="glass-input w-56"
               value={lineSearch}
@@ -1125,11 +1130,16 @@ export function VoiceStage({ projectId, episodeId, episode }: WorkspaceStagePage
 
             <label className="grid gap-1">
               <span className="text-xs text-[var(--glass-text-tertiary)]">性别倾向</span>
-              <select className="glass-input" value={voiceDesignGender} onChange={(event) => setVoiceDesignGender(event.target.value as 'female' | 'male' | 'neutral')}>
-                <option value="neutral">中性</option>
-                <option value="female">女声</option>
-                <option value="male">男声</option>
-              </select>
+              <GlassSelect
+                value={voiceDesignGender}
+                onChange={(nextValue) => setVoiceDesignGender(nextValue as 'female' | 'male' | 'neutral')}
+                ariaLabel="性别倾向"
+                options={[
+                  { value: 'neutral', label: '中性' },
+                  { value: 'female', label: '女声' },
+                  { value: 'male', label: '男声' },
+                ]}
+              />
             </label>
 
             <div className="flex flex-wrap justify-end gap-2">

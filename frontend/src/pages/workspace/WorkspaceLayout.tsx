@@ -5,6 +5,7 @@ import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-route
 import { getWorkspace } from '../../services/api/projects'
 import { queryKeys } from '../../services/queryKeys'
 import { EmptyState, ErrorState, LoadingState, SectionCard } from '../../components/common/PageState'
+import { GlassSelect } from '../../components/ui/GlassSelect'
 import { WorkspaceStageNav, type WorkspaceStageSignal } from '../../components/layout/WorkspaceStageNav'
 import {
   buildWorkspaceStagePath,
@@ -14,13 +15,13 @@ import {
   type WorkspaceStage,
 } from '../../app/router/routes'
 import { useWorkspaceStore } from '../../app/store/workspace.store'
-import { ConfigStage } from './stages/ConfigStage'
 import { ScriptStage } from './stages/ScriptStage'
 import { AssetsStage } from './stages/AssetsStage'
 import { StoryboardStage } from './stages/StoryboardStage'
 import { PromptsStage } from './stages/PromptsStage'
 import { VoiceStage } from './stages/VoiceStage'
 import { VideoStage } from './stages/VideoStage'
+import { ProjectSettingsModal } from './components/ProjectSettingsModal'
 import { useProjectTaskSSE } from '../../services/sse/project-stream'
 
 function stageTitle(stage: string) {
@@ -46,7 +47,6 @@ function buildStageSignals({
 }): Partial<Record<WorkspaceStage, WorkspaceStageSignal>> {
   const processing = activeTaskCount > 0
   return {
-    config: { status: 'ready', detail: '模型、比例与画风设定' },
     script: {
       status: processing && currentStage === 'script' ? 'processing' : hasNovelText ? 'ready' : 'active',
       detail: hasNovelText ? '原文已进入剧本拆解' : '先导入本集原文或剧本文本',
@@ -81,6 +81,7 @@ export function WorkspaceLayout() {
   const setActiveStage = useWorkspaceStore((state) => state.setActiveStage)
   const queryClient = useQueryClient()
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const workspaceQuery = useQuery({
     queryKey: queryKeys.projects.workspace(projectId),
@@ -109,6 +110,10 @@ export function WorkspaceLayout() {
       setActiveStage(currentStage)
     }
   }, [currentStage, setActiveStage])
+
+  if (projectId && episodeId && stage === 'config') {
+    return <Navigate to={buildWorkspaceStagePath(projectId, episodeId, 'script')} replace />
+  }
 
   if (!projectId || !episodeId || !isWorkspaceStage(stage)) {
     return <Navigate to="/projects" replace />
@@ -174,6 +179,13 @@ export function WorkspaceLayout() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setSettingsOpen(true)}
+              className="glass-btn-base glass-btn-secondary rounded-xl px-3 py-2 text-sm font-semibold"
+            >
+项目配置
+            </button>
             <Link to="/asset-hub" className="glass-btn-base glass-btn-ghost rounded-xl px-3 py-2 text-sm font-semibold">
 全局资产
             </Link>
@@ -196,20 +208,16 @@ export function WorkspaceLayout() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <select
-            className="glass-input min-w-[260px]"
+          <GlassSelect
+            className="min-w-[260px]"
             value={episode.id}
-            onChange={(event) => {
-              const nextEpisodeId = event.target.value
-              navigate(buildWorkspaceStagePath(projectId, nextEpisodeId, stage))
-            }}
-          >
-            {sortedEpisodes.map((item) => (
-              <option key={item.id} value={item.id}>
-                第 {item.episode_number} 集：{item.name}
-              </option>
-            ))}
-          </select>
+            onChange={(nextEpisodeId) => navigate(buildWorkspaceStagePath(projectId, nextEpisodeId, stage))}
+            ariaLabel="切换剧集"
+            options={sortedEpisodes.map((item) => ({
+              value: item.id,
+              label: `第 ${item.episode_number} 集：${item.name}`,
+            }))}
+          />
         </div>
 
         <div className="grid gap-2">
@@ -270,7 +278,6 @@ export function WorkspaceLayout() {
       </SectionCard>
 
       <div key={stage} className="animate-page-enter">
-        {stage === 'config' ? <ConfigStage projectId={projectId} episodeId={episodeId} workspace={workspace} episode={episode} /> : null}
         {stage === 'script' ? <ScriptStage projectId={projectId} episodeId={episodeId} workspace={workspace} episode={episode} /> : null}
         {stage === 'assets' ? <AssetsStage projectId={projectId} episodeId={episodeId} workspace={workspace} episode={episode} /> : null}
         {stage === 'storyboard' ? (
@@ -280,6 +287,8 @@ export function WorkspaceLayout() {
         {stage === 'voice' ? <VoiceStage projectId={projectId} episodeId={episodeId} workspace={workspace} episode={episode} /> : null}
         {stage === 'video' ? <VideoStage projectId={projectId} episodeId={episodeId} workspace={workspace} episode={episode} /> : null}
       </div>
+
+      <ProjectSettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} projectId={projectId} workspace={workspace} />
 
       {nextStage ? (
         <Link

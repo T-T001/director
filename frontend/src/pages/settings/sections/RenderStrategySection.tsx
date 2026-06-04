@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { getSettings, updateSettings } from '../../../services/api/settings'
 import { queryKeys } from '../../../services/queryKeys'
 import { Button } from '../../../components/ui/Button'
+import { GlassSelect } from '../../../components/ui/GlassSelect'
 import { ErrorState, LoadingState, SectionCard } from '../../../components/common/PageState'
 import type { UserSettings } from '../../../types/project'
 
@@ -187,30 +188,32 @@ export function RenderStrategySection() {
           </label>
           <label className="grid gap-1">
             <span className="text-sm text-[var(--glass-text-secondary)]">画面比例</span>
-            <select
-              className="glass-input"
+            <GlassSelect
               value={draft.video_ratio}
-              onChange={(event) => setDraft((previous) => ({ ...previous, video_ratio: event.target.value }))}
-            >
-              <option value="16:9">16:9</option>
-              <option value="9:16">9:16</option>
-              <option value="1:1">1:1</option>
-              <option value="4:3">4:3</option>
-              <option value="21:9">21:9</option>
-            </select>
+              onChange={(nextValue) => setDraft((previous) => ({ ...previous, video_ratio: nextValue }))}
+              ariaLabel="画面比例"
+              options={[
+                { value: '16:9', label: '16:9' },
+                { value: '9:16', label: '9:16' },
+                { value: '1:1', label: '1:1' },
+                { value: '4:3', label: '4:3' },
+                { value: '21:9', label: '21:9' },
+              ]}
+            />
           </label>
           <label className="grid gap-1">
             <span className="text-sm text-[var(--glass-text-secondary)]">分辨率</span>
-            <select
-              className="glass-input"
+            <GlassSelect
               value={draft.video_resolution}
-              onChange={(event) => setDraft((previous) => ({ ...previous, video_resolution: event.target.value }))}
-            >
-              <option value="720p">720p</option>
-              <option value="1080p">1080p</option>
-              <option value="1440p">1440p</option>
-              <option value="4k">4K</option>
-            </select>
+              onChange={(nextValue) => setDraft((previous) => ({ ...previous, video_resolution: nextValue }))}
+              ariaLabel="分辨率"
+              options={[
+                { value: '720p', label: '720p' },
+                { value: '1080p', label: '1080p' },
+                { value: '1440p', label: '1440p' },
+                { value: '4k', label: '4K' },
+              ]}
+            />
           </label>
         </div>
       </SectionCard>
