@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react'
 import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom'
 
 import { LoginPage } from '../../pages/auth/LoginPage'
@@ -8,7 +9,12 @@ import { SettingsPage } from '../../pages/settings/SettingsPage'
 import { ProjectDetailPage } from '../../pages/projects/ProjectDetailPage'
 import { ProjectListPage } from '../../pages/projects/ProjectListPage'
 import { WorkspaceLayout } from '../../pages/workspace/WorkspaceLayout'
+import { LoadingState } from '../../components/common/PageState'
 import { LegacyWorkspaceRedirect, ProtectedLayout } from './guards'
+
+const CanvasModePage = lazy(() =>
+  import('../../pages/workspace/canvas/CanvasModePage').then((module) => ({ default: module.CanvasModePage })),
+)
 
 const router = createBrowserRouter([
   {
@@ -38,6 +44,14 @@ const router = createBrowserRouter([
       {
         path: '/workspace/:projectId',
         element: <LegacyWorkspaceRedirect />,
+      },
+      {
+        path: '/workspace/:projectId/:episodeId/canvas',
+        element: (
+          <Suspense fallback={<LoadingState message="正在加载画布模式..." />}>
+            <CanvasModePage />
+          </Suspense>
+        ),
       },
       {
         path: '/workspace/:projectId/:episodeId/:stage',

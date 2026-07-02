@@ -2,6 +2,7 @@ import type { PropsWithChildren } from 'react'
 
 import { CinematicBackdrop } from './CinematicBackdrop'
 import { Navbar } from './Navbar'
+import { ToastHost } from '../ui/ToastHost'
 
 export function AppShell({ children }: PropsWithChildren) {
   return (
@@ -11,6 +12,8 @@ export function AppShell({ children }: PropsWithChildren) {
       <Navbar />
 
       <main className="animate-page-enter relative z-10 mx-auto w-full max-w-7xl px-4 py-7 sm:px-6 lg:px-8">{children}</main>
+
+      <ToastHost />
     </div>
   )
 }

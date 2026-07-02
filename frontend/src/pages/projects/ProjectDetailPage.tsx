@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Settings, Trash2, Calendar, Activity, Clapperboard } from 'lucide-react'
+import { Settings, Trash2, Calendar, Activity, Clapperboard, Workflow } from 'lucide-react'
 
 import { createEpisode, deleteEpisode, updateEpisode } from '../../services/api/episodes'
 import { analyzeNPIntakePreview, analyzeNPEpisode, convertNPScreenplay } from '../../services/api/novel-promotion'
 import { deleteProject, getWorkspace, updateProject } from '../../services/api/projects'
 import { getTask } from '../../services/api/tasks'
-import { buildWorkspaceStagePath } from '../../app/router/routes'
+import { buildWorkspaceCanvasPath, buildWorkspaceStagePath } from '../../app/router/routes'
 import { queryKeys } from '../../services/queryKeys'
 import type { Project } from '../../types/project'
 import { Button } from '../../components/ui/Button'
@@ -256,6 +256,19 @@ export function ProjectDetailPage() {
           </div>
 
           <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              disabled={sortedEpisodes.length === 0}
+              onClick={() => {
+                const targetEpisodeId = currentEpisodeId ?? sortedEpisodes[0]?.id
+                if (targetEpisodeId) navigate(buildWorkspaceCanvasPath(projectId, targetEpisodeId))
+              }}
+              title={sortedEpisodes.length === 0 ? '先拆集创建剧集后可用' : '以节点画布方式制作当前剧集'}
+              className="glass-btn-base glass-btn-primary inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs disabled:cursor-not-allowed"
+            >
+              <Workflow className="h-3.5 w-3.5" />
+              画布模式
+            </button>
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}

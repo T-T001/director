@@ -20,6 +20,10 @@ export function buildWorkspaceStagePath(projectId: string, episodeId: string, st
   return `/workspace/${projectId}/${episodeId}/${stage}`
 }
 
+export function buildWorkspaceCanvasPath(projectId: string, episodeId: string) {
+  return `/workspace/${projectId}/${episodeId}/canvas`
+}
+
 export function resolveWorkspaceStageFromPathname(pathname: string): WorkspaceStage | null {
   const parts = pathname.split('/').filter(Boolean)
   const segment = parts[parts.length - 1]

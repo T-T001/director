@@ -6,13 +6,14 @@ import { getWorkspace } from '../../services/api/projects'
 import { queryKeys } from '../../services/queryKeys'
 import { EmptyState, ErrorState, LoadingState, SectionCard } from '../../components/common/PageState'
 import { GlassSelect } from '../../components/ui/GlassSelect'
-import { WorkspaceStageNav, type WorkspaceStageSignal } from '../../components/layout/WorkspaceStageNav'
+import { WorkspaceStageNav } from '../../components/layout/WorkspaceStageNav'
+import { buildStageSignals, isRunningTask } from './stage-signals'
 import {
+  buildWorkspaceCanvasPath,
   buildWorkspaceStagePath,
   isWorkspaceStage,
   resolveWorkspaceStageFromPathname,
   workspaceStageItems,
-  type WorkspaceStage,
 } from '../../app/router/routes'
 import { useWorkspaceStore } from '../../app/store/workspace.store'
 import { ScriptStage } from './stages/ScriptStage'
@@ -26,52 +27,6 @@ import { useProjectTaskSSE } from '../../services/sse/project-stream'
 
 function stageTitle(stage: string) {
   return workspaceStageItems.find((item) => item.stage === stage)?.label ?? stage
-}
-
-function isRunningTask(status: string) {
-  return ['queued', 'processing', 'running'].includes(status)
-}
-
-function buildStageSignals({
-  currentStage,
-  hasNovelText,
-  hasSrt,
-  hasAudio,
-  activeTaskCount,
-}: {
-  currentStage: WorkspaceStage
-  hasNovelText: boolean
-  hasSrt: boolean
-  hasAudio: boolean
-  activeTaskCount: number
-}): Partial<Record<WorkspaceStage, WorkspaceStageSignal>> {
-  const processing = activeTaskCount > 0
-  return {
-    script: {
-      status: processing && currentStage === 'script' ? 'processing' : hasNovelText ? 'ready' : 'active',
-      detail: hasNovelText ? '原文已进入剧本拆解' : '先导入本集原文或剧本文本',
-    },
-    assets: {
-      status: processing && currentStage === 'assets' ? 'processing' : hasNovelText ? 'active' : 'empty',
-      detail: hasNovelText ? '补齐角色、场景、道具资产' : '等待剧本识别角色与场景',
-    },
-    storyboard: {
-      status: processing && currentStage === 'storyboard' ? 'processing' : hasNovelText ? 'active' : 'empty',
-      detail: hasNovelText ? '把剧本片段转成镜头面板' : '需要先准备剧本片段',
-    },
-    prompts: {
-      status: processing && currentStage === 'prompts' ? 'processing' : hasNovelText ? 'active' : 'empty',
-      detail: '审校每个镜头的图像/视频提示词',
-    },
-    voice: {
-      status: processing && currentStage === 'voice' ? 'processing' : hasAudio ? 'ready' : hasSrt || hasNovelText ? 'active' : 'empty',
-      detail: hasAudio ? '本集已有音频资产' : '绑定说话人音色并生成台词音频',
-    },
-    video: {
-      status: processing && currentStage === 'video' ? 'processing' : hasAudio ? 'active' : 'empty',
-      detail: hasAudio ? '组合分镜、配音与口型同步' : '等待分镜画面和配音资产',
-    },
-  }
 }
 
 export function WorkspaceLayout() {
@@ -147,11 +102,10 @@ export function WorkspaceLayout() {
   const hasSrt = Boolean(episode.srt_content?.trim())
   const hasAudio = Boolean(episode.audio_media_id)
   const stageSignals = buildStageSignals({
-    currentStage: stage as WorkspaceStage,
     hasNovelText,
     hasSrt,
     hasAudio,
-    activeTaskCount,
+    tasks: workspace.latest_active_tasks,
   })
 
   const handleRefreshWorkspace = async () => {
@@ -179,6 +133,12 @@ export function WorkspaceLayout() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link
+              to={buildWorkspaceCanvasPath(projectId, episodeId)}
+              className="glass-btn-base glass-btn-primary rounded-xl px-3 py-2 text-sm font-semibold"
+            >
+              画布模式
+            </Link>
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}

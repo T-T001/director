@@ -1,0 +1,47 @@
+.director-canvas {
+  --xy-background-color: transparent;
+  --xy-edge-stroke: rgba(255, 229, 180, 0.26);
+  --xy-edge-stroke-width: 1.6;
+  --xy-edge-stroke-selected: var(--glass-accent-cyan);
+  --xy-handle-background-color: var(--glass-accent-from);
+  --xy-handle-border-color: rgba(0, 0, 0, 0.4);
+  --xy-controls-button-background-color: var(--glass-bg-surface);
+  --xy-controls-button-background-color-hover: var(--glass-bg-surface-strong);
+  --xy-controls-button-color: var(--glass-text-secondary);
+  --xy-controls-button-color-hover: var(--glass-text-primary);
+  --xy-controls-button-border-color: var(--glass-stroke-base);
+  --xy-minimap-background-color: var(--glass-bg-nav);
+  --xy-minimap-mask-background-color: rgba(2, 3, 7, 0.62);
+  --xy-attribution-background-color-default: transparent;
+  --xy-selection-background-color: rgba(72, 209, 204, 0.08);
+  --xy-selection-border-default: 1px dashed var(--glass-stroke-focus);
+}
+
+.director-canvas .react-flow__edge.animated path {
+  stroke: var(--glass-accent-from);
+}
+
+.director-canvas .react-flow__controls {
+  border-radius: var(--glass-radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--glass-stroke-base);
+  box-shadow: var(--glass-shadow-sm);
+  backdrop-filter: blur(var(--glass-blur-md));
+  -webkit-backdrop-filter: blur(var(--glass-blur-md));
+}
+
+.director-canvas .react-flow__minimap {
+  border: 1px solid var(--glass-stroke-base);
+  border-radius: var(--glass-radius-sm);
+  overflow: hidden;
+}
+
+.director-canvas .react-flow__attribution {
+  color: var(--glass-text-tertiary);
+  opacity: 0.6;
+}
+
+.director-canvas .react-flow__handle {
+  width: 9px;
+  height: 9px;
+}
