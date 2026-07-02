@@ -1,0 +1,44 @@
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.eggs/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+
+# ===== Node / Vite =====
+node_modules/
+dist/
+.vite/
+*.local
+
+# ===== Environment & secrets =====
+.env
+.env.*
+!.env.example
+
+# ===== IDE / Editor =====
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
+sh.exe.stackdump
+
+# ===== Logs =====
+*.log
+logs/

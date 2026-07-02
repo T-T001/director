@@ -1,2 +1,0 @@
-[console_scripts]
-director-dev = app.scripts.dev:main
